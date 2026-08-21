@@ -79,6 +79,9 @@ namespace Client
         // 0 means automatic. The effective value is calculated from the actual
         // Direct3D client area and is deliberately kept separate from the saved value.
         public static float UIScale = 0F;
+        // Auto uses point sampling for integer scaling and linear sampling for
+        // fractional scaling. Point and Linear can be selected explicitly.
+        public static string UIScaleFilter = "Auto";
         public static float EffectiveUIScale { get; private set; } = 1F;
         public static int UIScreenWidth { get; private set; } = 1024;
         public static int UIScreenHeight { get; private set; } = 768;
@@ -261,6 +264,17 @@ namespace Client
                 UIScale = 0F;
             else if (UIScale > 0F)
                 UIScale = Math.Clamp((float)Math.Round(UIScale * 4F, MidpointRounding.AwayFromZero) / 4F, 1F, 3F);
+            UIScaleFilter = Reader.ReadString("Graphics", "UIScaleFilter", "Auto", false)?.Trim() ?? "Auto";
+            if (!UIScaleFilter.Equals("Auto", StringComparison.OrdinalIgnoreCase) &&
+                !UIScaleFilter.Equals("Point", StringComparison.OrdinalIgnoreCase) &&
+                !UIScaleFilter.Equals("Linear", StringComparison.OrdinalIgnoreCase))
+                UIScaleFilter = "Auto";
+            else if (UIScaleFilter.Equals("Point", StringComparison.OrdinalIgnoreCase))
+                UIScaleFilter = "Point";
+            else if (UIScaleFilter.Equals("Linear", StringComparison.OrdinalIgnoreCase))
+                UIScaleFilter = "Linear";
+            else
+                UIScaleFilter = "Auto";
             DebugMode = Reader.ReadBoolean("Graphics", "DebugMode", DebugMode);
             UseMouseCursors = Reader.ReadBoolean("Graphics", "UseMouseCursors", UseMouseCursors);
 
@@ -388,6 +402,7 @@ namespace Client
             Reader.Write("Graphics", "FPSCap", FPSCap);
             Reader.Write("Graphics", "Resolution", Resolution);
             Reader.Write("Graphics", "UIScale", UIScale.ToString("0.##", System.Globalization.CultureInfo.InvariantCulture));
+            Reader.Write("Graphics", "UIScaleFilter", UIScaleFilter);
             Reader.Write("Graphics", "DebugMode", DebugMode);
             Reader.Write("Graphics", "UseMouseCursors", UseMouseCursors);
 

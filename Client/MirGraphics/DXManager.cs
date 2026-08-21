@@ -10,7 +10,23 @@ namespace Client.MirGraphics
 {
     class DXManager
     {
-        public const string UIScaleBuildMarker = "UIFIX-20260821-D";
+        public const string UIScaleBuildMarker = "UIFIX-20260821-E";
+
+        public static TextureFilter EffectiveUIScaleFilter
+        {
+            get
+            {
+                if (Settings.UIScaleFilter.Equals("Point", StringComparison.OrdinalIgnoreCase))
+                    return TextureFilter.Point;
+                if (Settings.UIScaleFilter.Equals("Linear", StringComparison.OrdinalIgnoreCase))
+                    return TextureFilter.Linear;
+
+                float roundedScale = (float)Math.Round(Settings.EffectiveUIScale);
+                return Math.Abs(Settings.EffectiveUIScale - roundedScale) < 0.001F
+                    ? TextureFilter.Point
+                    : TextureFilter.Linear;
+            }
+        }
 
         public static int LastUISourceWidth { get; private set; }
         public static int LastUISourceHeight { get; private set; }
@@ -370,8 +386,9 @@ namespace Client.MirGraphics
                 Device.SetRenderState(RenderState.SourceBlend, Blend.SourceAlpha);
                 Device.SetRenderState(RenderState.DestinationBlend, Blend.InverseSourceAlpha);
 
-                Device.SetSamplerState(0, SamplerState.MinFilter, TextureFilter.Point);
-                Device.SetSamplerState(0, SamplerState.MagFilter, TextureFilter.Point);
+                TextureFilter scaleFilter = EffectiveUIScaleFilter;
+                Device.SetSamplerState(0, SamplerState.MinFilter, scaleFilter);
+                Device.SetSamplerState(0, SamplerState.MagFilter, scaleFilter);
                 Device.SetSamplerState(0, SamplerState.MipFilter, TextureFilter.None);
                 Device.SetSamplerState(0, SamplerState.AddressU, TextureAddress.Clamp);
                 Device.SetSamplerState(0, SamplerState.AddressV, TextureAddress.Clamp);

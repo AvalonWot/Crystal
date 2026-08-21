@@ -1251,7 +1251,8 @@ namespace Client.MirScenes
                         $"SCREEN={Settings.ScreenWidth}x{Settings.ScreenHeight} BB={backBuffer.Width}x{backBuffer.Height} " +
                         $"FORM={formClient.Width}x{formClient.Height} UI={Settings.UIScreenWidth}x{Settings.UIScreenHeight} " +
                         $"SCENE={Size.Width}x{Size.Height} DRAW={DXManager.LastUISourceWidth}x{DXManager.LastUISourceHeight}" +
-                        $"->{DXManager.LastUITargetWidth}x{DXManager.LastUITargetHeight} VP={viewport.Width}x{viewport.Height}";
+                        $"->{DXManager.LastUITargetWidth}x{DXManager.LastUITargetHeight} VP={viewport.Width}x{viewport.Height} " +
+                        $"FILTER={DXManager.EffectiveUIScaleFilter}";
                     _uiScaleDiagnosticLabel.Draw();
 
                     // Also expose the marker when playing windowed, where the title
