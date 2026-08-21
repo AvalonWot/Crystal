@@ -19,7 +19,7 @@ namespace Client.MirScenes.Dialogs
             Library = Libraries.Prguse3;
             Movable = true;
             Size = new Size(400, 174);
-            Location = new Point((Settings.ScreenWidth - Size.Width) / 2, (Settings.ScreenHeight - Size.Height) / 2);
+            Location = new Point((Settings.UIScreenWidth - Size.Width) / 2, (Settings.UIScreenHeight - Size.Height) / 2);
             Sort = true;
 
             // Title

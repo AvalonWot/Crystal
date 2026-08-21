@@ -205,9 +205,9 @@ namespace Client.MirControls
         void MirDropDownBox_BeforeDraw(object sender, EventArgs e)
         {
             if (!_Option[0].Visible) return;
-            if (IsMouseOver(CMain.MPoint)) return;
+            if (IsMouseOver(CMain.ControlMousePoint)) return;
             foreach (MirControl control in Controls)
-                if (control.IsMouseOver(CMain.MPoint))
+                if (control.IsMouseOver(CMain.ControlMousePoint))
                     return;
 
             CloseDropDown();
@@ -215,7 +215,7 @@ namespace Client.MirControls
 
         protected override void OnMouseLeave()
         {
-            if (!IsMouseOver(CMain.MPoint))
+            if (!IsMouseOver(CMain.ControlMousePoint))
                 CloseDropDown();
             base.OnMouseLeave();
         }

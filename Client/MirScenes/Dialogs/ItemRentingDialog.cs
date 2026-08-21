@@ -23,7 +23,7 @@ namespace Client.MirScenes.Dialogs
             Library = Libraries.Prguse;
             Movable = true;
             Size = new Size(204, 109);
-            Location = new Point(Settings.ScreenWidth - Size.Width - Size.Width / 2, Size.Height * 2 + Size.Height / 2 + 15);
+            Location = new Point(Settings.UIScreenWidth - Size.Width - Size.Width / 2, Size.Height * 2 + Size.Height / 2 + 15);
             Sort = true;
 
             // Confirm Button
@@ -236,7 +236,7 @@ namespace Client.MirScenes.Dialogs
             Library = Libraries.Prguse;
             Movable = true;
             Size = new Size(204, 109);
-            Location = new Point(Settings.ScreenWidth - Size.Width - Size.Width / 2, Size.Height * 2 + Size.Height / 2 + 15);
+            Location = new Point(Settings.UIScreenWidth - Size.Width - Size.Width / 2, Size.Height * 2 + Size.Height / 2 + 15);
             Sort = true;
 
             _lockButton = new MirButton

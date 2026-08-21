@@ -21,7 +21,7 @@ namespace Client.MirScenes.Dialogs
             Size = new Size(224, 180);
             Movable = true;
             Sort = true;
-            Location = new Point((Settings.ScreenWidth - Size.Width) / 2, (Settings.ScreenHeight - Size.Height) / 2);
+            Location = new Point((Settings.UIScreenWidth - Size.Width) / 2, (Settings.UIScreenHeight - Size.Height) / 2);
 
             BeforeDraw += ChatFilterPanel_BeforeDraw;
 

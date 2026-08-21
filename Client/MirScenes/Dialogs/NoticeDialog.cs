@@ -30,7 +30,7 @@ namespace Client.MirScenes.Dialogs
         {
             Index = 961;
             Library = Libraries.Prguse;
-            Location = new Point((Settings.ScreenWidth - Size.Width) / 2, (Settings.ScreenHeight - Size.Height) / 3);
+            Location = new Point((Settings.UIScreenWidth - Size.Width) / 2, (Settings.UIScreenHeight - Size.Height) / 3);
             TextLabel = new MirLabel[40];
             TextButtons = new List<MirLabel>();
 

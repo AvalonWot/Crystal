@@ -17,7 +17,7 @@ namespace Client.MirScenes.Dialogs
             Library = Libraries.Prguse;
             Movable = true;
             Size = new Size(204, 109);
-            Location = new Point(Settings.ScreenWidth - Size.Width - Size.Width / 2, Size.Height + Size.Height / 2);
+            Location = new Point(Settings.UIScreenWidth - Size.Width - Size.Width / 2, Size.Height + Size.Height / 2);
             Sort = true;
 
             var closeButton = new MirButton
@@ -203,7 +203,7 @@ namespace Client.MirScenes.Dialogs
             Library = Libraries.Prguse;
             Movable = true;
             Size = new Size(204, 109);
-            Location = new Point(Settings.ScreenWidth - Size.Width - Size.Width / 2, Size.Height + Size.Height / 2);
+            Location = new Point(Settings.UIScreenWidth - Size.Width - Size.Width / 2, Size.Height + Size.Height / 2);
             Sort = true;
 
             _lockButton = new MirButton

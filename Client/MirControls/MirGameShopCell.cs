@@ -248,12 +248,12 @@ namespace Client.MirControls
                 ShowItem = null;
             }
 
-            if (ShowItem == null && ItemDisplayArea.Contains(CMain.MPoint))
+            if (ShowItem == null && ItemDisplayArea.Contains(CMain.ControlMousePoint))
             {
                 ShowItem = new UserItem(Item.Info) { MaxDura = Item.Info.Durability, CurrentDura = Item.Info.Durability, Count = Item.Count };
                 GameScene.Scene.CreateItemLabel(ShowItem);
             }
-            else if (ShowItem != null && !ItemDisplayArea.Contains(CMain.MPoint))
+            else if (ShowItem != null && !ItemDisplayArea.Contains(CMain.ControlMousePoint))
             {
                 GameScene.Scene.DisposeItemLabel();
                 GameScene.HoverItem = null;

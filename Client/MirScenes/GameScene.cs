@@ -270,6 +270,7 @@ namespace Client.MirScenes
         public static long SpellTime;
 
         public MirLabel[] OutputLines = new MirLabel[10];
+        private MirLabel _uiScaleDiagnosticLabel;
         public List<OutPutMessage> OutputMessages = new List<OutPutMessage>();
 
         public long OutputDelay;
@@ -284,6 +285,9 @@ namespace Client.MirScenes
             RequestedMonsterInfo.Clear();
             RequestedNPCInfo.Clear();
             BackColour = Color.Transparent;
+            Size clientSize = DXManager.BackBufferSize;
+            Settings.UpdateUIScale(clientSize.Width, clientSize.Height);
+            Size = new Size(Settings.UIScreenWidth, Settings.UIScreenHeight);
             MoveTime = CMain.Time;
 
             KeyDown += GameScene_KeyDown;
@@ -406,8 +410,55 @@ namespace Client.MirScenes
                     OutLine = true,
                 };
 
+            // Keep this independent from the scene control texture so it identifies
+            // both the loaded build and the dimensions used by the final UI composite.
+            _uiScaleDiagnosticLabel = new MirLabel
+            {
+                AutoSize = true,
+                BackColour = Color.FromArgb(210, 32, 0, 32),
+                Font = new Font(Settings.FontName, 8F),
+                ForeColour = Color.Yellow,
+                Location = new Point(5, 5),
+                NotControl = true,
+                OutLine = true,
+                OutLineColour = Color.Black,
+            };
+
             if (MapInfoList.Count > 0)
                 RecreateBigMapButtons();
+        }
+
+        public void ApplyUIScaling()
+        {
+            Size newSize = new Size(Settings.UIScreenWidth, Settings.UIScreenHeight);
+            if (Size == newSize)
+                return;
+
+            Size oldSize = Size;
+            Size = newSize;
+
+            // Preserve the nearest screen edge for movable/top-level controls and
+            // clamp legacy saved positions into the new logical canvas.
+            foreach (MirControl control in Controls)
+            {
+                if (control == null || control is MapControl)
+                    continue;
+
+                Point location = control.Location;
+                int oldRight = oldSize.Width - (location.X + control.Size.Width);
+                int oldBottom = oldSize.Height - (location.Y + control.Size.Height);
+
+                if (oldRight >= 0 && oldRight < Math.Max(32, control.Size.Width / 4))
+                    location.X = newSize.Width - control.Size.Width - oldRight;
+                if (oldBottom >= 0 && oldBottom < Math.Max(32, control.Size.Height / 4))
+                    location.Y = newSize.Height - control.Size.Height - oldBottom;
+
+                location.X = Math.Max(0, Math.Min(location.X, Math.Max(0, newSize.Width - control.Size.Width)));
+                location.Y = Math.Max(0, Math.Min(location.Y, Math.Max(0, newSize.Height - control.Size.Height)));
+                control.Location = location;
+            }
+
+            TextureValid = false;
         }
 
         private void UpdateMouseCursor()
@@ -1159,26 +1210,58 @@ namespace Client.MirScenes
         {
             if (MapControl != null && !MapControl.IsDisposed)
                 MapControl.DrawControl();
-            base.DrawControl();
 
+            if (DrawControlTexture && !TextureValid)
+                CreateTexture();
 
-            if (PickedUpGold || (SelectedCell != null && SelectedCell.Item != null))
+            Size clientSize = DXManager.BackBufferSize;
+            if (ControlTexture != null && !ControlTexture.Disposed)
+                DXManager.DrawScaledUI(ControlTexture, Size.Width, Size.Height, clientSize.Width, clientSize.Height, Opacity);
+
+            DXManager.DrawScaledUIOverlay(() =>
             {
-                int image = PickedUpGold ? 116 : SelectedCell.Item.Image;
-                Size imgSize = Libraries.Items.GetTrueSize(image);
-                Point p = CMain.MPoint.Add(-imgSize.Width / 2, -imgSize.Height / 2);
+                if (PickedUpGold || (SelectedCell != null && SelectedCell.Item != null))
+                {
+                    int image = PickedUpGold ? 116 : SelectedCell.Item.Image;
+                    Size imgSize = Libraries.Items.GetTrueSize(image);
+                    Point p = CMain.UIMPoint.Add(-imgSize.Width / 2, -imgSize.Height / 2);
 
-                if (p.X + imgSize.Width >= Settings.ScreenWidth)
-                    p.X = Settings.ScreenWidth - imgSize.Width;
+                    if (p.X + imgSize.Width >= Settings.UIScreenWidth)
+                        p.X = Settings.UIScreenWidth - imgSize.Width;
 
-                if (p.Y + imgSize.Height >= Settings.ScreenHeight)
-                    p.Y = Settings.ScreenHeight - imgSize.Height;
+                    if (p.Y + imgSize.Height >= Settings.UIScreenHeight)
+                        p.Y = Settings.UIScreenHeight - imgSize.Height;
 
-                Libraries.Items.Draw(image, p.X, p.Y);
-            }
+                    Libraries.Items.Draw(image, p.X, p.Y);
+                }
 
-            for (int i = 0; i < OutputLines.Length; i++)
-                OutputLines[i].Draw();
+                for (int i = 0; i < OutputLines.Length; i++)
+                    OutputLines[i].Draw();
+
+                if (_uiScaleDiagnosticLabel != null && !_uiScaleDiagnosticLabel.IsDisposed)
+                {
+                    Size backBuffer = DXManager.BackBufferSize;
+                    Size formClient = Program.Form.ClientSize;
+                    Viewport viewport = DXManager.Device.Viewport;
+                    string configuredScale = Settings.UIScale.ToString("0.00", System.Globalization.CultureInfo.InvariantCulture);
+                    string effectiveScale = Settings.EffectiveUIScale.ToString("0.00", System.Globalization.CultureInfo.InvariantCulture);
+
+                    _uiScaleDiagnosticLabel.Text =
+                        $"{DXManager.UIScaleBuildMarker}  CFG={configuredScale} EFF={effectiveScale}  " +
+                        $"SCREEN={Settings.ScreenWidth}x{Settings.ScreenHeight} BB={backBuffer.Width}x{backBuffer.Height} " +
+                        $"FORM={formClient.Width}x{formClient.Height} UI={Settings.UIScreenWidth}x{Settings.UIScreenHeight} " +
+                        $"SCENE={Size.Width}x{Size.Height} DRAW={DXManager.LastUISourceWidth}x{DXManager.LastUISourceHeight}" +
+                        $"->{DXManager.LastUITargetWidth}x{DXManager.LastUITargetHeight} VP={viewport.Width}x{viewport.Height}";
+                    _uiScaleDiagnosticLabel.Draw();
+
+                    // Also expose the marker when playing windowed, where the title
+                    // remains visible even if the UI render target is the faulty path.
+                    if (!Settings.FullScreen)
+                        Program.Form.Text = _uiScaleDiagnosticLabel.Text;
+                }
+            }, Size.Width, Size.Height, clientSize.Width, clientSize.Height);
+
+            CleanTime = CMain.Time + Settings.CleanDelay;
         }
         public override void Process()
         {
@@ -1218,12 +1301,12 @@ namespace Client.MirScenes
             {
                 ItemLabel.BringToFront();
 
-                int x = CMain.MPoint.X + 28, y = CMain.MPoint.Y + 28;
-                if (x + ItemLabel.Size.Width > Settings.ScreenWidth)
-                    x = Settings.ScreenWidth - ItemLabel.Size.Width;
+                int x = CMain.UIMPoint.X + 28, y = CMain.UIMPoint.Y + 28;
+                if (x + ItemLabel.Size.Width > Settings.UIScreenWidth)
+                    x = Settings.UIScreenWidth - ItemLabel.Size.Width;
 
-                if (y + ItemLabel.Size.Height > Settings.ScreenHeight)
-                    y = Settings.ScreenHeight - ItemLabel.Size.Height;
+                if (y + ItemLabel.Size.Height > Settings.UIScreenHeight)
+                    y = Settings.UIScreenHeight - ItemLabel.Size.Height;
                 ItemLabel.Location = new Point(x, y);
             }
 
@@ -1231,12 +1314,12 @@ namespace Client.MirScenes
             {
                 MailLabel.BringToFront();
 
-                int x = CMain.MPoint.X + 15, y = CMain.MPoint.Y;
-                if (x + MailLabel.Size.Width > Settings.ScreenWidth)
-                    x = Settings.ScreenWidth - MailLabel.Size.Width;
+                int x = CMain.UIMPoint.X + 15, y = CMain.UIMPoint.Y;
+                if (x + MailLabel.Size.Width > Settings.UIScreenWidth)
+                    x = Settings.UIScreenWidth - MailLabel.Size.Width;
 
-                if (y + MailLabel.Size.Height > Settings.ScreenHeight)
-                    y = Settings.ScreenHeight - MailLabel.Size.Height;
+                if (y + MailLabel.Size.Height > Settings.UIScreenHeight)
+                    y = Settings.UIScreenHeight - MailLabel.Size.Height;
                 MailLabel.Location = new Point(x, y);
             }
 
@@ -1244,12 +1327,12 @@ namespace Client.MirScenes
             {
                 MemoLabel.BringToFront();
 
-                int x = CMain.MPoint.X + 15, y = CMain.MPoint.Y;
-                if (x + MemoLabel.Size.Width > Settings.ScreenWidth)
-                    x = Settings.ScreenWidth - MemoLabel.Size.Width;
+                int x = CMain.UIMPoint.X + 15, y = CMain.UIMPoint.Y;
+                if (x + MemoLabel.Size.Width > Settings.UIScreenWidth)
+                    x = Settings.UIScreenWidth - MemoLabel.Size.Width;
 
-                if (y + MemoLabel.Size.Height > Settings.ScreenHeight)
-                    y = Settings.ScreenHeight - MemoLabel.Size.Height;
+                if (y + MemoLabel.Size.Height > Settings.UIScreenHeight)
+                    y = Settings.UIScreenHeight - MemoLabel.Size.Height;
                 MemoLabel.Location = new Point(x, y);
             }
 
@@ -1257,12 +1340,12 @@ namespace Client.MirScenes
             {
                 GuildBuffLabel.BringToFront();
 
-                int x = CMain.MPoint.X + 15, y = CMain.MPoint.Y;
-                if (x + GuildBuffLabel.Size.Width > Settings.ScreenWidth)
-                    x = Settings.ScreenWidth - GuildBuffLabel.Size.Width;
+                int x = CMain.UIMPoint.X + 15, y = CMain.UIMPoint.Y;
+                if (x + GuildBuffLabel.Size.Width > Settings.UIScreenWidth)
+                    x = Settings.UIScreenWidth - GuildBuffLabel.Size.Width;
 
-                if (y + GuildBuffLabel.Size.Height > Settings.ScreenHeight)
-                    y = Settings.ScreenHeight - GuildBuffLabel.Size.Height;
+                if (y + GuildBuffLabel.Size.Height > Settings.UIScreenHeight)
+                    y = Settings.UIScreenHeight - GuildBuffLabel.Size.Height;
                 GuildBuffLabel.Location = new Point(x, y);
             }
 
@@ -1326,7 +1409,7 @@ namespace Client.MirScenes
             for (int i = 0; i < Scene.SkillBarDialogs.Count; i++)
             {
                 if (i * 2 > Settings.SkillbarLocation.Length) break;
-                if ((Settings.SkillbarLocation[i, 0] > Settings.Resolution - 100) || (Settings.SkillbarLocation[i, 1] > 700))
+                if ((Settings.SkillbarLocation[i, 0] > Settings.UIScreenWidth - 100) || (Settings.SkillbarLocation[i, 1] > Settings.UIScreenHeight - 68))
                     continue; //in theory you'd want the y coord to be validated based on resolution, but since client only allows for wider screens and not higher :(
                 Scene.SkillBarDialogs[i].Location = new Point(Settings.SkillbarLocation[i, 0], Settings.SkillbarLocation[i, 1]);
             }
@@ -6171,7 +6254,7 @@ namespace Client.MirScenes
             {
                 Parent = this,
                 Visible = true,
-                Location = new Point(Settings.ScreenWidth - 170, 80),
+                Location = new Point(Settings.UIScreenWidth - 170, 80),
                 GetExpandedParameter = () => { return Settings.ExpandedHeroBuffWindow; },
                 SetExpandedParameter = (value) => { Settings.ExpandedHeroBuffWindow = value; }
             };
@@ -10200,6 +10283,10 @@ namespace Client.MirScenes
         {
             if (disposing)
             {
+                if (_uiScaleDiagnosticLabel != null && !_uiScaleDiagnosticLabel.IsDisposed)
+                    _uiScaleDiagnosticLabel.Dispose();
+                _uiScaleDiagnosticLabel = null;
+
                 Scene = null;
                 User = null;
 
@@ -10406,7 +10493,7 @@ namespace Client.MirScenes
             BackColour = Color.Black;
 
             MouseDown += OnMouseDown;
-            MouseMove += (o, e) => MouseLocation = e.Location;
+            MouseMove += (o, e) => MouseLocation = CMain.MPoint;
             Click += OnMouseClick;
         }
 

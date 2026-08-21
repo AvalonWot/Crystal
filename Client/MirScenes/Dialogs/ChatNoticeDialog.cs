@@ -16,7 +16,7 @@ namespace Client.MirScenes.Dialogs
             Library = Libraries.Prguse;
             Movable = false;
             Sort = false;
-            Location = new Point(Settings.ScreenWidth / 2 - Size.Width / 2, Settings.ScreenHeight / 6 - Size.Height / 2);
+            Location = new Point(Settings.UIScreenWidth / 2 - Size.Width / 2, Settings.UIScreenHeight / 6 - Size.Height / 2);
             Opacity = 0.7F;
 
             TextLabel1 = new MirLabel

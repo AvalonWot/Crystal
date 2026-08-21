@@ -568,7 +568,7 @@ namespace Client.MirControls
                 Dehighlight();
                 Deactivate();
             }
-            else if (IsMouseOver(CMain.MPoint))
+            else if (IsMouseOver(CMain.ControlMousePoint))
                 Highlight();
 
 
@@ -581,7 +581,7 @@ namespace Client.MirControls
             if (HasShown)
                 return;
 
-            if (Visible && IsMouseOver(CMain.MPoint))
+            if (Visible && IsMouseOver(CMain.ControlMousePoint))
                 Highlight();
 
             if (BeforeShown != null)
@@ -609,29 +609,33 @@ namespace Client.MirControls
 
         #region Positions
 
+        private static Size ControlViewportSize => Client.MirScenes.GameScene.Scene != null
+            ? new Size(Settings.UIScreenWidth, Settings.UIScreenHeight)
+            : new Size(Settings.ScreenWidth, Settings.ScreenHeight);
+
         protected Point Center
         {
-            get { return new Point((Settings.ScreenWidth - Size.Width) / 2, (Settings.ScreenHeight - Size.Height) / 2); }
+            get { Size viewport = ControlViewportSize; return new Point((viewport.Width - Size.Width) / 2, (viewport.Height - Size.Height) / 2); }
         }
 
         protected Point Left
         {
-            get { return new Point(0, (Settings.ScreenHeight - Size.Height) / 2); }
+            get { Size viewport = ControlViewportSize; return new Point(0, (viewport.Height - Size.Height) / 2); }
         }
 
         protected Point Top
         {
-            get { return new Point((Settings.ScreenWidth - Size.Width) / 2, 0); }
+            get { Size viewport = ControlViewportSize; return new Point((viewport.Width - Size.Width) / 2, 0); }
         }
 
         protected Point Right
         {
-            get { return new Point(Settings.ScreenWidth - Size.Width, (Settings.ScreenHeight - Size.Height) / 2); }
+            get { Size viewport = ControlViewportSize; return new Point(viewport.Width - Size.Width, (viewport.Height - Size.Height) / 2); }
         }
 
         protected Point Bottom
         {
-            get { return new Point((Settings.ScreenWidth - Size.Width) / 2, Settings.ScreenHeight - Size.Height); }
+            get { Size viewport = ControlViewportSize; return new Point((viewport.Width - Size.Width) / 2, viewport.Height - Size.Height); }
         }
 
         protected Point TopLeft
@@ -641,17 +645,17 @@ namespace Client.MirControls
 
         protected Point TopRight
         {
-            get { return new Point(Settings.ScreenWidth - Size.Width, 0); }
+            get { return new Point(ControlViewportSize.Width - Size.Width, 0); }
         }
 
         protected Point BottomRight
         {
-            get { return new Point(Settings.ScreenWidth - Size.Width, Settings.ScreenHeight - Size.Height); }
+            get { Size viewport = ControlViewportSize; return new Point(viewport.Width - Size.Width, viewport.Height - Size.Height); }
         }
 
         protected Point BottomLeft
         {
-            get { return new Point(0, Settings.ScreenHeight - Size.Height); }
+            get { return new Point(0, ControlViewportSize.Height - Size.Height); }
         }
 
         #endregion
@@ -857,15 +861,16 @@ namespace Client.MirControls
 
             if (Moving)
             {
-                Point tempPoint = CMain.MPoint.Subtract(_movePoint);
+                Point tempPoint = CMain.ControlMousePoint.Subtract(_movePoint);
 
                 if (Parent == null)
                 {
-                    if (tempPoint.Y + TrueSize.Height > Settings.ScreenHeight)
-                        tempPoint.Y = Settings.ScreenHeight - TrueSize.Height - 1;
+                    Size viewport = ControlViewportSize;
+                    if (tempPoint.Y + TrueSize.Height > viewport.Height)
+                        tempPoint.Y = viewport.Height - TrueSize.Height - 1;
 
-                    if (tempPoint.X + TrueSize.Width > Settings.ScreenWidth)
-                        tempPoint.X = Settings.ScreenWidth - TrueSize.Width - 1;
+                    if (tempPoint.X + TrueSize.Width > viewport.Width)
+                        tempPoint.X = viewport.Width - TrueSize.Width - 1;
                 }
                 else
                 {
@@ -889,7 +894,7 @@ namespace Client.MirControls
 
             if (Controls != null)
                 for (int i = Controls.Count - 1; i >= 0; i--)
-                    if (Controls[i].IsMouseOver(CMain.MPoint))
+                    if (Controls[i].IsMouseOver(CMain.ControlMousePoint))
                     {
                         Controls[i].OnMouseMove(e);
                         return;
@@ -912,7 +917,7 @@ namespace Client.MirControls
             if (_movable)
             {
                 Moving = true;
-                _movePoint = CMain.MPoint.Subtract(Location);
+                _movePoint = CMain.ControlMousePoint.Subtract(Location);
             }
 
             if (MouseDown != null)

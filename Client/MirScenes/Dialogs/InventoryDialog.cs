@@ -534,8 +534,8 @@ namespace Client.MirScenes.Dialogs
             if (!_deleteMode || _deleteCursorIcon == null || !_deleteCursorIcon.Visible) return;
 
             // Top-center above the pointer: bottom edge of the icon touches the cursor
-            int x = CMain.MPoint.X - (_binSize.Width / 2);
-            int y = CMain.MPoint.Y - _binSize.Height;
+            int x = CMain.ControlMousePoint.X - (_binSize.Width / 2);
+            int y = CMain.ControlMousePoint.Y - _binSize.Height;
 
             _deleteCursorIcon.Location = new Point(x, y);
             _deleteCursorIcon.BringToFront();
@@ -610,7 +610,7 @@ namespace Client.MirScenes.Dialogs
             Movable = true;
             Sort = true;
             Visible = true;
-            Location = new Point(GameScene.Scene.MainDialog.Location.X + 230, Settings.ScreenHeight - 150);
+            Location = new Point(GameScene.Scene.MainDialog.Location.X + 230, Settings.UIScreenHeight - 150);
 
             BeforeDraw += BeltPanel_BeforeDraw;
 
@@ -701,7 +701,7 @@ namespace Client.MirScenes.Dialogs
             else
             {
                 Index = 1932;
-                Location = new Point(GameScene.Scene.MainDialog.Location.X + 230, Settings.ScreenHeight - 150);
+                Location = new Point(GameScene.Scene.MainDialog.Location.X + 230, Settings.UIScreenHeight - 150);
 
                 for (int x = 0; x < 6; x++)
                     Grid[x].Location = new Point(x * 35 + 12, 3);

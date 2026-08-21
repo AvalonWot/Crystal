@@ -36,7 +36,7 @@ namespace Client.MirScenes.Dialogs
         {
             Index = Settings.Resolution == 800 ? 0 : Settings.Resolution == 1024 ? 1 : 2;
             Library = Libraries.Prguse;
-            Location = new Point(((Settings.ScreenWidth / 2) - (Size.Width / 2)), Settings.ScreenHeight - Size.Height);
+            Location = new Point(((Settings.UIScreenWidth / 2) - (Size.Width / 2)), Settings.UIScreenHeight - Size.Height);
             PixelDetect = true;
 
             LeftCap = new MirImageControl
@@ -496,7 +496,7 @@ namespace Client.MirScenes.Dialogs
             }
 
             Rectangle r = new Rectangle(0, 80 - height, hpOnly ? 100 : 50, height);
-            Libraries.Prguse.Draw(orbImage, r, new Point(((Settings.ScreenWidth / 2) - (Size.Width / 2)), HealthOrb.DisplayLocation.Y + 80 - height), Color.White, false);
+            Libraries.Prguse.Draw(orbImage, r, new Point(((Settings.UIScreenWidth / 2) - (Size.Width / 2)), HealthOrb.DisplayLocation.Y + 80 - height), Color.White, false);
 
             if (hpOnly) return;
 
@@ -509,7 +509,7 @@ namespace Client.MirScenes.Dialogs
             if (height > 80) height = 80;
             r = new Rectangle(51, 80 - height, 50, height);
 
-            Libraries.Prguse.Draw(4, r, new Point(((Settings.ScreenWidth / 2) - (Size.Width / 2)) + 51, HealthOrb.DisplayLocation.Y + 80 - height), Color.White, false);
+            Libraries.Prguse.Draw(4, r, new Point(((Settings.UIScreenWidth / 2) - (Size.Width / 2)) + 51, HealthOrb.DisplayLocation.Y + 80 - height), Color.White, false);
         }
 
         private void ExperienceBar_BeforeDraw(object sender, EventArgs e)
@@ -584,7 +584,7 @@ namespace Client.MirScenes.Dialogs
         {
             Index = Settings.Resolution != 800 ? 2221 : 2201;
             Library = Libraries.Prguse;
-            Location = new Point(GameScene.Scene.MainDialog.Location.X + 230, Settings.ScreenHeight - 97);
+            Location = new Point(GameScene.Scene.MainDialog.Location.X + 230, Settings.UIScreenHeight - 97);
             PixelDetect = true;
 
             KeyPress += ChatPanel_KeyPress;
@@ -1260,7 +1260,7 @@ namespace Client.MirScenes.Dialogs
         {
             Index = Settings.Resolution != 800 ? 2034 : 2035;
             Library = Libraries.Prguse;
-            Location = new Point(GameScene.Scene.MainDialog.Location.X + 230, Settings.ScreenHeight - 112);
+            Location = new Point(GameScene.Scene.MainDialog.Location.X + 230, Settings.UIScreenHeight - 112);
 
             SizeButton = new MirButton
             {
@@ -1777,7 +1777,7 @@ namespace Client.MirScenes.Dialogs
         {
             Index = 2090;
             Library = Libraries.Prguse;
-            Location = new Point(Settings.ScreenWidth - 126, 0);
+            Location = new Point(Settings.UIScreenWidth - 126, 0);
             PixelDetect = true;
 
             BeforeDraw += MiniMap_BeforeDraw;
@@ -2007,7 +2007,7 @@ namespace Client.MirScenes.Dialogs
                         DrawFormat = TextFormatFlags.HorizontalCenter | TextFormatFlags.VerticalCenter,
                         Text = text,
                         ForeColour = color,
-                        Location = new Point((int)(x - Settings.ScreenWidth + GameScene.Scene.MiniMapDialog.Size.Width) - 6, (int)(y) - 10),
+                        Location = new Point((int)(x - Settings.UIScreenWidth + GameScene.Scene.MiniMapDialog.Size.Width) - 6, (int)(y) - 10),
                         NotControl = true,
                         Visible = true,
                         Modal = true
@@ -2080,11 +2080,11 @@ namespace Client.MirScenes.Dialogs
             LocationLabel.Text = Functions.PointToString(MapObject.User.CurrentLocation);
 
             GameScene.Scene.MainDialog.SModeLabel.Location = new Point((GameScene.Scene.MiniMapDialog.Location.X - 3) - GameScene.Scene.MainDialog.Location.X,
-            (GameScene.Scene.MiniMapDialog.Size.Height + 150) - Settings.ScreenHeight);
+            (GameScene.Scene.MiniMapDialog.Size.Height + 150) - Settings.UIScreenHeight);
             GameScene.Scene.MainDialog.AModeLabel.Location = new Point((GameScene.Scene.MiniMapDialog.Location.X - 3) - GameScene.Scene.MainDialog.Location.X,
-            (GameScene.Scene.MiniMapDialog.Size.Height + 165) - Settings.ScreenHeight);
+            (GameScene.Scene.MiniMapDialog.Size.Height + 165) - Settings.UIScreenHeight);
             GameScene.Scene.MainDialog.PModeLabel.Location = new Point((GameScene.Scene.MiniMapDialog.Location.X - 3) - GameScene.Scene.MainDialog.Location.X,
-            (GameScene.Scene.MiniMapDialog.Size.Height + 180) - Settings.ScreenHeight);
+            (GameScene.Scene.MiniMapDialog.Size.Height + 180) - Settings.UIScreenHeight);
 
             if (GameScene.Scene.NewMail)
             {
@@ -2547,7 +2547,7 @@ namespace Client.MirScenes.Dialogs
             Movable = true;
             Sort = true;
 
-            Location = new Point((Settings.ScreenWidth - Size.Width) / 2, (Settings.ScreenHeight - Size.Height) / 2);
+            Location = new Point((Settings.UIScreenWidth - Size.Width) / 2, (Settings.UIScreenHeight - Size.Height) / 2);
 
             BeforeDraw += OptionPanel_BeforeDraw;
 
@@ -3026,7 +3026,7 @@ namespace Client.MirScenes.Dialogs
             Index = 567;
             Parent = GameScene.Scene;
             Library = Libraries.Title;
-            Location = new Point(Settings.ScreenWidth - Size.Width, GameScene.Scene.MainDialog.Location.Y - this.Size.Height + 15);
+            Location = new Point(Settings.UIScreenWidth - Size.Width, GameScene.Scene.MainDialog.Location.Y - this.Size.Height + 15);
             Sort = true;
             Visible = false;
             Movable = true;
@@ -3947,7 +3947,7 @@ namespace Client.MirScenes.Dialogs
             Index = 2105;
             Library = Libraries.Prguse;
             Movable = false;
-            Location = new Point(Settings.ScreenWidth - 61, 200);
+            Location = new Point(Settings.UIScreenWidth - 61, 200);
 
             GrayBackground = new MirImageControl()
             {

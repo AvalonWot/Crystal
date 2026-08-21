@@ -474,7 +474,7 @@ namespace Client.MirScenes.Dialogs
             Library = Libraries.Prguse;
             Movable = true;
             Sort = true;
-            Location = new Point(Settings.ScreenWidth / 2 + 20, 60);
+            Location = new Point(Settings.UIScreenWidth / 2 + 20, 60);
 
             MirImageControl TitleLabel = new MirImageControl
             {
@@ -655,7 +655,7 @@ namespace Client.MirScenes.Dialogs
             Library = Libraries.Prguse;
             Movable = true;
             Sort = true;
-            Location = new Point(Settings.ScreenWidth / 2 - 300 - 20, 60);
+            Location = new Point(Settings.UIScreenWidth / 2 - 300 - 20, 60);
 
             MirImageControl TitleLabel = new MirImageControl
             {

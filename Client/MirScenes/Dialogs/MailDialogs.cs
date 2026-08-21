@@ -32,7 +32,7 @@ namespace Client.MirScenes.Dialogs
             Size = new Size(312, 444);
             Movable = true;
             Sort = true;
-            Location = new Point((Settings.ScreenWidth - Size.Width) - 150, 5);
+            Location = new Point((Settings.UIScreenWidth - Size.Width) - 150, 5);
 
             TitleLabel = new MirImageControl
             {

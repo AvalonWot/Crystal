@@ -76,7 +76,46 @@ namespace Client
         public static bool FPSCap = true;
         public static int MaxFPS = 100;
         public static int Resolution = 1024;
+        // 0 means automatic. The effective value is calculated from the actual
+        // Direct3D client area and is deliberately kept separate from the saved value.
+        public static float UIScale = 0F;
+        public static float EffectiveUIScale { get; private set; } = 1F;
+        public static int UIScreenWidth { get; private set; } = 1024;
+        public static int UIScreenHeight { get; private set; } = 768;
         public static bool DebugMode = false;
+
+        public static bool UpdateUIScale(int clientWidth, int clientHeight)
+        {
+            if (clientWidth <= 0 || clientHeight <= 0)
+            {
+                clientWidth = ScreenWidth;
+                clientHeight = ScreenHeight;
+            }
+
+            float requested = UIScale;
+            if (requested > 0F)
+                requested = (float)Math.Round(requested * 4F, MidpointRounding.AwayFromZero) / 4F;
+            else
+                requested = (float)Math.Floor(Math.Min(clientWidth / 1280F, clientHeight / 720F) * 4F) / 4F;
+
+            requested = Math.Clamp(requested, 1F, 3F);
+
+            // Keep the established UI layout inside its minimum usable canvas.
+            float fitLimit = Math.Min(clientWidth / 1024F, clientHeight / 720F);
+            fitLimit = (float)Math.Floor(fitLimit * 4F) / 4F;
+            float effective = Math.Max(1F, Math.Min(requested, fitLimit));
+
+            int uiWidth = Math.Max(1, (int)Math.Round(clientWidth / effective));
+            int uiHeight = Math.Max(1, (int)Math.Round(clientHeight / effective));
+
+            bool changed = Math.Abs(EffectiveUIScale - effective) > 0.001F ||
+                           UIScreenWidth != uiWidth || UIScreenHeight != uiHeight;
+
+            EffectiveUIScale = effective;
+            UIScreenWidth = uiWidth;
+            UIScreenHeight = uiHeight;
+            return changed;
+        }
 
         //Network
         public static bool UseConfig = false;
@@ -215,6 +254,13 @@ namespace Client
             TopMost = Reader.ReadBoolean("Graphics", "AlwaysOnTop", TopMost);
             FPSCap = Reader.ReadBoolean("Graphics", "FPSCap", FPSCap);
             Resolution = Reader.ReadInt32("Graphics", "Resolution", Resolution);
+            string uiScaleValue = Reader.ReadString("Graphics", "UIScale", "0", false);
+            if (!float.TryParse(uiScaleValue, System.Globalization.NumberStyles.Float,
+                    System.Globalization.CultureInfo.InvariantCulture, out UIScale) ||
+                !float.IsFinite(UIScale) || UIScale < 0F || (UIScale > 0F && (UIScale < 1F || UIScale > 3F)))
+                UIScale = 0F;
+            else if (UIScale > 0F)
+                UIScale = Math.Clamp((float)Math.Round(UIScale * 4F, MidpointRounding.AwayFromZero) / 4F, 1F, 3F);
             DebugMode = Reader.ReadBoolean("Graphics", "DebugMode", DebugMode);
             UseMouseCursors = Reader.ReadBoolean("Graphics", "UseMouseCursors", UseMouseCursors);
 
@@ -341,6 +387,7 @@ namespace Client
             Reader.Write("Graphics", "AlwaysOnTop", TopMost);
             Reader.Write("Graphics", "FPSCap", FPSCap);
             Reader.Write("Graphics", "Resolution", Resolution);
+            Reader.Write("Graphics", "UIScale", UIScale.ToString("0.##", System.Globalization.CultureInfo.InvariantCulture));
             Reader.Write("Graphics", "DebugMode", DebugMode);
             Reader.Write("Graphics", "UseMouseCursors", UseMouseCursors);
 

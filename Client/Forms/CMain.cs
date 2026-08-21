@@ -22,6 +22,34 @@ namespace Client
         public static MirLabel DebugTextLabel, HintTextLabel, ScreenshotTextLabel;
         public static Graphics Graphics;
         public static Point MPoint;
+        public static Point UIMPoint;
+        public static Point ControlMousePoint => MirScene.ActiveScene is GameScene ? UIMPoint : MPoint;
+
+        private static MouseEventArgs ToSceneMouseEvent(MouseEventArgs e)
+        {
+            if (Program.Form != null)
+                UpdateMousePoints(Program.Form.PointToClient(Cursor.Position));
+
+            if (MirScene.ActiveScene is not GameScene)
+                return e;
+
+            return new MouseEventArgs(e.Button, e.Clicks, UIMPoint.X, UIMPoint.Y, e.Delta);
+        }
+
+        private static void UpdateMousePoints(Point physicalPoint)
+        {
+            MPoint = physicalPoint;
+
+            if (MirScene.ActiveScene is GameScene && Program.Form != null)
+            {
+                Size clientSize = Program.Form.ClientSize;
+                UIMPoint = new Point(
+                    clientSize.Width > 0 ? (int)Math.Floor(physicalPoint.X * Settings.UIScreenWidth / (double)clientSize.Width) : physicalPoint.X,
+                    clientSize.Height > 0 ? (int)Math.Floor(physicalPoint.Y * Settings.UIScreenHeight / (double)clientSize.Height) : physicalPoint.Y);
+            }
+            else
+                UIMPoint = physicalPoint;
+        }
 
         public readonly static Stopwatch Timer = Stopwatch.StartNew();
         public readonly static DateTime StartTime = DateTime.UtcNow;
@@ -83,6 +111,7 @@ namespace Client
             try
             {
                 ClientSize = new Size(Settings.ScreenWidth, Settings.ScreenHeight);
+                Settings.UpdateUIScale(Settings.ScreenWidth, Settings.ScreenHeight);
 
                 LoadMouseCursors();
                 SetMouseCursor(MouseCursor.Default);
@@ -173,12 +202,12 @@ namespace Client
             if (Settings.FullScreen || Settings.MouseClip)
                 Cursor.Clip = Program.Form.RectangleToScreen(Program.Form.ClientRectangle);
 
-            MPoint = Program.Form.PointToClient(Cursor.Position);
+            UpdateMousePoints(Program.Form.PointToClient(Cursor.Position));
 
             try
             {
                 if (MirScene.ActiveScene != null)
-                    MirScene.ActiveScene.OnMouseMove(e);
+                    MirScene.ActiveScene.OnMouseMove(ToSceneMouseEvent(e));
             }
             catch (Exception ex)
             {
@@ -247,7 +276,7 @@ namespace Client
             try
             {
                 if (MirScene.ActiveScene != null)
-                    MirScene.ActiveScene.OnMouseClick(e);
+                    MirScene.ActiveScene.OnMouseClick(ToSceneMouseEvent(e));
             }
             catch (Exception ex)
             {
@@ -263,7 +292,7 @@ namespace Client
             try
             {
                 if (MirScene.ActiveScene != null)
-                    MirScene.ActiveScene.OnMouseUp(e);
+                    MirScene.ActiveScene.OnMouseUp(ToSceneMouseEvent(e));
             }
             catch (Exception ex)
             {
@@ -290,7 +319,7 @@ namespace Client
             try
             {
                 if (MirScene.ActiveScene != null)
-                    MirScene.ActiveScene.OnMouseDown(e);
+                    MirScene.ActiveScene.OnMouseDown(ToSceneMouseEvent(e));
             }
             catch (Exception ex)
             {
@@ -302,7 +331,7 @@ namespace Client
             try
             {
                 if (MirScene.ActiveScene != null)
-                    MirScene.ActiveScene.OnMouseClick(e);
+                    MirScene.ActiveScene.OnMouseClick(ToSceneMouseEvent(e));
             }
             catch (Exception ex)
             {
@@ -314,7 +343,7 @@ namespace Client
             try
             {
                 if (MirScene.ActiveScene != null)
-                    MirScene.ActiveScene.OnMouseWheel(e);
+                    MirScene.ActiveScene.OnMouseWheel(ToSceneMouseEvent(e));
             }
             catch (Exception ex)
             {
@@ -552,12 +581,14 @@ namespace Client
 
             HintTextLabel.Text = MirControl.MouseControl.Hint;
 
-            Point point = MPoint.Add(-HintTextLabel.Size.Width, 20);
+            Point point = ControlMousePoint.Add(-HintTextLabel.Size.Width, 20);
 
-            if (point.X + HintBaseLabel.Size.Width >= Settings.ScreenWidth)
-                point.X = Settings.ScreenWidth - HintBaseLabel.Size.Width - 1;
-            if (point.Y + HintBaseLabel.Size.Height >= Settings.ScreenHeight)
-                point.Y = Settings.ScreenHeight - HintBaseLabel.Size.Height - 1;
+            int viewportWidth = MirScene.ActiveScene is GameScene ? Settings.UIScreenWidth : Settings.ScreenWidth;
+            int viewportHeight = MirScene.ActiveScene is GameScene ? Settings.UIScreenHeight : Settings.ScreenHeight;
+            if (point.X + HintBaseLabel.Size.Width >= viewportWidth)
+                point.X = viewportWidth - HintBaseLabel.Size.Width - 1;
+            if (point.Y + HintBaseLabel.Size.Height >= viewportHeight)
+                point.Y = viewportHeight - HintBaseLabel.Size.Height - 1;
 
             if (point.X < 0)
                 point.X = 0;
@@ -651,6 +682,8 @@ namespace Client
             Settings.ScreenWidth = width;
             Settings.ScreenHeight = height;
             Program.Form.ClientSize = new Size(width, height);
+            Settings.UpdateUIScale(width, height);
+            GameScene.Scene?.ApplyUIScaling();
 
             DXManager.Device.Clear(ClearFlags.Target, Color.Black, 0, 0);
             DXManager.Device.Present();

@@ -176,7 +176,7 @@ namespace Client.MirScenes.Dialogs
             Movable = true;
             Sort = true;
             Size = new Size(244, 128);
-            Location = new Point((Settings.ScreenWidth - Size.Width) / 2, 300);
+            Location = new Point((Settings.UIScreenWidth - Size.Width) / 2, 300);
             BeforeDraw += FishingStatusDialog_BeforeDraw;
 
             ChanceBar = new MirControl

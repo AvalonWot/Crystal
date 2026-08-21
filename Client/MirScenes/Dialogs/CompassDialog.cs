@@ -11,7 +11,7 @@ namespace Client.MirScenes.Dialogs
 
         public CompassDialog()
         {
-            Location = new Point((Settings.ScreenWidth / 2) - 25, (Settings.ScreenHeight / 2) - 120);
+            Location = new Point((Settings.UIScreenWidth / 2) - 25, (Settings.UIScreenHeight / 2) - 120);
             NotControl = true;
             Size = new Size(10, 10);
             Movable = false;

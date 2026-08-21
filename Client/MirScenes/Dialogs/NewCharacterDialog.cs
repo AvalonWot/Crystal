@@ -47,7 +47,7 @@ namespace Client.MirScenes.Dialogs
         {
             Index = 73;
             Library = Libraries.Prguse;
-            Location = new Point((Settings.ScreenWidth - Size.Width) / 2, (Settings.ScreenHeight - Size.Height) / 2);
+            Location = new Point((Settings.UIScreenWidth - Size.Width) / 2, (Settings.UIScreenHeight - Size.Height) / 2);
             Modal = true;
 
             TitleLabel = new MirImageControl

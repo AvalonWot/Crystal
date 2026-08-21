@@ -90,7 +90,7 @@ namespace Client.MirScenes.Dialogs
                 case 0: //Die
                     {
                         Size = new Size(65, 65);
-                        Location = new Point((Settings.ScreenWidth / 2) - 38, (Settings.ScreenHeight / 2) - 40);
+                        Location = new Point((Settings.UIScreenWidth / 2) - 38, (Settings.UIScreenHeight / 2) - 40);
 
                         _image.Index = 282;
                         _image.Library = Libraries.Prguse;
@@ -105,7 +105,7 @@ namespace Client.MirScenes.Dialogs
                 case 1: //Yut
                     {
                         Size = new Size(180, 130);
-                        Location = new Point((Settings.ScreenWidth / 2) - 90, (Settings.ScreenHeight / 2) - 65);
+                        Location = new Point((Settings.UIScreenWidth / 2) - 90, (Settings.UIScreenHeight / 2) - 65);
 
                         _image.Index = 2581;
                         _image.Library = Libraries.Items;

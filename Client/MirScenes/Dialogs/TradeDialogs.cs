@@ -18,7 +18,7 @@ namespace Client.MirScenes.Dialogs
             Library = Libraries.Prguse;
             Movable = true;
             Size = new Size(204, 152);
-            Location = new Point((Settings.ScreenWidth / 2) - Size.Width - 10, Settings.ScreenHeight - 350);
+            Location = new Point((Settings.UIScreenWidth / 2) - Size.Width - 10, Settings.UIScreenHeight - 350);
             Sort = true;
 
             #region Buttons
@@ -151,7 +151,7 @@ namespace Client.MirScenes.Dialogs
 
         public void TradeAccept()
         {
-            GameScene.Scene.InventoryDialog.Location = new Point(Settings.ScreenWidth - GameScene.Scene.InventoryDialog.Size.Width, 0);
+            GameScene.Scene.InventoryDialog.Location = new Point(Settings.UIScreenWidth - GameScene.Scene.InventoryDialog.Size.Width, 0);
             GameScene.Scene.InventoryDialog.Show();
 
             RefreshInterface();
@@ -208,7 +208,7 @@ namespace Client.MirScenes.Dialogs
             Library = Libraries.Prguse;
             Movable = true;
             Size = new Size(204, 152);
-            Location = new Point((Settings.ScreenWidth / 2) + 10, Settings.ScreenHeight - 350);
+            Location = new Point((Settings.UIScreenWidth / 2) + 10, Settings.UIScreenHeight - 350);
             Sort = true;
 
             #region Host labels

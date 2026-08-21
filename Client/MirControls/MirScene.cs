@@ -36,11 +36,23 @@ namespace Client.MirControls
 
             DrawControl();
 
-            if (CMain.DebugBaseLabel != null && !CMain.DebugBaseLabel.IsDisposed)
-                CMain.DebugBaseLabel.Draw();
+            Action drawOverlays = () =>
+            {
+                if (CMain.DebugBaseLabel != null && !CMain.DebugBaseLabel.IsDisposed)
+                    CMain.DebugBaseLabel.Draw();
 
-            if (CMain.HintBaseLabel != null && !CMain.HintBaseLabel.IsDisposed)
-                CMain.HintBaseLabel.Draw();
+                if (CMain.HintBaseLabel != null && !CMain.HintBaseLabel.IsDisposed)
+                    CMain.HintBaseLabel.Draw();
+            };
+
+            if (this is GameScene)
+            {
+                Size clientSize = DXManager.BackBufferSize;
+                DXManager.DrawScaledUIOverlay(drawOverlays, Settings.UIScreenWidth, Settings.UIScreenHeight,
+                    clientSize.Width, clientSize.Height);
+            }
+            else
+                drawOverlays();
 
             OnShown();
         }
@@ -129,7 +141,7 @@ namespace Client.MirControls
             else
                 _lastClickTime = 0;
 
-            if (ActiveControl != null && ActiveControl.IsMouseOver(CMain.MPoint) && ActiveControl != this)
+            if (ActiveControl != null && ActiveControl.IsMouseOver(CMain.ControlMousePoint) && ActiveControl != this)
                 ActiveControl.OnMouseClick(e);
             else
                 base.OnMouseClick(e);
@@ -147,7 +159,7 @@ namespace Client.MirControls
             _lastClickTime = 0;
             _buttons = MouseButtons.None;
 
-            if (ActiveControl != null && ActiveControl.IsMouseOver(CMain.MPoint) && ActiveControl != this)
+            if (ActiveControl != null && ActiveControl.IsMouseOver(CMain.ControlMousePoint) && ActiveControl != this)
             {
                 if (ActiveControl == _clickedControl)
                     ActiveControl.OnMouseDoubleClick(e);

@@ -10,6 +10,13 @@ namespace Client.MirGraphics
 {
     class DXManager
     {
+        public const string UIScaleBuildMarker = "UIFIX-20260821-D";
+
+        public static int LastUISourceWidth { get; private set; }
+        public static int LastUISourceHeight { get; private set; }
+        public static int LastUITargetWidth { get; private set; }
+        public static int LastUITargetHeight { get; private set; }
+
         public static List<MImage> TextureList = new List<MImage>();
         public static List<MirControl> ControlList = new List<MirControl>();
 
@@ -32,6 +39,8 @@ namespace Client.MirGraphics
         public static Texture PoisonDotBackground;
 
         public static Texture FloorTexture, LightTexture;
+        private static Texture UIScaledOverlayTexture;
+        private static Size UIScaledOverlaySize;
         public static Surface FloorSurface, LightSurface;
 
         public static PixelShader GrayScalePixelShader;
@@ -39,6 +48,24 @@ namespace Client.MirGraphics
         public static PixelShader MagicPixelShader;
 
         public static bool GrayScale;
+
+        public static Size BackBufferSize
+        {
+            get
+            {
+                if (MainSurface != null && !MainSurface.Disposed)
+                {
+                    SurfaceDescription description = MainSurface.Description;
+                    if (description.Width > 0 && description.Height > 0)
+                        return new Size(description.Width, description.Height);
+                }
+
+                if (Parameters != null && Parameters.BackBufferWidth > 0 && Parameters.BackBufferHeight > 0)
+                    return new Size(Parameters.BackBufferWidth, Parameters.BackBufferHeight);
+
+                return new Size(Settings.ScreenWidth, Settings.ScreenHeight);
+            }
+        }
 
         public static Point[] LightSizes =
         {
@@ -221,9 +248,65 @@ namespace Client.MirGraphics
             if (CurrentSurface == surface)
                 return;
 
-            Sprite.Flush();
+            // D3DXSprite builds its screen-space projection when Begin is called.
+            // Merely flushing before changing to a differently-sized render target
+            // leaves that projection based on the previous surface. In particular,
+            // drawing a 1280x720 UI target with a 1920x1080 projection compresses it
+            // to 2/3 size; the later 1.5x composite then appears to do nothing.
+            PixelShader pixelShader = Device.PixelShader;
+            Sprite.End();
             CurrentSurface = surface;
             Device.SetRenderTarget(0, surface);
+
+            SurfaceDescription description = surface.Description;
+            Device.Viewport = new Viewport(0, 0, description.Width, description.Height);
+
+            Sprite.Begin(SpriteFlags.AlphaBlend);
+            Device.PixelShader = pixelShader;
+            RestoreSpriteBlendState();
+        }
+
+        private static void RestoreSpriteBlendState()
+        {
+            Device.SetRenderState(RenderState.AlphaBlendEnable, true);
+
+            if (Blending)
+            {
+                switch (BlendingMode)
+                {
+                    case BlendMode.INVLIGHT:
+                        Device.SetRenderState(RenderState.BlendOperation, BlendOperation.Add);
+                        Device.SetRenderState(RenderState.SourceBlend, Blend.BlendFactor);
+                        Device.SetRenderState(RenderState.DestinationBlend, Blend.InverseSourceColor);
+                        break;
+                    default:
+                        Device.SetRenderState(RenderState.SourceBlend, Blend.SourceAlpha);
+                        Device.SetRenderState(RenderState.DestinationBlend, Blend.One);
+                        break;
+                }
+
+                byte blendValue = (byte)(255 * BlendingRate);
+                Device.SetRenderState(RenderState.BlendFactor,
+                    Color.FromArgb(blendValue, blendValue, blendValue, blendValue).ToArgb());
+                return;
+            }
+
+            if (Opacity >= 1F || Opacity < 0F)
+            {
+                Device.SetRenderState(RenderState.SourceBlend, Blend.SourceAlpha);
+                Device.SetRenderState(RenderState.DestinationBlend, Blend.InverseSourceAlpha);
+                Device.SetRenderState(RenderState.SourceBlendAlpha, Blend.One);
+                Device.SetRenderState(RenderState.BlendFactor, Color.White.ToArgb());
+            }
+            else
+            {
+                byte opacityValue = (byte)(255 * Opacity);
+                Device.SetRenderState(RenderState.SourceBlend, Blend.BlendFactor);
+                Device.SetRenderState(RenderState.DestinationBlend, Blend.InverseBlendFactor);
+                Device.SetRenderState(RenderState.SourceBlendAlpha, Blend.SourceAlpha);
+                Device.SetRenderState(RenderState.BlendFactor,
+                    Color.FromArgb(opacityValue, opacityValue, opacityValue, opacityValue).ToArgb());
+            }
         }
         public static void SetGrayscale(bool value)
         {
@@ -253,6 +336,122 @@ namespace Client.MirGraphics
         {
             Sprite.Draw(texture, sourceRect, Vector3.Zero, position, color);
             CMain.DPSCounter++;
+        }
+
+        public static void DrawScaledUI(Texture texture, int sourceWidth, int sourceHeight, int targetWidth, int targetHeight, float opacity)
+        {
+            if (texture == null || texture.Disposed || sourceWidth <= 0 || sourceHeight <= 0 || targetWidth <= 0 || targetHeight <= 0)
+                return;
+
+            LastUISourceWidth = sourceWidth;
+            LastUISourceHeight = sourceHeight;
+            LastUITargetWidth = targetWidth;
+            LastUITargetHeight = targetHeight;
+
+            // Direct device primitives must not be submitted while SlimDX Sprite owns
+            // the active vertex declaration/state. Flush alone is insufficient: the
+            // sprite remains begun and can restore its 1:1 screen-space setup over the
+            // quad below. End it for the composite and start a fresh batch afterwards.
+            Sprite.End();
+            using StateBlock oldState = new StateBlock(Device, StateBlockType.All);
+            oldState.Capture();
+            try
+            {
+                Device.VertexShader = null;
+                Device.PixelShader = null;
+                Device.VertexFormat = VertexFormat.PositionRhw | VertexFormat.Diffuse | VertexFormat.Texture1;
+                Device.Viewport = new Viewport(0, 0, targetWidth, targetHeight);
+                Device.SetTexture(0, texture);
+
+                Device.SetRenderState(RenderState.Lighting, false);
+                Device.SetRenderState(RenderState.ZEnable, false);
+                Device.SetRenderState(RenderState.CullMode, Cull.None);
+                Device.SetRenderState(RenderState.AlphaBlendEnable, true);
+                Device.SetRenderState(RenderState.SourceBlend, Blend.SourceAlpha);
+                Device.SetRenderState(RenderState.DestinationBlend, Blend.InverseSourceAlpha);
+
+                Device.SetSamplerState(0, SamplerState.MinFilter, TextureFilter.Point);
+                Device.SetSamplerState(0, SamplerState.MagFilter, TextureFilter.Point);
+                Device.SetSamplerState(0, SamplerState.MipFilter, TextureFilter.None);
+                Device.SetSamplerState(0, SamplerState.AddressU, TextureAddress.Clamp);
+                Device.SetSamplerState(0, SamplerState.AddressV, TextureAddress.Clamp);
+
+                Device.SetTextureStageState(0, TextureStage.ColorOperation, TextureOperation.Modulate);
+                Device.SetTextureStageState(0, TextureStage.ColorArg1, TextureArgument.Texture);
+                Device.SetTextureStageState(0, TextureStage.ColorArg2, TextureArgument.Diffuse);
+                Device.SetTextureStageState(0, TextureStage.AlphaOperation, TextureOperation.Modulate);
+                Device.SetTextureStageState(0, TextureStage.AlphaArg1, TextureArgument.Texture);
+                Device.SetTextureStageState(0, TextureStage.AlphaArg2, TextureArgument.Diffuse);
+                Device.SetTextureStageState(1, TextureStage.ColorOperation, TextureOperation.Disable);
+                Device.SetTextureStageState(1, TextureStage.AlphaOperation, TextureOperation.Disable);
+
+                int colour = Color.FromArgb((int)(Math.Clamp(opacity, 0F, 1F) * 255F), 255, 255, 255).ToArgb();
+                UIQuadVertex[] vertices =
+                {
+                    new UIQuadVertex(-0.5F, -0.5F, colour, 0F, 0F),
+                    new UIQuadVertex(targetWidth - 0.5F, -0.5F, colour, 1F, 0F),
+                    new UIQuadVertex(-0.5F, targetHeight - 0.5F, colour, 0F, 1F),
+                    new UIQuadVertex(targetWidth - 0.5F, targetHeight - 0.5F, colour, 1F, 1F),
+                };
+
+                Device.DrawUserPrimitives(PrimitiveType.TriangleStrip, 2, vertices);
+                CMain.DPSCounter++;
+            }
+            finally
+            {
+                oldState.Apply();
+                Sprite.Begin(SpriteFlags.AlphaBlend);
+                Device.SetRenderTarget(0, CurrentSurface);
+            }
+        }
+
+        public static void DrawScaledUIOverlay(Action drawAction, int sourceWidth, int sourceHeight, int targetWidth, int targetHeight)
+        {
+            if (drawAction == null || sourceWidth <= 0 || sourceHeight <= 0 || targetWidth <= 0 || targetHeight <= 0)
+                return;
+
+            if (UIScaledOverlayTexture == null || UIScaledOverlayTexture.Disposed || UIScaledOverlaySize != new Size(sourceWidth, sourceHeight))
+            {
+                UIScaledOverlayTexture?.Dispose();
+                UIScaledOverlayTexture = new Texture(Device, sourceWidth, sourceHeight, 1, Usage.RenderTarget,
+                    Format.A8R8G8B8, Pool.Default);
+                UIScaledOverlaySize = new Size(sourceWidth, sourceHeight);
+            }
+
+            Surface oldSurface = CurrentSurface;
+            using Surface overlaySurface = UIScaledOverlayTexture.GetSurfaceLevel(0);
+            try
+            {
+                SetSurface(overlaySurface);
+                Device.Clear(ClearFlags.Target, Color.Transparent, 0F, 0);
+                drawAction();
+                Sprite.Flush();
+            }
+            finally
+            {
+                SetSurface(oldSurface);
+            }
+
+            DrawScaledUI(UIScaledOverlayTexture, sourceWidth, sourceHeight, targetWidth, targetHeight, 1F);
+        }
+
+        [System.Runtime.InteropServices.StructLayout(System.Runtime.InteropServices.LayoutKind.Sequential)]
+        private struct UIQuadVertex
+        {
+            public float X, Y, Z, Rhw;
+            public int Colour;
+            public float U, V;
+
+            public UIQuadVertex(float x, float y, int colour, float u, float v)
+            {
+                X = x;
+                Y = y;
+                Z = 0F;
+                Rhw = 1F;
+                Colour = colour;
+                U = u;
+                V = v;
+            }
         }
 
         public static void AttemptReset()
@@ -289,9 +488,12 @@ namespace Client.MirGraphics
 
             if (clientSize.Width == 0 || clientSize.Height == 0) return;
 
+            if (Settings.UpdateUIScale(Settings.ScreenWidth, Settings.ScreenHeight))
+                GameScene.Scene?.ApplyUIScaling();
+
             DXManager.Parameters.Windowed = !Settings.FullScreen;
-            DXManager.Parameters.BackBufferWidth = clientSize.Width;
-            DXManager.Parameters.BackBufferHeight = clientSize.Height;
+            DXManager.Parameters.BackBufferWidth = Settings.ScreenWidth;
+            DXManager.Parameters.BackBufferHeight = Settings.ScreenHeight;
             DXManager.Parameters.PresentationInterval = Settings.FPSCap ? PresentInterval.Default : PresentInterval.Immediate;
             DXManager.Device.Reset(DXManager.Parameters);
 
@@ -461,6 +663,15 @@ namespace Client.MirGraphics
 
         private static void CleanUp()
         {
+            if (UIScaledOverlayTexture != null)
+            {
+                if (!UIScaledOverlayTexture.Disposed)
+                    UIScaledOverlayTexture.Dispose();
+
+                UIScaledOverlayTexture = null;
+                UIScaledOverlaySize = Size.Empty;
+            }
+
             if (Sprite != null)
             {
                 if (!Sprite.Disposed)

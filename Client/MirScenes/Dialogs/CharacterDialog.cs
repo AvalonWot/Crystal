@@ -31,7 +31,7 @@ namespace Client.MirScenes.Dialogs
 
             Index = 504;
             Library = Libraries.Title;
-            Location = new Point(Settings.ScreenWidth - 264, 0);
+            Location = new Point(Settings.UIScreenWidth - 264, 0);
             Movable = true;
             Sort = true;            
 

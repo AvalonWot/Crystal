@@ -23,7 +23,9 @@ namespace Client.MirControls
             Index = 360;
             Library = Libraries.Prguse;
 
-            Location = new Point((Settings.ScreenWidth - Size.Width) / 2, (Settings.ScreenHeight - Size.Height) / 2);
+            int viewportWidth = Client.MirScenes.GameScene.Scene != null ? Settings.UIScreenWidth : Settings.ScreenWidth;
+            int viewportHeight = Client.MirScenes.GameScene.Scene != null ? Settings.UIScreenHeight : Settings.ScreenHeight;
+            Location = new Point((viewportWidth - Size.Width) / 2, (viewportHeight - Size.Height) / 2);
 
 
             Label = new MirLabel

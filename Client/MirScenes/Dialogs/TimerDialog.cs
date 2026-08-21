@@ -23,7 +23,7 @@ namespace Client.MirScenes.Dialogs
 
         public TimerDialog()
         {
-            Location = new Point(Settings.ScreenWidth - 120, Settings.ScreenHeight - 230);
+            Location = new Point(Settings.UIScreenWidth - 120, Settings.UIScreenHeight - 230);
             NotControl = true;
             Size = new Size(120, 100);
             Movable = false;

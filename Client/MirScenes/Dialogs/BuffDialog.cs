@@ -31,7 +31,7 @@ namespace Client.MirScenes.Dialogs
             Library = Libraries.Prguse2;
             Movable = false;
             Size = new Size(44, 34);
-            Location = new Point(Settings.ScreenWidth - 170, 0);
+            Location = new Point(Settings.UIScreenWidth - 170, 0);
             Sort = true;
 
             Opacity = 0f;
@@ -172,7 +172,7 @@ namespace Client.MirScenes.Dialogs
                     image.Index = -1;
             }
 
-            if (IsMouseOver(CMain.MPoint))
+            if (IsMouseOver(CMain.ControlMousePoint))
             { 
                 if (_buffCount == 0 || (!_fadedIn && CMain.Time <= _nextFadeTime))
                     return;
@@ -562,7 +562,7 @@ namespace Client.MirScenes.Dialogs
             Library = Libraries.Prguse2;
             Movable = false;
             Size = new Size(44, 34);
-            Location = new Point(Settings.ScreenWidth - 170, 0);
+            Location = new Point(Settings.UIScreenWidth - 170, 0);
             Sort = true;
 
             Opacity = 0f;
@@ -794,7 +794,7 @@ namespace Client.MirScenes.Dialogs
                     image.Index = -1;
             }
 
-            if (IsMouseOver(CMain.MPoint))
+            if (IsMouseOver(CMain.ControlMousePoint))
             {
                 if (_buffCount == 0 || (!_fadedIn && CMain.Time <= _nextFadeTime))
                     return;
