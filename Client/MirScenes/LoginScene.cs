@@ -4,6 +4,7 @@ using Client.MirControls;
 using Client.MirGraphics;
 using Client.MirNetwork;
 using Client.MirSounds;
+using Client.Localization;
 using S = ServerPackets;
 using C = ClientPackets;
 
@@ -143,6 +144,7 @@ namespace Client.MirScenes
                     sum = md5.ComputeHash(stream);
 
                 p.VersionHash = sum;
+                p.Language = Settings.Language;
                     Network.Enqueue(p);
             }
             catch (Exception ex)
@@ -150,7 +152,7 @@ namespace Client.MirScenes
                 if (Settings.LogErrors) CMain.SaveError(ex.ToString());
             }
         }
-        private void ClientVersion(S.ClientVersion p)
+        private async void ClientVersion(S.ClientVersion p)
         {
             switch (p.Result)
             {
@@ -160,6 +162,9 @@ namespace Client.MirScenes
                     Network.Disconnect();
                     break;
                 case 1:
+                    if (_connectBox.Label != null)
+                        _connectBox.Label.Text = "Synchronizing localization...";
+                    await ItemLocalizationService.SynchronizeAsync(p.EffectiveLanguage, p.LocalizationBaseUrl);
                     _connectBox.Dispose();
                     _login.Show();
                     break;

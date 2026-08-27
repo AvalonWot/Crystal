@@ -320,7 +320,7 @@ namespace Client.MirScenes.Dialogs
             {
                 if (Selected == null || CMain.Time < MarketTime) return;
 
-                string message = GameLanguage.ClientTextMap.GetLocalization((ClientTextKeys.InterestedInPurchase), Selected.Listing.Item.FriendlyName, Selected.Listing.Price);
+                string message = GameLanguage.ClientTextMap.GetLocalization((ClientTextKeys.InterestedInPurchase), Selected.Listing.Item.DisplayName, Selected.Listing.Price);
 
                 GameScene.Scene.MailComposeLetterDialog.ComposeMail(Selected.Listing.Seller, message);
             };
@@ -367,7 +367,7 @@ namespace Client.MirScenes.Dialogs
                     {
                         if (Selected.Listing.Seller == "For Sale")
                         {
-                            MirMessageBox box = new MirMessageBox(GameLanguage.ClientTextMap.GetLocalization((ClientTextKeys.ItemNotSoldGetBack), Selected.Listing.Item.FriendlyName), MirMessageBoxButtons.YesNo);
+                            MirMessageBox box = new MirMessageBox(GameLanguage.ClientTextMap.GetLocalization((ClientTextKeys.ItemNotSoldGetBack), Selected.Listing.Item.DisplayName), MirMessageBoxButtons.YesNo);
                             box.YesButton.Click += (o1, e2) =>
                             {
                                 MarketTime = CMain.Time + 3000;
@@ -385,7 +385,7 @@ namespace Client.MirScenes.Dialogs
                     {
                         if (Selected.Listing.Seller == "No Bid")
                         {
-                            MirMessageBox box = new MirMessageBox(GameLanguage.ClientTextMap.GetLocalization((ClientTextKeys.ItemNotSoldConfirmRetrieve), Selected.Listing.Item.FriendlyName), MirMessageBoxButtons.YesNo);
+                            MirMessageBox box = new MirMessageBox(GameLanguage.ClientTextMap.GetLocalization((ClientTextKeys.ItemNotSoldConfirmRetrieve), Selected.Listing.Item.DisplayName), MirMessageBoxButtons.YesNo);
                             box.YesButton.Click += (o1, e2) =>
                             {
                                 MarketTime = CMain.Time + 3000;
@@ -407,7 +407,7 @@ namespace Client.MirScenes.Dialogs
                         case MarketItemType.Consign:
                         case MarketItemType.GameShop:
                             {
-                                MirMessageBox box = new MirMessageBox(GameLanguage.ClientTextMap.GetLocalization((ClientTextKeys.ConfirmBuyItemWithPrice), Selected.Listing.Item.FriendlyName, Selected.Listing.Price, MarketType == MarketPanelType.GameShop ? GameLanguage.ClientTextMap.GetLocalization(ClientTextKeys.Credits) : GameLanguage.ClientTextMap.GetLocalization(ClientTextKeys.Gold)), MirMessageBoxButtons.YesNo);
+                                MirMessageBox box = new MirMessageBox(GameLanguage.ClientTextMap.GetLocalization((ClientTextKeys.ConfirmBuyItemWithPrice), Selected.Listing.Item.DisplayName, Selected.Listing.Price, MarketType == MarketPanelType.GameShop ? GameLanguage.ClientTextMap.GetLocalization(ClientTextKeys.Credits) : GameLanguage.ClientTextMap.GetLocalization(ClientTextKeys.Gold)), MirMessageBoxButtons.YesNo);
                                 box.YesButton.Click += (o1, e2) =>
                                 {
                                     MarketTime = CMain.Time + 3000;
@@ -422,7 +422,7 @@ namespace Client.MirScenes.Dialogs
 
                                 bidAmount.OKButton.Click += (o1, e1) =>
                                 {
-                                    MirMessageBox box = new MirMessageBox(GameLanguage.ClientTextMap.GetLocalization((ClientTextKeys.ConfirmBidGoldForItem), bidAmount.Amount, Selected.Listing.Item.FriendlyName), MirMessageBoxButtons.YesNo);
+                                    MirMessageBox box = new MirMessageBox(GameLanguage.ClientTextMap.GetLocalization((ClientTextKeys.ConfirmBidGoldForItem), bidAmount.Amount, Selected.Listing.Item.DisplayName), MirMessageBoxButtons.YesNo);
                                     box.YesButton.Click += (o2, e2) =>
                                     {
                                         MarketTime = CMain.Time + 3000;
@@ -1565,7 +1565,7 @@ namespace Client.MirScenes.Dialogs
             public void Update(ClientAuction listing)
             {
                 Listing = listing;
-                NameLabel.Text = Listing.Item.FriendlyName;
+                NameLabel.Text = Listing.Item.DisplayName;
                 PriceLabel.Text = String.Format("{0:###,###,##0} {1}", Listing.Price, listing.ItemType == MarketItemType.Auction ? GameLanguage.ClientTextMap.GetLocalization(ClientTextKeys.Bid) : "");
 
                 NameLabel.ForeColour = GameScene.Scene.GradeNameColor(Listing.Item.Info.Grade);

@@ -621,11 +621,11 @@ namespace Server.MirObjects
 
                     if (item.Item.Info.ShowGroupPickup && IsMasterGroupMember(Master))
                         for (int j = 0; j < Master.GroupMembers.Count; j++)
-                            Master.GroupMembers[j].ReceiveChat(GameLanguage.ServerTextMap.GetLocalization((ServerTextKeys.FriendlyPickedUpItem), Name, item.Item.FriendlyName), ChatType.Hint);
+                            Master.GroupMembers[j].ReceiveChat(Master.GroupMembers[j].GetLocalizedText(ServerTextKeys.FriendlyPickedUpItem, Name, Master.GroupMembers[j].GetItemDisplayName(item.Item)), ChatType.Hint);
 
                     if (item.Item.Info.Grade == ItemGrade.Mythical || item.Item.Info.Grade == ItemGrade.Legendary || item.Item.Info.Grade == ItemGrade.Heroic)
                     {
-                        Master.ReceiveChat(GameLanguage.ServerTextMap.GetLocalization((ServerTextKeys.PetPickedUp), item.Item.FriendlyName), ChatType.Hint);
+                        Master.ReceiveChat(((PlayerObject)Master).GetLocalizedText(ServerTextKeys.PetPickedUp, ((PlayerObject)Master).GetItemDisplayName(item.Item)), ChatType.Hint);
                         ((PlayerObject)Master).Enqueue(new S.IntelligentCreaturePickup { ObjectID = ObjectID });
                     }
 

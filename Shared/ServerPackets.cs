@@ -44,6 +44,8 @@ namespace ServerPackets
         }
 
         public byte Result;
+        public string EffectiveLanguage = string.Empty;
+        public string LocalizationBaseUrl = string.Empty;
         /*
          * 0: Wrong Version
          * 1: Correct Version
@@ -52,11 +54,17 @@ namespace ServerPackets
         protected override void ReadPacket(BinaryReader reader)
         {
             Result = reader.ReadByte();
+            if (reader.BaseStream.Position < reader.BaseStream.Length)
+                EffectiveLanguage = reader.ReadString();
+            if (reader.BaseStream.Position < reader.BaseStream.Length)
+                LocalizationBaseUrl = reader.ReadString();
         }
 
         protected override void WritePacket(BinaryWriter writer)
         {
             writer.Write(Result);
+            writer.Write(EffectiveLanguage ?? string.Empty);
+            writer.Write(LocalizationBaseUrl ?? string.Empty);
         }
     }
     public sealed class Disconnect : Packet
@@ -2138,6 +2146,7 @@ namespace ServerPackets
         public Point Location;
         public ushort Image;
         public ItemGrade grade;
+        public int ItemIndex;
 
 
         protected override void ReadPacket(BinaryReader reader)
@@ -2148,6 +2157,8 @@ namespace ServerPackets
             Location = new Point(reader.ReadInt32(), reader.ReadInt32());
             Image = reader.ReadUInt16();
             grade = (ItemGrade)reader.ReadByte();
+			if (reader.BaseStream.Position < reader.BaseStream.Length)
+				ItemIndex = reader.ReadInt32();
 		}
 
         protected override void WritePacket(BinaryWriter writer)
@@ -2159,6 +2170,7 @@ namespace ServerPackets
             writer.Write(Location.Y);
             writer.Write(Image);
             writer.Write((byte)grade);
+			writer.Write(ItemIndex);
 		}
     }
     public sealed class ObjectGold : Packet

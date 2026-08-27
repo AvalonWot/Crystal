@@ -1497,55 +1497,55 @@ namespace Server.MirObjects
                     break;
                 case "ARMOUR":
                     newValue = player.Info.Equipment[(int)EquipmentSlot.Armour] != null ?
-                        player.Info.Equipment[(int)EquipmentSlot.Armour].FriendlyName : GameLanguage.ServerTextMap.GetLocalization(ServerTextKeys.NoArmour);
+                        player.GetItemDisplayName(player.Info.Equipment[(int)EquipmentSlot.Armour]) : GameLanguage.ServerTextMap.GetLocalization(ServerTextKeys.NoArmour);
                     break;
                 case "WEAPON":
                     newValue = player.Info.Equipment[(int)EquipmentSlot.Weapon] != null ?
-                        player.Info.Equipment[(int)EquipmentSlot.Weapon].FriendlyName : GameLanguage.ServerTextMap.GetLocalization(ServerTextKeys.NoWeapon);
+                        player.GetItemDisplayName(player.Info.Equipment[(int)EquipmentSlot.Weapon]) : GameLanguage.ServerTextMap.GetLocalization(ServerTextKeys.NoWeapon);
                     break;
                 case "RING_L":
                     newValue = player.Info.Equipment[(int)EquipmentSlot.RingL] != null ?
-                        player.Info.Equipment[(int)EquipmentSlot.RingL].FriendlyName : GameLanguage.ServerTextMap.GetLocalization(ServerTextKeys.NoRing);
+                        player.GetItemDisplayName(player.Info.Equipment[(int)EquipmentSlot.RingL]) : GameLanguage.ServerTextMap.GetLocalization(ServerTextKeys.NoRing);
                     break;
                 case "RING_R":
                     newValue = player.Info.Equipment[(int)EquipmentSlot.RingR] != null ?
-                        player.Info.Equipment[(int)EquipmentSlot.RingR].FriendlyName : GameLanguage.ServerTextMap.GetLocalization(ServerTextKeys.NoRing);
+                        player.GetItemDisplayName(player.Info.Equipment[(int)EquipmentSlot.RingR]) : GameLanguage.ServerTextMap.GetLocalization(ServerTextKeys.NoRing);
                     break;
                 case "BRACELET_L":
                     newValue = player.Info.Equipment[(int)EquipmentSlot.BraceletL] != null ?
-                        player.Info.Equipment[(int)EquipmentSlot.BraceletL].FriendlyName : GameLanguage.ServerTextMap.GetLocalization(ServerTextKeys.NoBracelet);
+                        player.GetItemDisplayName(player.Info.Equipment[(int)EquipmentSlot.BraceletL]) : GameLanguage.ServerTextMap.GetLocalization(ServerTextKeys.NoBracelet);
                     break;
                 case "BRACELET_R":
                     newValue = player.Info.Equipment[(int)EquipmentSlot.BraceletR] != null ?
-                        player.Info.Equipment[(int)EquipmentSlot.BraceletR].FriendlyName : GameLanguage.ServerTextMap.GetLocalization(ServerTextKeys.NoBracelet);
+                        player.GetItemDisplayName(player.Info.Equipment[(int)EquipmentSlot.BraceletR]) : GameLanguage.ServerTextMap.GetLocalization(ServerTextKeys.NoBracelet);
                     break;
                 case "NECKLACE":
                     newValue = player.Info.Equipment[(int)EquipmentSlot.Necklace] != null ?
-                        player.Info.Equipment[(int)EquipmentSlot.Necklace].FriendlyName : GameLanguage.ServerTextMap.GetLocalization(ServerTextKeys.NoNecklace);
+                        player.GetItemDisplayName(player.Info.Equipment[(int)EquipmentSlot.Necklace]) : GameLanguage.ServerTextMap.GetLocalization(ServerTextKeys.NoNecklace);
                     break;
                 case "BELT":
                     newValue = player.Info.Equipment[(int)EquipmentSlot.Belt] != null ?
-                        player.Info.Equipment[(int)EquipmentSlot.Belt].FriendlyName : GameLanguage.ServerTextMap.GetLocalization(ServerTextKeys.NoBelt);
+                        player.GetItemDisplayName(player.Info.Equipment[(int)EquipmentSlot.Belt]) : GameLanguage.ServerTextMap.GetLocalization(ServerTextKeys.NoBelt);
                     break;
                 case "BOOTS":
                     newValue = player.Info.Equipment[(int)EquipmentSlot.Boots] != null ?
-                        player.Info.Equipment[(int)EquipmentSlot.Boots].FriendlyName : GameLanguage.ServerTextMap.GetLocalization(ServerTextKeys.NoBoots);
+                        player.GetItemDisplayName(player.Info.Equipment[(int)EquipmentSlot.Boots]) : GameLanguage.ServerTextMap.GetLocalization(ServerTextKeys.NoBoots);
                     break;
                 case "HELMET":
                     newValue = player.Info.Equipment[(int)EquipmentSlot.Helmet] != null ?
-                        player.Info.Equipment[(int)EquipmentSlot.Helmet].FriendlyName : GameLanguage.ServerTextMap.GetLocalization(ServerTextKeys.NoHelmet);
+                        player.GetItemDisplayName(player.Info.Equipment[(int)EquipmentSlot.Helmet]) : GameLanguage.ServerTextMap.GetLocalization(ServerTextKeys.NoHelmet);
                     break;
                 case "AMULET":
                     newValue = player.Info.Equipment[(int)EquipmentSlot.Amulet] != null ?
-                        player.Info.Equipment[(int)EquipmentSlot.Amulet].FriendlyName : GameLanguage.ServerTextMap.GetLocalization(ServerTextKeys.NoAmulet);
+                        player.GetItemDisplayName(player.Info.Equipment[(int)EquipmentSlot.Amulet]) : GameLanguage.ServerTextMap.GetLocalization(ServerTextKeys.NoAmulet);
                     break;
                 case "STONE":
                     newValue = player.Info.Equipment[(int)EquipmentSlot.Stone] != null ?
-                        player.Info.Equipment[(int)EquipmentSlot.Stone].FriendlyName : GameLanguage.ServerTextMap.GetLocalization(ServerTextKeys.NoStone);
+                        player.GetItemDisplayName(player.Info.Equipment[(int)EquipmentSlot.Stone]) : GameLanguage.ServerTextMap.GetLocalization(ServerTextKeys.NoStone);
                     break;
                 case "TORCH":
                     newValue = player.Info.Equipment[(int)EquipmentSlot.Torch] != null ?
-                        player.Info.Equipment[(int)EquipmentSlot.Torch].FriendlyName : GameLanguage.ServerTextMap.GetLocalization(ServerTextKeys.NoTorch);
+                        player.GetItemDisplayName(player.Info.Equipment[(int)EquipmentSlot.Torch]) : GameLanguage.ServerTextMap.GetLocalization(ServerTextKeys.NoTorch);
                     break;
 
                 case "DATE":
@@ -1590,7 +1590,7 @@ namespace Server.MirObjects
                 case "MOUNT":
                     if (player.Mount.HasMount)
                     {
-                        newValue = player.Info.Equipment[(int)EquipmentSlot.Mount].FriendlyName;
+                        newValue = player.GetItemDisplayName(player.Info.Equipment[(int)EquipmentSlot.Mount]);
                     }
                     else
                     {

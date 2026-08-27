@@ -1,5 +1,6 @@
 ﻿using System.Net;
 using Server.MirEnvir;
+using Server.Library.Localization;
 using S = ServerPackets;
 
 namespace Server.Library.Utils
@@ -16,7 +17,7 @@ namespace Server.Library.Utils
 
         public void Start()
         {
-            _thread = new Thread(Listen);
+            _thread = new Thread(Listen) { IsBackground = true };
             _thread.Start(tokenSource.Token);
         }
 
@@ -33,14 +34,15 @@ namespace Server.Library.Utils
 
         public override void OnGetRequest(HttpListenerRequest request, HttpListenerResponse response)
         {
-            var url = request.Url.PathAndQuery;
-            if (url.Contains("?"))
-            {
-                url = url.Substring(0, url.IndexOf("?", StringComparison.Ordinal));
-                url = url.ToLower();
-            }
+            var url = request.Url.AbsolutePath.ToLowerInvariant();
             try
             {
+                if (url.StartsWith("/localization/", StringComparison.Ordinal))
+                {
+                    WriteLocalization(request, response);
+                    return;
+                }
+
                 switch (url)
                 {
                     case "/":
@@ -93,7 +95,37 @@ namespace Server.Library.Utils
             {
                 WriteResponse(response, "request error: " + error);
             }
-        }      
+        }
+
+        protected override bool IsPublicRequest(HttpListenerRequest request)
+        {
+            return request.HttpMethod == "GET" &&
+                   request.Url.AbsolutePath.StartsWith("/localization/", StringComparison.OrdinalIgnoreCase);
+        }
+
+        private static void WriteLocalization(HttpListenerRequest request, HttpListenerResponse response)
+        {
+            string hash = request.QueryString["hash"] ?? string.Empty;
+            ItemLocalizationHttpResult result = ItemLocalizationHttpResolver.Resolve(request.Url.AbsolutePath, hash);
+            if (result.StatusCode is HttpStatusCode.BadRequest or HttpStatusCode.NotFound)
+            {
+                WriteStatus(response, result.StatusCode);
+                return;
+            }
+
+            ItemLocalizationSnapshot snapshot = result.Snapshot;
+            response.Headers["ETag"] = $"\"{snapshot.Hash}\"";
+            response.Headers["X-Content-SHA256"] = snapshot.Hash;
+            response.Headers["Cache-Control"] = "no-cache";
+
+            if (result.StatusCode == HttpStatusCode.NotModified)
+            {
+                WriteStatus(response, HttpStatusCode.NotModified);
+                return;
+            }
+
+            WriteBytes(response, snapshot.Content, "application/json; charset=utf-8");
+        }
 
         void AddNameList(string playerName, string fileName)
         {

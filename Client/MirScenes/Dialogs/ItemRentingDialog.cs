@@ -148,7 +148,7 @@ namespace Client.MirScenes.Dialogs
 
         public void InputRentalPeroid()
         {
-            var inputBox = new MirInputBox(GameLanguage.ClientTextMap.GetLocalization((ClientTextKeys.RentItemDurationQuestion), RentalItem.FriendlyName, GameScene.Scene.GuestItemRentDialog.GuestName));
+            var inputBox = new MirInputBox(GameLanguage.ClientTextMap.GetLocalization((ClientTextKeys.RentItemDurationQuestion), RentalItem.DisplayName, GameScene.Scene.GuestItemRentDialog.GuestName));
 
             inputBox.OKButton.Click += (o1, e1) =>
             {

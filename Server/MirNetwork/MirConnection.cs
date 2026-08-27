@@ -7,6 +7,7 @@ using C = ClientPackets;
 using S = ServerPackets;
 using System.Text.RegularExpressions;
 using Server.Utils;
+using Server.Library.Localization;
 
 namespace Server.MirNetwork
 {
@@ -28,6 +29,7 @@ namespace Server.MirNetwork
         public readonly string IPAddress;
 
         public GameStage Stage;
+        public string Language { get; private set; } = "en-US";
 
         private TcpClient _client;
         private ConcurrentQueue<Packet> _receiveList;
@@ -865,8 +867,23 @@ namespace Server.MirNetwork
                 }
             }
 
+            Language = ItemLocalizationManager.ResolveCulture(p.Language);
+
+            string publicBaseUrl = Settings.LocalizationPublicBaseUrl?.Trim() ?? string.Empty;
+            if (publicBaseUrl.Length > 0 && !publicBaseUrl.EndsWith('/')) publicBaseUrl += "/";
+            if (!Uri.TryCreate(publicBaseUrl, UriKind.Absolute, out Uri localizationUri) ||
+                (localizationUri.Scheme != Uri.UriSchemeHttp && localizationUri.Scheme != Uri.UriSchemeHttps))
+            {
+                publicBaseUrl = string.Empty;
+            }
+
             MessageQueue.Enqueue(GameLanguage.ServerTextMap.GetLocalization((ServerTextKeys.ClientVersionMatched), SessionID, IPAddress));
-            Enqueue(new S.ClientVersion { Result = 1 });
+            Enqueue(new S.ClientVersion
+            {
+                Result = 1,
+                EffectiveLanguage = Language,
+                LocalizationBaseUrl = publicBaseUrl
+            });
 
             Stage = GameStage.Login;
         }

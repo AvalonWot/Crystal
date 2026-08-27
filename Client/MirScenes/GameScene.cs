@@ -12,6 +12,7 @@ using Effect = Client.MirObjects.Effect;
 using Client.MirScenes.Dialogs;
 using Client.Utils;
 using Client.MirGraphics.Particles;
+using Client.Localization;
 
 namespace Client.MirScenes
 {
@@ -3263,6 +3264,7 @@ namespace Client.MirScenes
 
         private void ObjectItem(S.ObjectItem p)
         {
+            p.Name = ItemLocalizationService.GetDisplayName(p.ItemIndex, p.Name);
             ItemObject ob = new ItemObject(p.ObjectID);
             ob.Load(p);
             /*
@@ -3284,7 +3286,7 @@ namespace Client.MirScenes
             AddItem(p.Item);
             User.RefreshStats();
 
-            OutputMessage(GameLanguage.ClientTextMap.GetLocalization((ClientTextKeys.YouGainedItem), p.Item.FriendlyName));
+            OutputMessage(GameLanguage.ClientTextMap.GetLocalization((ClientTextKeys.YouGainedItem), p.Item.DisplayName));
         }
         private void GainedQuestItem(S.GainedQuestItem p)
         {
@@ -3577,10 +3579,10 @@ namespace Client.MirScenes
                 switch (item.Info.Type)
                 {
                     case ItemType.Mount:
-                        ChatDialog.ReceiveChat(GameLanguage.ClientTextMap.GetLocalization((ClientTextKeys.FriendlyNoLongerLoyal), item.Info.FriendlyName), ChatType.System);
+                        ChatDialog.ReceiveChat(GameLanguage.ClientTextMap.GetLocalization((ClientTextKeys.FriendlyNoLongerLoyal), item.Info.DisplayName), ChatType.System);
                         break;
                     default:
-                        ChatDialog.ReceiveChat(GameLanguage.ClientTextMap.GetLocalization((ClientTextKeys.FriendlyDuraDroppedToZero), item.Info.FriendlyName), ChatType.System);
+                        ChatDialog.ReceiveChat(GameLanguage.ClientTextMap.GetLocalization((ClientTextKeys.FriendlyDuraDroppedToZero), item.Info.DisplayName), ChatType.System);
                         break;
                 }
 
@@ -6369,6 +6371,9 @@ namespace Client.MirScenes
         }
         private void AwakeningNeedMaterials(S.AwakeningNeedMaterials p)
         {
+            if (p.Materials != null)
+                foreach (ItemInfo material in p.Materials)
+                    ItemLocalizationService.Apply(material);
             NPCAwakeDialog.setNeedItems(p.Materials, p.MaterialsCount);
         }
         private void AwakeningLockedItem(S.AwakeningLockedItem p)
@@ -6678,6 +6683,7 @@ namespace Client.MirScenes
 
         private void GameShopUpdate(S.GameShopInfo p)
         {
+            ItemLocalizationService.Apply(p.Item.Info);
             p.Item.Stock = p.StockLevel;
             GameShopInfoList.Add(p.Item);
             if (p.Item.Date > CMain.Now.AddDays(-7)) GameShopDialog.New.Visible = true;
@@ -6754,6 +6760,7 @@ namespace Client.MirScenes
         }
         public static void Bind(UserItem item)
         {
+            if (item == null) return;
             for (int i = 0; i < ItemInfoList.Count; i++)
             {
                 if (ItemInfoList[i].Index != item.ItemIndex) continue;
@@ -6867,7 +6874,7 @@ namespace Client.MirScenes
                 Location = new Point(4, 4),
                 OutLine = true,
                 Parent = ItemLabel,
-                Text = HoverItem.Info.Grade != ItemGrade.None ? string.Format("{0}{1}{2}", HoverItem.Info.FriendlyName, "\n", GradeString) : HoverItem.Info.FriendlyName,
+                Text = HoverItem.Info.Grade != ItemGrade.None ? string.Format("{0}{1}{2}", HoverItem.Info.DisplayName, "\n", GradeString) : HoverItem.Info.DisplayName,
             };
 
             if (HoverItem.RefineAdded > 0)
@@ -8633,7 +8640,7 @@ namespace Client.MirScenes
                     OutLine = true,
                     Parent = ItemLabel,
                     Text = GameLanguage.ClientTextMap.GetLocalization((ClientTextKeys.SocketWithValue),
-                        item.Slots[i] == null ? GameLanguage.ClientTextMap.GetLocalization(ClientTextKeys.Empty) : item.Slots[i].FriendlyName)
+                        item.Slots[i] == null ? GameLanguage.ClientTextMap.GetLocalization(ClientTextKeys.Empty) : item.Slots[i].DisplayName)
                 };
 
                 ItemLabel.Size = new Size(Math.Max(ItemLabel.Size.Width, SOCKETLabel.DisplayRectangle.Right + 4),
@@ -9707,7 +9714,7 @@ namespace Client.MirScenes
                 HoverItem.Info.ToolTip = GameLanguage.ClientTextMap.GetLocalization((ClientTextKeys.AddsCreditsToAccount), HoverItem.Info.Price);
             }
 
-            if (!string.IsNullOrEmpty(HoverItem.Info.ToolTip))
+            if (!string.IsNullOrEmpty(HoverItem.Info.DisplayToolTip))
             {
                 count++;
 
@@ -9731,7 +9738,7 @@ namespace Client.MirScenes
                     Location = new Point(4, ItemLabel.DisplayRectangle.Bottom),
                     OutLine = true,
                     Parent = ItemLabel,
-                    Text = HoverItem.Info.ToolTip
+                    Text = HoverItem.Info.DisplayToolTip
                 };
 
                 ItemLabel.Size = new Size(Math.Max(ItemLabel.Size.Width, TOOLTIPLabel.DisplayRectangle.Right + 4),
@@ -11377,14 +11384,14 @@ namespace Client.MirScenes
                 MirItemCell cell = GameScene.SelectedCell;
                 if (cell.Item.Info.Bind.HasFlag(BindMode.DontDrop))
                 {
-                    MirMessageBox messageBox = new MirMessageBox(GameLanguage.ClientTextMap.GetLocalization((ClientTextKeys.YouCannotDrop), cell.Item.FriendlyName), MirMessageBoxButtons.OK);
+                    MirMessageBox messageBox = new MirMessageBox(GameLanguage.ClientTextMap.GetLocalization((ClientTextKeys.YouCannotDrop), cell.Item.DisplayName), MirMessageBoxButtons.OK);
                     messageBox.Show();
                     GameScene.SelectedCell = null;
                     return;
                 }
                 if (cell.Item.Count == 1)
                 {
-                    MirMessageBox messageBox = new MirMessageBox(GameLanguage.ClientTextMap.GetLocalization((ClientTextKeys.DropTip), cell.Item.FriendlyName), MirMessageBoxButtons.YesNo);
+                    MirMessageBox messageBox = new MirMessageBox(GameLanguage.ClientTextMap.GetLocalization((ClientTextKeys.DropTip), cell.Item.DisplayName), MirMessageBoxButtons.YesNo);
 
                     messageBox.YesButton.Click += (o, a) =>
                     {

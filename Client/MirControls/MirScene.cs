@@ -1,6 +1,7 @@
 ﻿using Client.MirGraphics;
 using Client.MirNetwork;
 using Client.MirScenes;
+using Client.Localization;
 using SlimDX.Direct3D9;
 using S = ServerPackets;
 
@@ -202,6 +203,7 @@ namespace Client.MirControls
 
         private void NewItemInfo(S.NewItemInfo info)
         {
+            ItemLocalizationService.Apply(info.Info);
             GameScene.ItemInfoList.Add(info.Info);
             GameScene.OnItemInfoReceived(info.Info.Index);
         }
@@ -245,6 +247,10 @@ namespace Client.MirControls
 
         private void NewQuestInfo(S.NewQuestInfo info)
         {
+            foreach (QuestItemReward reward in info.Info.RewardsFixedItem)
+                ItemLocalizationService.Apply(reward.Item);
+            foreach (QuestItemReward reward in info.Info.RewardsSelectItem)
+                ItemLocalizationService.Apply(reward.Item);
             GameScene.QuestInfoList.Add(info.Info);
         }
 

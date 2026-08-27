@@ -10,15 +10,19 @@ namespace ClientPackets
         }
 
         public byte[] VersionHash;
+        public string Language = string.Empty;
 
         protected override void ReadPacket(BinaryReader reader)
         {
             VersionHash = reader.ReadBytes(reader.ReadInt32());
+            if (reader.BaseStream.Position < reader.BaseStream.Length)
+                Language = reader.ReadString();
         }
         protected override void WritePacket(BinaryWriter writer)
         {
             writer.Write(VersionHash.Length);
             writer.Write(VersionHash);
+            writer.Write(Language ?? string.Empty);
         }
     }
     public sealed class Disconnect : Packet

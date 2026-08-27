@@ -2,6 +2,7 @@ using System.Drawing;
 ﻿using Server.MirDatabase;
 using Server.MirEnvir;
 using Server.MirNetwork;
+using Server.Library.Localization;
 using Server.MirObjects.Monsters;
 using System.Numerics;
 using S = ServerPackets;
@@ -22,6 +23,21 @@ namespace Server.MirObjects
         {
             get { return connection; }
             set { connection = value; }
+        }
+
+        public string GetItemDisplayName(ItemInfo info)
+        {
+            return ItemLocalizationManager.GetDisplayName(Connection?.Language, info);
+        }
+
+        public string GetItemDisplayName(UserItem item)
+        {
+            return item == null ? string.Empty : GetItemDisplayName(item.Info);
+        }
+
+        public string GetLocalizedText(ServerTextKeys key, params object[] arguments)
+        {
+            return ItemLocalizationManager.GetServerText(Connection?.Language, key, arguments);
         }
         public override string Name
         {
@@ -781,7 +797,7 @@ namespace Server.MirObjects
 
                 if (item?.ExpireInfo?.ExpiryDate <= Envir.Now)
                 {
-                    ReceiveChat(GameLanguage.ServerTextMap.GetLocalization((ServerTextKeys.ItemHasExpiredFromInventory), item.Info.FriendlyName), ChatType.Hint);
+                    ReceiveChat(GetLocalizedText(ServerTextKeys.ItemHasExpiredFromInventory, GetItemDisplayName(item)), ChatType.Hint);
                     Enqueue(new S.DeleteItem { UniqueID = item.UniqueID, Count = item.Count });
                     Info.Inventory[i] = null;
                     continue;
@@ -789,7 +805,7 @@ namespace Server.MirObjects
 
                 if (item?.RentalInformation?.RentalLocked == true && item?.RentalInformation?.ExpiryDate <= Envir.Now)
                 {
-                    ReceiveChat(GameLanguage.ServerTextMap.GetLocalization((ServerTextKeys.RentalLockRemovedFrom), item.Info.FriendlyName), ChatType.Hint);
+                    ReceiveChat(GetLocalizedText(ServerTextKeys.RentalLockRemovedFrom, GetItemDisplayName(item)), ChatType.Hint);
                     item.RentalInformation = null;
                 }
             }
@@ -800,7 +816,7 @@ namespace Server.MirObjects
 
                 if (item?.ExpireInfo?.ExpiryDate <= Envir.Now)
                 {
-                    ReceiveChat(GameLanguage.ServerTextMap.GetLocalization((ServerTextKeys.EquipmentExpired), item.Info.FriendlyName), ChatType.Hint);
+                    ReceiveChat(GetLocalizedText(ServerTextKeys.EquipmentExpired, GetItemDisplayName(item)), ChatType.Hint);
                     Enqueue(new S.DeleteItem { UniqueID = item.UniqueID, Count = item.Count });
                     Info.Equipment[i] = null;
                     continue;
@@ -808,7 +824,7 @@ namespace Server.MirObjects
 
                 if (item?.RentalInformation?.RentalLocked == true && item?.RentalInformation?.ExpiryDate <= Envir.Now)
                 {
-                    ReceiveChat(GameLanguage.ServerTextMap.GetLocalization((ServerTextKeys.RentalLockRemovedFrom), item.Info.FriendlyName), ChatType.Hint);
+                    ReceiveChat(GetLocalizedText(ServerTextKeys.RentalLockRemovedFrom, GetItemDisplayName(item)), ChatType.Hint);
                     item.RentalInformation = null;
                 }
             }
@@ -820,7 +836,7 @@ namespace Server.MirObjects
                 var item = Info.AccountInfo.Storage[i];
                 if (item?.ExpireInfo?.ExpiryDate <= Envir.Now)
                 {
-                    ReceiveChat(GameLanguage.ServerTextMap.GetLocalization((ServerTextKeys.ItemExpiredFromStorage), item.Info.FriendlyName), ChatType.Hint);
+                    ReceiveChat(GetLocalizedText(ServerTextKeys.ItemExpiredFromStorage, GetItemDisplayName(item)), ChatType.Hint);
                     Enqueue(new S.DeleteItem { UniqueID = item.UniqueID, Count = item.Count });
                     Info.AccountInfo.Storage[i] = null;
                     continue;
@@ -1420,7 +1436,7 @@ namespace Server.MirObjects
                         {
                             Info.Equipment[i] = null;
                             Enqueue(new S.DeleteItem { UniqueID = item.UniqueID, Count = item.Count });
-                            ReceiveChat(GameLanguage.ServerTextMap.GetLocalization((ServerTextKeys.YourItemShatteredUponDeath), item.FriendlyName), ChatType.System2);
+                            ReceiveChat(GetLocalizedText(ServerTextKeys.YourItemShatteredUponDeath, GetItemDisplayName(item)), ChatType.System2);
                             Report?.ItemChanged(item, item.Count, 1);
                         }
                     }
@@ -1464,7 +1480,7 @@ namespace Server.MirObjects
                             Info.Equipment[i] = null;
                             Enqueue(new S.DeleteItem { UniqueID = item.UniqueID, Count = item.Count });
 
-                            ReceiveChat(GameLanguage.ServerTextMap.GetLocalization((ServerTextKeys.YouDiedItemReturnedOwner), item.Info.FriendlyName), ChatType.Hint);
+                            ReceiveChat(GetLocalizedText(ServerTextKeys.YouDiedItemReturnedOwner, GetItemDisplayName(item)), ChatType.Hint);
                             Report?.ItemMailed(item, 1, 1);
 
                             continue;
@@ -1479,7 +1495,7 @@ namespace Server.MirObjects
                         {
                             foreach (var player in Envir.Players)
                             {
-                                player.ReceiveChat(GameLanguage.ServerTextMap.GetLocalization((ServerTextKeys.PlayerHasDroppedItem), Name, item.FriendlyName), ChatType.System2);
+                                player.ReceiveChat(player.GetLocalizedText(ServerTextKeys.PlayerHasDroppedItem, Name, player.GetItemDisplayName(item)), ChatType.System2);
                             }
                         }
 
@@ -1553,7 +1569,7 @@ namespace Server.MirObjects
                     if (item.Info.GlobalDropNotify)
                         foreach (var player in Envir.Players)
                         {
-                            player.ReceiveChat(GameLanguage.ServerTextMap.GetLocalization((ServerTextKeys.PlayerHasDroppedItem), Name, item.FriendlyName), ChatType.System2);;
+                            player.ReceiveChat(player.GetLocalizedText(ServerTextKeys.PlayerHasDroppedItem, Name, player.GetItemDisplayName(item)), ChatType.System2);;
                         }
 
                     Info.Inventory[i] = null;

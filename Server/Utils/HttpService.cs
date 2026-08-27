@@ -52,7 +52,7 @@ namespace Server.Library.Utils
                     Console.WriteLine("Connection: {0}", request.KeepAlive ? "Keep-Alive" : "close");
                     Console.WriteLine("Host: {0}", request.UserHostName);
                     var response = context.Response;
-                    if (context.Request.RemoteEndPoint != null)
+                    if (!IsPublicRequest(request) && context.Request.RemoteEndPoint != null)
                     {
                         var clientIp = context.Request.RemoteEndPoint.Address.ToString();
 
@@ -88,6 +88,11 @@ namespace Server.Library.Utils
         public abstract void OnGetRequest(HttpListenerRequest request, HttpListenerResponse response);
         public abstract void OnPostRequest(HttpListenerRequest request, HttpListenerResponse response);
 
+        protected virtual bool IsPublicRequest(HttpListenerRequest request)
+        {
+            return false;
+        }
+
         public void WriteResponse(HttpListenerResponse response, string responseString)
         {
             try
@@ -102,6 +107,21 @@ namespace Server.Library.Utils
                 writer.Write(responseString);
                 writer.Close();
             }
+        }
+
+        protected static void WriteBytes(HttpListenerResponse response, byte[] content, string contentType)
+        {
+            response.ContentType = contentType;
+            response.ContentLength64 = content.Length;
+            response.OutputStream.Write(content, 0, content.Length);
+            response.OutputStream.Close();
+        }
+
+        protected static void WriteStatus(HttpListenerResponse response, HttpStatusCode statusCode)
+        {
+            response.StatusCode = (int)statusCode;
+            response.ContentLength64 = 0;
+            response.OutputStream.Close();
         }
     }
 }

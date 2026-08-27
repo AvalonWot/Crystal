@@ -217,7 +217,7 @@ namespace Client.MirScenes.Dialogs
 
                 if (item != null)
                 {
-                    MountName.Text = item.FriendlyName;
+                    MountName.Text = item.DisplayName;
                     MountLoyalty.Text = GameLanguage.ClientTextMap.GetLocalization((ClientTextKeys.LoyaltyProgress), item.CurrentDura, item.MaxDura);
                 }
             }

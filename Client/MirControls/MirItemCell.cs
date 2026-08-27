@@ -250,7 +250,7 @@ namespace Client.MirControls
                     {
                         if (Item != null)
                         {
-                            string text = string.Format("<{0}> ", Item.FriendlyName);
+                            string text = string.Format("<{0}> ", Item.DisplayName);
 
                             if (GameScene.Scene.ChatDialog.ChatTextBox.Text.Length + text.Length > Globals.MaxChatLength)
                             {
@@ -258,7 +258,7 @@ namespace Client.MirControls
                                 return;
                             }
 
-                            GameScene.Scene.ChatDialog.LinkedItems.Add(new ChatItem { UniqueID = Item.UniqueID, Title = Item.FriendlyName, Grid = GridType });
+                            GameScene.Scene.ChatDialog.LinkedItems.Add(new ChatItem { UniqueID = Item.UniqueID, Title = Item.DisplayName, Grid = GridType });
                             GameScene.Scene.ChatDialog.SetChatText(text);
                         }
 

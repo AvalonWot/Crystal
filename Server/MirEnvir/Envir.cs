@@ -1,6 +1,7 @@
 using ClientPackets;
 using Server.Library.MirDatabase;
 using Server.Library.Utils;
+using Server.Library.Localization;
 using Server.MirDatabase;
 using Server.MirNetwork;
 using Server.MirObjects;
@@ -2031,6 +2032,8 @@ namespace Server.MirEnvir
                     return;
                 }
 
+                ItemLocalizationManager.Start();
+
                 if (Settings.Multithreaded)
                 {
                     for (var j = 0; j < MobThreads.Length; j++)
@@ -2196,6 +2199,7 @@ namespace Server.MirEnvir
                     MessageQueue.Enqueue(GameLanguage.ServerTextMap.GetLocalization((ServerTextKeys.InnerWorkloopErrorLine), line, ex));
                 }
 
+                ItemLocalizationManager.Stop();
                 StopNetwork();
                 StopEnvir();
                 SaveAccounts();
@@ -3286,6 +3290,7 @@ namespace Server.MirEnvir
             }
 
             http?.Stop();
+            ItemLocalizationManager.Stop();
 
             while (_thread != null)
                 Thread.Sleep(1);
@@ -4794,6 +4799,19 @@ namespace Server.MirEnvir
             }
         }
 
+        public void MessageAccount(AccountInfo account, Func<PlayerObject, string> messageFactory, ChatType type)
+        {
+            if (account?.Characters == null || messageFactory == null) return;
+
+            for (var i = 0; i < account.Characters.Count; i++)
+            {
+                PlayerObject player = account.Characters[i].Player;
+                if (player == null) continue;
+                player.ReceiveChat(messageFactory(player), type);
+                return;
+            }
+        }
+
 
         public void MailCharacter(CharacterInfo info, UserItem item = null, uint gold = 0, int reason = 0, string customMessage = null)
         {
@@ -4909,7 +4927,7 @@ namespace Server.MirEnvir
                             continue;
                         }
 
-                        rentingPlayer.Player.ReceiveChat(GameLanguage.ServerTextMap.GetLocalization((ServerTextKeys.ItemExpiredFromInventory), item.Info.FriendlyName), ChatType.Hint);
+                        rentingPlayer.Player.ReceiveChat(GameLanguage.ServerTextMap.GetLocalization((ServerTextKeys.ItemExpiredFromInventory), rentingPlayer.Player.GetItemDisplayName(item)), ChatType.Hint);
                         rentingPlayer.Player.Enqueue(new S.DeleteItem { UniqueID = item.UniqueID, Count = item.Count });
                         rentingPlayer.Player.RefreshStats();
                     }
@@ -4937,7 +4955,7 @@ namespace Server.MirEnvir
                             continue;
                         }
 
-                        rentingPlayer.Player.ReceiveChat(GameLanguage.ServerTextMap.GetLocalization((ServerTextKeys.ItemExpiredInventory), item.Info.FriendlyName), ChatType.Hint);
+                        rentingPlayer.Player.ReceiveChat(GameLanguage.ServerTextMap.GetLocalization((ServerTextKeys.ItemExpiredInventory), rentingPlayer.Player.GetItemDisplayName(item)), ChatType.Hint);
                         rentingPlayer.Player.Enqueue(new S.DeleteItem { UniqueID = item.UniqueID, Count = item.Count });
                         rentingPlayer.Player.RefreshStats();
                     }
@@ -4987,7 +5005,7 @@ namespace Server.MirEnvir
             var mail = new MailInfo(owner.Index, true)
             {
                 Sender = rentingCharacterInfo.Name,
-                Message = rentedItem.Info.FriendlyName,
+                Message = rentingCharacterInfo.Player?.GetItemDisplayName(rentedItem) ?? rentedItem.Info.FriendlyName,
                 Items = returnItems
             };
 

@@ -36,6 +36,21 @@ public class ItemInfo
     public RandomItemStat RandomStats;
     public string ToolTip = string.Empty;
 
+    private string _displayName = string.Empty;
+    private string _displayToolTip = string.Empty;
+
+    public string DisplayName
+    {
+        get { return string.IsNullOrWhiteSpace(_displayName) ? FriendlyName : _displayName; }
+        set { _displayName = value ?? string.Empty; }
+    }
+
+    public string DisplayToolTip
+    {
+        get { return string.IsNullOrWhiteSpace(_displayToolTip) ? ToolTip : _displayToolTip; }
+        set { _displayToolTip = value ?? string.Empty; }
+    }
+
     public byte Slots;
 
     public Stats Stats;
@@ -322,6 +337,11 @@ public class UserItem
     public string FriendlyName
     {
         get { return Count > 1 ? string.Format("{0} ({1})", Info.FriendlyName, Count) : Info.FriendlyName; }
+    }
+
+    public string DisplayName
+    {
+        get { return Count > 1 ? string.Format("{0} ({1})", Info.DisplayName, Count) : Info.DisplayName; }
     }
 
     public bool GMMade { get; set; }

@@ -653,7 +653,7 @@ namespace Client.MirScenes.Dialogs
             List<GameShopItem> shopList;
 
             if (Search.TextBox.Text != "")
-                shopList = GameScene.GameShopInfoList.Where(f => f.Info.FriendlyName.ToLower().Contains(Search.TextBox.Text.ToLower())).ToList();
+                shopList = GameScene.GameShopInfoList.Where(f => f.Info.DisplayName.Contains(Search.TextBox.Text, StringComparison.CurrentCultureIgnoreCase)).ToList();
             else
                 shopList = GameScene.GameShopInfoList;
 
@@ -702,7 +702,7 @@ namespace Client.MirScenes.Dialogs
             List<GameShopItem> ShopList;
 
             if (Search.TextBox.Text != "")
-                ShopList = GameScene.GameShopInfoList.Where(f => f.Info.FriendlyName.ToLower().Contains(Search.TextBox.Text.ToLower())).ToList();
+                ShopList = GameScene.GameShopInfoList.Where(f => f.Info.DisplayName.Contains(Search.TextBox.Text, StringComparison.CurrentCultureIgnoreCase)).ToList();
             else
                 ShopList = GameScene.GameShopInfoList;
 
@@ -737,7 +737,7 @@ namespace Client.MirScenes.Dialogs
             if (StartIndex > maxIndex) StartIndex = maxIndex;
             if (StartIndex < 0) StartIndex = 0;
 
-            filteredShop = filteredShop.OrderBy(e => e.Info.FriendlyName).ToList();
+            filteredShop = filteredShop.OrderBy(e => e.Info.DisplayName).ToList();
 
             for (int i = 0; i < Grid.Length; i++)
             {

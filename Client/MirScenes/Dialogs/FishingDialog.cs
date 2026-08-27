@@ -107,7 +107,7 @@ namespace Client.MirScenes.Dialogs
 
             if (MapObject.User.HasFishingRod && item != null)
             {
-                TitleLabel.Text = item.FriendlyName;
+                TitleLabel.Text = item.DisplayName;
             }
         }
 

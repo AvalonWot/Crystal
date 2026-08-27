@@ -77,6 +77,11 @@ namespace Server
         public static string HTTPIPAddress = "http://127.0.0.1:5679/";
         public static string HTTPTrustedIPAddress = "127.0.0.1";
 
+        //Localization
+        public static string LocalizationDirectory = Path.Combine(".", "Localization");
+        public static string LocalizationPublicBaseUrl = "http://127.0.0.1:5679/localization/";
+        public static string LocalizationDefaultCulture = "en-US";
+
         //Permission
         public static bool AllowNewAccount = true,
                            AllowChangePassword = true,
@@ -401,6 +406,10 @@ namespace Server
             HTTPIPAddress = Reader.ReadString("Network", "HTTPIPAddress", HTTPIPAddress);
             HTTPTrustedIPAddress = Reader.ReadString("Network", "HTTPTrustedIPAddress", HTTPTrustedIPAddress);
 
+            LocalizationDirectory = Reader.ReadString("Localization", "Directory", LocalizationDirectory);
+            LocalizationPublicBaseUrl = Reader.ReadString("Localization", "PublicBaseUrl", LocalizationPublicBaseUrl);
+            LocalizationDefaultCulture = Reader.ReadString("Localization", "DefaultCulture", LocalizationDefaultCulture);
+
             //Permission
             AllowNewAccount = Reader.ReadBoolean("Permission", "AllowNewAccount", AllowNewAccount);
             AllowChangePassword = Reader.ReadBoolean("Permission", "AllowChangePassword", AllowChangePassword);
@@ -687,6 +696,10 @@ namespace Server
             Reader.Write("Network", "StartHTTPService", StartHTTPService);
             Reader.Write("Network", "HTTPIPAddress", HTTPIPAddress);
             Reader.Write("Network", "HTTPTrustedIPAddress", HTTPTrustedIPAddress);
+
+            Reader.Write("Localization", "Directory", LocalizationDirectory);
+            Reader.Write("Localization", "PublicBaseUrl", LocalizationPublicBaseUrl);
+            Reader.Write("Localization", "DefaultCulture", LocalizationDefaultCulture);
 
             //Permission
             Reader.Write("Permission", "AllowNewAccount", AllowNewAccount);

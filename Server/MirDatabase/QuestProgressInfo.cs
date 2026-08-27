@@ -485,7 +485,7 @@ namespace Server.MirDatabase
             {
                 if (string.IsNullOrEmpty(Info.ItemTasks[i].Message))
                 {
-                    TaskList.Add(GameLanguage.ServerTextMap.GetLocalization((ServerTextKeys.CollectProgress), Info.ItemTasks[i].Item.FriendlyName, ItemTaskCount[i].Count,
+                    TaskList.Add(Owner.GetLocalizedText(ServerTextKeys.CollectProgress, Owner.GetItemDisplayName(Info.ItemTasks[i].Item), ItemTaskCount[i].Count,
                         Info.ItemTasks[i].Count, ItemTaskCount[i].Complete ? GameLanguage.ServerTextMap.GetLocalization(ServerTextKeys.TaskCompleted) : ""));
                 }
                 else

@@ -211,7 +211,7 @@ namespace Client.MirControls
                     if (Item.CreditPrice * Quantity <= GameScene.Credit)
                     {
                         CreditCost = Item.CreditPrice * Quantity;
-                        messageBox = new MirMessageBox(GameLanguage.ClientTextMap.GetLocalization((ClientTextKeys.ConfirmBuyItemCredits), Item.Info.FriendlyName, Quantity, CreditCost, Item.Count), MirMessageBoxButtons.YesNo);
+                        messageBox = new MirMessageBox(GameLanguage.ClientTextMap.GetLocalization((ClientTextKeys.ConfirmBuyItemCredits), Item.Info.DisplayName, Quantity, CreditCost, Item.Count), MirMessageBoxButtons.YesNo);
                         messageBox.YesButton.Click += (o, e) => Network.Enqueue(new C.GameshopBuy { GIndex = Item.GIndex, Quantity = Quantity, PType = pType });
                         messageBox.NoButton.Click += (o, e) => { };
                         messageBox.Show();
@@ -223,7 +223,7 @@ namespace Client.MirControls
                     if (Item.GoldPrice * Quantity <= GameScene.Gold)
                     {
                         GoldCost = Item.GoldPrice * Quantity;
-                        messageBox = new MirMessageBox(GameLanguage.ClientTextMap.GetLocalization((ClientTextKeys.ConfirmPurchaseItemGold), Item.Info.FriendlyName, Quantity, GoldCost, Item.Count), MirMessageBoxButtons.YesNo);
+                        messageBox = new MirMessageBox(GameLanguage.ClientTextMap.GetLocalization((ClientTextKeys.ConfirmPurchaseItemGold), Item.Info.DisplayName, Quantity, GoldCost, Item.Count), MirMessageBoxButtons.YesNo);
                         messageBox.YesButton.Click += (o, e) => Network.Enqueue(new C.GameshopBuy { GIndex = Item.GIndex, Quantity = Quantity, PType = pType });
                         messageBox.NoButton.Click += (o, e) => { };
                         messageBox.Show();
@@ -263,7 +263,7 @@ namespace Client.MirControls
 
         public void UpdateText()
         {
-            nameLabel.Text = Item.Info.FriendlyName;
+            nameLabel.Text = Item.Info.DisplayName;
             nameLabel.Text = nameLabel.Text.Length > 17 ? nameLabel.Text.Substring(0, 17) : nameLabel.Text;
             nameLabel.ForeColour = GameScene.Scene.GradeNameColor(Item.Info.Grade);
             if (Item.CanBuyGold)

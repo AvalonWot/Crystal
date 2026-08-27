@@ -687,7 +687,7 @@ namespace Client.MirScenes.Dialogs
                         var item = GameScene.ItemInfoList.FirstOrDefault(x => x.Index == itemIdx);
                         if (item != null)
                         {
-                            title = item.FriendlyName ?? item.Name;
+                            title = item.DisplayName;
                             content = GetItemInfo(linkName);
 
                             // Show item image using Items_Tooltip_32bit library for KR style
@@ -929,7 +929,7 @@ namespace Client.MirScenes.Dialogs
                     case "ITEM":
                         var item = GameScene.ItemInfoList.FirstOrDefault(x => x.Index == idx);
                         if (item != null)
-                        return item.FriendlyName ?? item.Name ?? $"Item {idx}";
+                        return item.DisplayName;
 
                         GameScene.RequestItemInfo(idx);
                         return $"Item {idx}";
@@ -1607,18 +1607,18 @@ namespace Client.MirScenes.Dialogs
                                 TargetItem = null;
                                 return;
                             }
-                            GameScene.Scene.ChatDialog.ReceiveChat(GameLanguage.ClientTextMap.GetLocalization((ClientTextKeys.YouDontHaveEnoughGoldToRefine), TargetItem.FriendlyName), ChatType.System);
+                            GameScene.Scene.ChatDialog.ReceiveChat(GameLanguage.ClientTextMap.GetLocalization((ClientTextKeys.YouDontHaveEnoughGoldToRefine), TargetItem.DisplayName), ChatType.System);
                             return;
                         }
 
                     }
-                    GameScene.Scene.ChatDialog.ReceiveChat(GameLanguage.ClientTextMap.GetLocalization((ClientTextKeys.YouHaventDepositedItemsToRefine), TargetItem.FriendlyName), ChatType.System);
+                    GameScene.Scene.ChatDialog.ReceiveChat(GameLanguage.ClientTextMap.GetLocalization((ClientTextKeys.YouHaventDepositedItemsToRefine), TargetItem.DisplayName), ChatType.System);
                     break;
                 case PanelType.CheckRefine:
 
                     if (TargetItem.RefineAdded == 0)
                     {
-                        GameScene.Scene.ChatDialog.ReceiveChat(GameLanguage.ClientTextMap.GetLocalization((ClientTextKeys.ItemHasntBeenRefinedNoChecking), TargetItem.FriendlyName), ChatType.System);
+                        GameScene.Scene.ChatDialog.ReceiveChat(GameLanguage.ClientTextMap.GetLocalization((ClientTextKeys.ItemHasntBeenRefinedNoChecking), TargetItem.DisplayName), ChatType.System);
                         return;
                     }
                     Network.Enqueue(new C.CheckRefine { UniqueID = TargetItem.UniqueID });
@@ -1628,7 +1628,7 @@ namespace Client.MirScenes.Dialogs
 
                     if (TargetItem.Info.Type != ItemType.Ring)
                     {
-                        GameScene.Scene.ChatDialog.ReceiveChat(GameLanguage.ClientTextMap.GetLocalization((ClientTextKeys.ItemIsNotRing), TargetItem.FriendlyName), ChatType.System);
+                        GameScene.Scene.ChatDialog.ReceiveChat(GameLanguage.ClientTextMap.GetLocalization((ClientTextKeys.ItemIsNotRing), TargetItem.DisplayName), ChatType.System);
                         return;
                     }
 
@@ -2168,7 +2168,7 @@ namespace Client.MirScenes.Dialogs
             {
                 ItemCells[1].Item = new UserItem(Materials[0]);
                 ItemCells[1].Item.Count = MaterialsCount[0];
-                NeedItemLabel1.Text = GameLanguage.ClientTextMap.GetLocalization((ClientTextKeys.NeedItemQuantity), Regex.Replace(ItemCells[1].Item.Info.Name, @"[\d-]", string.Empty), MaterialsCount[0].ToString());
+                NeedItemLabel1.Text = GameLanguage.ClientTextMap.GetLocalization((ClientTextKeys.NeedItemQuantity), ItemCells[1].Item.Info.DisplayName, MaterialsCount[0].ToString());
             }
             else
             {
@@ -2180,7 +2180,7 @@ namespace Client.MirScenes.Dialogs
             {
                 ItemCells[2].Item = new UserItem(Materials[1]);
                 ItemCells[2].Item.Count = MaterialsCount[1];
-                NeedItemLabel2.Text = GameLanguage.ClientTextMap.GetLocalization((ClientTextKeys.NeedItemQuantity), Regex.Replace(ItemCells[2].Item.Info.Name, @"[\d-]", string.Empty), MaterialsCount[1].ToString());
+                NeedItemLabel2.Text = GameLanguage.ClientTextMap.GetLocalization((ClientTextKeys.NeedItemQuantity), ItemCells[2].Item.Info.DisplayName, MaterialsCount[1].ToString());
             }
             else
             {
@@ -2692,7 +2692,7 @@ namespace Client.MirScenes.Dialogs
 
             Recipe = GameScene.RecipeInfoList.SingleOrDefault(x => x.Item.ItemIndex == selectedItem.ItemIndex);
 
-            RecipeLabel.Text = Recipe.Item.FriendlyName;
+            RecipeLabel.Text = Recipe.Item.DisplayName;
             PossibilityLabel.Text = (UserObject.User.Stats[Stat.CraftRatePercent] > 0 ? $"{Math.Min(100, Recipe.Chance + UserObject.User.Stats[Stat.CraftRatePercent])}% (+{UserObject.User.Stats[Stat.CraftRatePercent]}%)" : $"{Recipe.Chance}%") + " Chance of Success";
             GoldLabel.Text = Recipe.Gold.ToString("###,###,##0");
 
