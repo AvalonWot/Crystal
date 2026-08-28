@@ -81,6 +81,7 @@ namespace Server
         public static string LocalizationDirectory = Path.Combine(".", "Localization");
         public static string LocalizationPublicBaseUrl = "http://127.0.0.1:5679/localization/";
         public static string LocalizationDefaultCulture = "en-US";
+        public static string ItemEditorLibraryPath = string.Empty;
 
         //Permission
         public static bool AllowNewAccount = true,
@@ -409,6 +410,7 @@ namespace Server
             LocalizationDirectory = Reader.ReadString("Localization", "Directory", LocalizationDirectory);
             LocalizationPublicBaseUrl = Reader.ReadString("Localization", "PublicBaseUrl", LocalizationPublicBaseUrl);
             LocalizationDefaultCulture = Reader.ReadString("Localization", "DefaultCulture", LocalizationDefaultCulture);
+            ItemEditorLibraryPath = Reader.ReadString("Localization", "ItemEditorLibraryPath", ItemEditorLibraryPath);
 
             //Permission
             AllowNewAccount = Reader.ReadBoolean("Permission", "AllowNewAccount", AllowNewAccount);
@@ -700,6 +702,7 @@ namespace Server
             Reader.Write("Localization", "Directory", LocalizationDirectory);
             Reader.Write("Localization", "PublicBaseUrl", LocalizationPublicBaseUrl);
             Reader.Write("Localization", "DefaultCulture", LocalizationDefaultCulture);
+            Reader.Write("Localization", "ItemEditorLibraryPath", ItemEditorLibraryPath);
 
             //Permission
             Reader.Write("Permission", "AllowNewAccount", AllowNewAccount);
