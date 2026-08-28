@@ -7,7 +7,7 @@ namespace Server.Database;
 
 internal sealed class MirLibraryPreviewProvider : IDisposable
 {
-    private const int PreviewSize = 44;
+    internal const int PreviewSize = 60;
     private const int ImageHeaderSize = 17;
     private const int MaximumImageCount = 1_000_000;
 
@@ -144,15 +144,9 @@ internal sealed class MirLibraryPreviewProvider : IDisposable
         Bitmap preview = new(PreviewSize, PreviewSize, PixelFormat.Format32bppArgb);
         using Graphics graphics = Graphics.FromImage(preview);
         graphics.Clear(Color.Transparent);
-        graphics.InterpolationMode = InterpolationMode.NearestNeighbor;
-        graphics.PixelOffsetMode = PixelOffsetMode.Half;
-
-        float scale = Math.Min((float)PreviewSize / width, (float)PreviewSize / height);
-        int targetWidth = Math.Max(1, (int)Math.Round(width * scale));
-        int targetHeight = Math.Max(1, (int)Math.Round(height * scale));
-        graphics.DrawImage(source,
-            new Rectangle((PreviewSize - targetWidth) / 2, (PreviewSize - targetHeight) / 2, targetWidth, targetHeight),
-            new Rectangle(0, 0, width, height), GraphicsUnit.Pixel);
+        graphics.DrawImageUnscaled(source,
+            (PreviewSize - width) / 2,
+            (PreviewSize - height) / 2);
         return preview;
     }
 

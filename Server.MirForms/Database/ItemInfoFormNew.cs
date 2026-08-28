@@ -73,10 +73,14 @@ namespace Server.Database
                 HeaderText = "Image",
                 ReadOnly = true,
                 Frozen = true,
-                Width = 52,
-                ImageLayout = DataGridViewImageCellLayout.Zoom,
+                Width = MirLibraryPreviewProvider.PreviewSize,
+                ImageLayout = DataGridViewImageCellLayout.Normal,
                 SortMode = DataGridViewColumnSortMode.NotSortable,
-                DefaultCellStyle = new DataGridViewCellStyle { NullValue = _unavailablePreview }
+                DefaultCellStyle = new DataGridViewCellStyle
+                {
+                    Alignment = DataGridViewContentAlignment.MiddleCenter,
+                    NullValue = _unavailablePreview
+                }
             };
             itemInfoGridView.Columns.Insert(0, _itemPreviewColumn);
 
@@ -103,7 +107,7 @@ namespace Server.Database
                 DefaultCellStyle = new DataGridViewCellStyle { WrapMode = DataGridViewTriState.True }
             };
             itemInfoGridView.Columns.Insert(itemInfoGridView.Columns["ItemToolTip"].Index + 1, _translatedToolTipColumn);
-            itemInfoGridView.RowTemplate.Height = 48;
+            itemInfoGridView.RowTemplate.Height = MirLibraryPreviewProvider.PreviewSize;
 
             panel1.Height = 84;
             _translationCultureLabel = new Label
