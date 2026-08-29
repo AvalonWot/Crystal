@@ -1160,7 +1160,7 @@ namespace Server.MirObjects
 
             foreach (var player in Envir.Players)
             {
-                player.ReceiveChat(player.GetLocalizedText(ServerTextKeys.PlayerHasDroppedItem, Name, player.GetItemDisplayName(item)), ChatType.System2);
+                player.ReceiveChat(player.GetLocalizedText(ServerTextKeys.PlayerHasDroppedItem, player.GetMonsterDisplayName(this), player.GetItemDisplayName(item)), ChatType.System2);
             }
 
             return ob.Drop(Settings.DropRange);
@@ -1338,7 +1338,8 @@ namespace Server.MirObjects
             // Prevent pet from warping into NoPets maps (unless exempt e.g. pickup pets)
             if (Master.CurrentMap.Info.NoPets && !IgnoresNoPetRestriction)
             {
-                Master.ReceiveChat(GameLanguage.ServerTextMap.GetLocalization(ServerTextKeys.CannotFollowIntoMapWaitHere, Name), ChatType.System);
+                if (Master is HumanObject owner)
+                    owner.ReceiveChat(owner.GetLocalizedText(ServerTextKeys.CannotFollowIntoMapWaitHere, owner.GetMonsterDisplayName(this)), ChatType.System);
 
                 Frozen = true;
                 Target = null;
@@ -1369,7 +1370,8 @@ namespace Server.MirObjects
                 // Only show message if returning from frozen/waiting state
                 if (wasFrozen)
                 {
-                    Master.ReceiveChat(GameLanguage.ServerTextMap.GetLocalization(ServerTextKeys.HasReturnedToYourSide,Name), ChatType.System);
+                    if (Master is HumanObject owner)
+                        owner.ReceiveChat(owner.GetLocalizedText(ServerTextKeys.HasReturnedToYourSide, owner.GetMonsterDisplayName(this)), ChatType.System);
                 }
             }
         }
@@ -2875,7 +2877,8 @@ namespace Server.MirObjects
                 BindingShotCenter = BindingShotCenter,
                 Buffs = Buffs.Where(d => d.Info.Visible).Select(e => e.Type).ToList(),
                 MasterObjectId = Master?.ObjectID ?? 0,
-                Rarity= MonsterType
+                Rarity = MonsterType,
+                MonsterIndex = Info.Index
             };
         }
 

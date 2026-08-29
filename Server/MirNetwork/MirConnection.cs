@@ -29,7 +29,7 @@ namespace Server.MirNetwork
         public readonly string IPAddress;
 
         public GameStage Stage;
-        public string Language { get; private set; } = "en-US";
+        public string Language { get; private set; } = string.Empty;
 
         private TcpClient _client;
         private ConcurrentQueue<Packet> _receiveList;
@@ -867,7 +867,7 @@ namespace Server.MirNetwork
                 }
             }
 
-            Language = ItemLocalizationManager.ResolveCulture(p.Language);
+            Language = LocalizationManager.ResolveLanguage(p.Language);
 
             string publicBaseUrl = Settings.LocalizationPublicBaseUrl?.Trim() ?? string.Empty;
             if (publicBaseUrl.Length > 0 && !publicBaseUrl.EndsWith('/')) publicBaseUrl += "/";

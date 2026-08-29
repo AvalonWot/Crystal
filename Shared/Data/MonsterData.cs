@@ -15,6 +15,14 @@ public class ClientMonsterInfo
     // Stats for detailed tooltip
     public Stats Stats;
 
+    private string _displayName = string.Empty;
+
+    public string DisplayName
+    {
+        get { return string.IsNullOrWhiteSpace(_displayName) ? GameName : _displayName; }
+        set { _displayName = value ?? string.Empty; }
+    }
+
     public ClientMonsterInfo()
     {
         Stats = new Stats();

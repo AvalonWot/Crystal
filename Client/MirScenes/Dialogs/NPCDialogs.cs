@@ -6,6 +6,7 @@ using Client.MirGraphics;
 using Client.MirNetwork;
 using Client.MirObjects;
 using Client.MirSounds;
+using Client.Localization;
 using Font = System.Drawing.Font;
 using C = ClientPackets;
 using S = ServerPackets;
@@ -622,8 +623,7 @@ namespace Client.MirScenes.Dialogs
                         var monsterInfo = GameScene.MonsterInfoList.FirstOrDefault(x => x.Index == monsterIdx);
                         if (monsterInfo != null)
                         {
-                            string monsterName = string.IsNullOrEmpty(monsterInfo.GameName) ? monsterInfo.Name : monsterInfo.GameName;
-                            title = monsterName;
+                            title = monsterInfo.DisplayName;
                             content = GetMonsterInfo(linkName);
 
                             // Show monster image
@@ -920,7 +920,11 @@ namespace Client.MirScenes.Dialogs
         public static string GetDisplayNameForLink(string linkType, string linkIdx, string providedName = null)
         {
             if (!string.IsNullOrEmpty(providedName))
+            {
+                if (linkType == "MONSTER" && int.TryParse(linkIdx, out int providedMonsterIndex))
+                    return LocalizationService.GetMonsterDisplayName(providedMonsterIndex, providedName);
                 return providedName;
+            }
 
             if (int.TryParse(linkIdx, out int idx))
             {
@@ -936,7 +940,7 @@ namespace Client.MirScenes.Dialogs
                     case "MONSTER":
                         var monster = GameScene.MonsterInfoList.FirstOrDefault(x => x.Index == idx);
                         if (monster != null)
-                        return string.IsNullOrEmpty(monster.GameName) ? monster.Name : monster.GameName;
+                        return monster.DisplayName;
 
                         GameScene.RequestMonsterInfo(idx);
                         return $"Monster {idx}";

@@ -203,13 +203,14 @@ namespace Client.MirControls
 
         private void NewItemInfo(S.NewItemInfo info)
         {
-            ItemLocalizationService.Apply(info.Info);
+            LocalizationService.Apply(info.Info);
             GameScene.ItemInfoList.Add(info.Info);
             GameScene.OnItemInfoReceived(info.Info.Index);
         }
 
         private void NewMonsterInfo(S.NewMonsterInfo info)
         {
+            LocalizationService.Apply(info.Info);
             GameScene.MonsterInfoList.RemoveAll(x => x.Index == info.Info.Index);
             GameScene.MonsterInfoList.Add(info.Info);
             GameScene.OnMonsterInfoReceived(info.Info.Index);
@@ -248,9 +249,9 @@ namespace Client.MirControls
         private void NewQuestInfo(S.NewQuestInfo info)
         {
             foreach (QuestItemReward reward in info.Info.RewardsFixedItem)
-                ItemLocalizationService.Apply(reward.Item);
+                LocalizationService.Apply(reward.Item);
             foreach (QuestItemReward reward in info.Info.RewardsSelectItem)
-                ItemLocalizationService.Apply(reward.Item);
+                LocalizationService.Apply(reward.Item);
             GameScene.QuestInfoList.Add(info.Info);
         }
 

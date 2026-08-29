@@ -27,7 +27,7 @@ namespace Server.MirObjects
 
         public string GetItemDisplayName(ItemInfo info)
         {
-            return ItemLocalizationManager.GetDisplayName(Connection?.Language, info);
+            return LocalizationManager.GetItemDisplayName(Connection?.Language, info);
         }
 
         public string GetItemDisplayName(UserItem item)
@@ -35,9 +35,23 @@ namespace Server.MirObjects
             return item == null ? string.Empty : GetItemDisplayName(item.Info);
         }
 
+        public string GetMonsterDisplayName(MonsterInfo info)
+        {
+            return LocalizationManager.GetMonsterDisplayName(Connection?.Language, info);
+        }
+
+        public string GetMonsterDisplayName(MonsterObject monster)
+        {
+            if (monster == null) return string.Empty;
+            if (monster is IntelligentCreatureObject) return monster.Name;
+
+            string displayName = GetMonsterDisplayName(monster.Info);
+            return monster.Master == null ? displayName : $"{displayName}({monster.Master.Name})";
+        }
+
         public string GetLocalizedText(ServerTextKeys key, params object[] arguments)
         {
-            return ItemLocalizationManager.GetServerText(Connection?.Language, key, arguments);
+            return LocalizationManager.GetServerText(Connection?.Language, key, arguments);
         }
         public override string Name
         {

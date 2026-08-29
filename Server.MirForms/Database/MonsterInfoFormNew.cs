@@ -13,12 +13,17 @@ namespace Server.Database
         private readonly Array StatEnums = Enum.GetValues(typeof(Stat));
 
         private DataTable Table;
+        private LocalizationEditorStore _localizationStore;
+        private DataGridViewTextBoxColumn _translatedNameColumn;
+        private bool _localizationDirty;
 
         public MonsterInfoFormNew()
         {
             InitializeComponent();
 
             SetDoubleBuffered(monsterInfoGridView);
+
+            InitializeLocalizationEditor();
 
             InitializeItemInfoGridView();
 
@@ -31,6 +36,29 @@ namespace Server.Database
             rbtnViewBasic.Checked = true;
             monsterInfoGridView.CellBeginEdit += MonsterInfoGridView_CellBeginEdit;
             monsterInfoGridView.CellEndEdit += MonsterInfoGridView_CellEndEdit;
+            monsterInfoGridView.CellValueChanged += MonsterInfoGridView_CellValueChanged;
+        }
+
+        private void InitializeLocalizationEditor()
+        {
+            string language = LocalizationEditorStore.ResolveEditorLanguage(Settings.Language);
+            string path = Path.GetFullPath(Path.Combine(Settings.LocalizationDirectory, language, "monsters.json"));
+            _localizationStore = LocalizationEditorStore.LoadMonsters(language, path);
+            _translatedNameColumn = new DataGridViewTextBoxColumn
+            {
+                Name = "MonsterTranslatedName",
+                DataPropertyName = "MonsterTranslatedName",
+                HeaderText = $"Translated Name [{language}]",
+                ValueType = typeof(string),
+                Frozen = true,
+                Width = 170,
+                ReadOnly = !_localizationStore.CanEdit
+            };
+            monsterInfoGridView.Columns.Insert(monsterInfoGridView.Columns["MonsterName"].Index + 1, _translatedNameColumn);
+
+            if (!_localizationStore.CanEdit)
+                MessageBox.Show($"Unable to edit localization file:{Environment.NewLine}{path}{Environment.NewLine}{Environment.NewLine}{_localizationStore.Error}",
+                    "Monster Localization", MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
 
         public static void SetDoubleBuffered(System.Windows.Forms.Control c)
@@ -133,6 +161,7 @@ namespace Server.Database
 
             foreach (DataGridViewColumn col in monsterInfoGridView.Columns)
             {
+                if (string.IsNullOrWhiteSpace(col.DataPropertyName)) continue;
                 Table.Columns.Add(col.DataPropertyName, col.ValueType);
             }
 
@@ -144,6 +173,15 @@ namespace Server.Database
 
                 row["MonsterIndex"] = item.Index;
                 row["MonsterName"] = item.Name;
+                if (_localizationStore.TryGetEntry(item.Index, out string translatedName, out string localizedSourceName))
+                {
+                    row["MonsterTranslatedName"] = translatedName;
+                    if (!localizedSourceName.Equals(item.Name, StringComparison.Ordinal)) _localizationDirty = true;
+                }
+                else
+                {
+                    row["MonsterTranslatedName"] = string.Empty;
+                }
 
                 row["MonsterImage"] = item.Image;
                 row["MonsterAI"] = item.AI;
@@ -215,6 +253,7 @@ namespace Server.Database
                     Envir.MonsterInfoList.Add(monster = new MonsterInfo());
 
                     monster.Index = ++lastIndex;
+                    row.Cells["MonsterIndex"].Value = monster.Index;
                 }
                 else
                 {
@@ -258,7 +297,34 @@ namespace Server.Database
                     }
                 }
             }
+            SaveLocalization();
             SaveQuestScript();
+        }
+
+        private void SaveLocalization()
+        {
+            if (!_localizationStore.CanEdit || !_localizationDirty) return;
+            foreach (DataGridViewRow row in monsterInfoGridView.Rows)
+            {
+                if (row.IsNewRow || row.Cells["MonsterIndex"].Value == null ||
+                    !int.TryParse(row.Cells["MonsterIndex"].Value.ToString(), out int index)) continue;
+
+                string sourceName = Convert.ToString(row.Cells["MonsterName"].Value) ?? string.Empty;
+                if (string.IsNullOrWhiteSpace(sourceName)) continue;
+                string displayName = Convert.ToString(row.Cells["MonsterTranslatedName"].Value) ?? string.Empty;
+                if (displayName.Length > MonsterLocalizationFormat.MaxNameLength)
+                    throw new InvalidDataException($"Monster {index} translated name exceeds {MonsterLocalizationFormat.MaxNameLength} characters.");
+                _localizationStore.UpdateEntry(index, sourceName, displayName);
+            }
+            _localizationStore.Save();
+            _localizationDirty = false;
+        }
+
+        private void MonsterInfoGridView_CellValueChanged(object sender, DataGridViewCellEventArgs e)
+        {
+            if (e.RowIndex < 0 || e.ColumnIndex < 0) return;
+            string columnName = monsterInfoGridView.Columns[e.ColumnIndex].Name;
+            if (columnName == "MonsterTranslatedName" || columnName == "MonsterName") _localizationDirty = true;
         }
 
         private DataRow FindRowByMonsterName(string value)
@@ -305,6 +371,14 @@ namespace Server.Database
             var val = e.FormattedValue.ToString();
 
             monsterInfoGridView.Rows[e.RowIndex].ErrorText = "";
+
+            if (col.Name == "MonsterTranslatedName" && val.Length > MonsterLocalizationFormat.MaxNameLength)
+            {
+                e.Cancel = true;
+                monsterInfoGridView.Rows[e.RowIndex].ErrorText =
+                    $"Translated name cannot exceed {MonsterLocalizationFormat.MaxNameLength} characters.";
+                return;
+            }
 
             if (col.ValueType == typeof(int) && int.TryParse(val, out int val1) && val1 < 0)
             {
@@ -610,6 +684,7 @@ namespace Server.Database
             row.Cells["Modified"].Value = (bool)true;
 
             row.Cells["MonsterName"].Value = "";
+            row.Cells["MonsterTranslatedName"].Value = "";
             row.Cells["MonsterImage"].Value = (Monster)0;
             row.Cells["MonsterAI"].Value = (byte)0;
             row.Cells["MonsterLevel"].Value = (ushort)0;

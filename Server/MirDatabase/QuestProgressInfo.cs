@@ -455,7 +455,7 @@ namespace Server.MirDatabase
             {
                 if (string.IsNullOrEmpty(Info.KillTasks[i].Message))
                 {
-                    TaskList.Add(GameLanguage.ServerTextMap.GetLocalization((ServerTextKeys.KillCountProgress), KillTaskCount[i].Info.Monster.GameName, KillTaskCount[i].Count,
+                    TaskList.Add(Owner.GetLocalizedText(ServerTextKeys.KillCountProgress, Owner.GetMonsterDisplayName(KillTaskCount[i].Info.Monster), KillTaskCount[i].Count,
                         KillTaskCount[i].Info.Count, KillTaskCount[i].Complete ? GameLanguage.ServerTextMap.GetLocalization(ServerTextKeys.TaskCompleted) : ""));
                 }
                 else

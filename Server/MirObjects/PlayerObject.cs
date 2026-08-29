@@ -6300,7 +6300,7 @@ namespace Server.MirObjects
                         var con = CurrentMap.GetConquest(CurrentLocation);
                         if (con == null)
                         {
-                            ReceiveChat(GameLanguage.ServerTextMap.GetLocalization((ServerTextKeys.SpawnOnlyDuringConquest), monsterInfo.GameName), ChatType.Hint);
+                            ReceiveChat(GetLocalizedText(ServerTextKeys.SpawnOnlyDuringConquest, GetMonsterDisplayName(monsterInfo)), ChatType.Hint);
                             Enqueue(p);
                             return;
                         }
@@ -11583,7 +11583,7 @@ namespace Server.MirObjects
             {
                 quest.ProcessKill(mInfo);
 
-                Enqueue(new S.SendOutputMessage { Message = GameLanguage.ServerTextMap.GetLocalization((ServerTextKeys.YouKilled), mInfo.GameName), Type = OutputMessageType.Quest });
+                Enqueue(new S.SendOutputMessage { Message = GetLocalizedText(ServerTextKeys.YouKilled, GetMonsterDisplayName(mInfo)), Type = OutputMessageType.Quest });
 
                 SendUpdateQuest(quest, QuestState.Update);
             }

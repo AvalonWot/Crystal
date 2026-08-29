@@ -2334,6 +2334,7 @@ namespace Client.MirScenes
 
         private void NewMonsterInfo(S.NewMonsterInfo info)
         {
+            LocalizationService.Apply(info.Info);
             GameScene.MonsterInfoList.RemoveAll(x => x.Index == info.Info.Index);
             GameScene.MonsterInfoList.Add(info.Info);
             GameScene.OnMonsterInfoReceived(info.Info.Index);
@@ -3264,7 +3265,7 @@ namespace Client.MirScenes
 
         private void ObjectItem(S.ObjectItem p)
         {
-            p.Name = ItemLocalizationService.GetDisplayName(p.ItemIndex, p.Name);
+            p.Name = LocalizationService.GetItemDisplayName(p.ItemIndex, p.Name);
             ItemObject ob = new ItemObject(p.ObjectID);
             ob.Load(p);
             /*
@@ -4951,7 +4952,12 @@ namespace Client.MirScenes
             if (p.ObjectID == User.ObjectID) return;
 
             if (MapControl.Objects.TryGetValue(p.ObjectID, out var ob))
-                ob.Name = p.Name;
+            {
+                if (ob is MonsterObject monster)
+                    monster.SetLocalizedName(p.Name);
+                else
+                    ob.Name = p.Name;
+            }
         }
 
         private void UserStorage(S.UserStorage p)
@@ -6373,7 +6379,7 @@ namespace Client.MirScenes
         {
             if (p.Materials != null)
                 foreach (ItemInfo material in p.Materials)
-                    ItemLocalizationService.Apply(material);
+                    LocalizationService.Apply(material);
             NPCAwakeDialog.setNeedItems(p.Materials, p.MaterialsCount);
         }
         private void AwakeningLockedItem(S.AwakeningLockedItem p)
@@ -6683,7 +6689,7 @@ namespace Client.MirScenes
 
         private void GameShopUpdate(S.GameShopInfo p)
         {
-            ItemLocalizationService.Apply(p.Item.Info);
+            LocalizationService.Apply(p.Item.Info);
             p.Item.Stock = p.StockLevel;
             GameShopInfoList.Add(p.Item);
             if (p.Item.Date > CMain.Now.AddDays(-7)) GameShopDialog.New.Visible = true;

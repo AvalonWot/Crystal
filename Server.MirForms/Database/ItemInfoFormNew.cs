@@ -20,7 +20,7 @@ namespace Server.Database
         private Dictionary<int, string> _gemItemHeaderMappings = new();
 
         private DataTable Table;
-        private ItemLocalizationEditorStore _localizationStore;
+        private LocalizationEditorStore _localizationStore;
         private MirLibraryPreviewProvider _previewProvider;
         private DataGridViewImageColumn _itemPreviewColumn;
         private DataGridViewTextBoxColumn _translatedNameColumn;
@@ -62,9 +62,9 @@ namespace Server.Database
 
         private void InitializeLocalizationEditor()
         {
-            string culture = ResolveEditorCulture();
-            string localizationPath = Path.GetFullPath(Path.Combine(Settings.LocalizationDirectory, culture, "items.json"));
-            _localizationStore = ItemLocalizationEditorStore.Load(culture, localizationPath);
+            string language = LocalizationEditorStore.ResolveEditorLanguage(Settings.Language);
+            string localizationPath = Path.GetFullPath(Path.Combine(Settings.LocalizationDirectory, language, "items.json"));
+            _localizationStore = LocalizationEditorStore.LoadItems(language, localizationPath);
             _unavailablePreview = MirLibraryPreviewProvider.CreateErrorImage();
 
             _itemPreviewColumn = new DataGridViewImageColumn
@@ -88,7 +88,7 @@ namespace Server.Database
             {
                 Name = "ItemTranslatedName",
                 DataPropertyName = "ItemTranslatedName",
-                HeaderText = $"Translated Name [{culture}]",
+                HeaderText = $"Translated Name [{language}]",
                 ValueType = typeof(string),
                 Frozen = true,
                 Width = 170,
@@ -100,7 +100,7 @@ namespace Server.Database
             {
                 Name = "ItemTranslatedToolTip",
                 DataPropertyName = "ItemTranslatedToolTip",
-                HeaderText = $"Translated ToolTip [{culture}]",
+                HeaderText = $"Translated ToolTip [{language}]",
                 ValueType = typeof(string),
                 Width = 220,
                 ReadOnly = !_localizationStore.CanEdit,
@@ -114,7 +114,7 @@ namespace Server.Database
             {
                 AutoSize = true,
                 Location = new Point(8, 62),
-                Text = $"Translation: {culture}"
+                Text = $"Translation: {language}"
             };
             _selectItemLibraryButton = new Button
             {
@@ -145,14 +145,6 @@ namespace Server.Database
 
             if (!string.IsNullOrWhiteSpace(Settings.ItemEditorLibraryPath))
                 TryLoadItemLibrary(Settings.ItemEditorLibraryPath, false);
-        }
-
-        private static string ResolveEditorCulture()
-        {
-            string culture = ItemLocalizationFormat.NormalizeCulture(Settings.Language);
-            if (culture.Length == 0)
-                culture = ItemLocalizationFormat.NormalizeCulture(Settings.LocalizationDefaultCulture);
-            return culture.Length == 0 ? "en-US" : culture;
         }
 
         private void SelectItemLibraryButton_Click(object sender, EventArgs e)

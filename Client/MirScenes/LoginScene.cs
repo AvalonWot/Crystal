@@ -164,7 +164,7 @@ namespace Client.MirScenes
                 case 1:
                     if (_connectBox.Label != null)
                         _connectBox.Label.Text = "Synchronizing localization...";
-                    await ItemLocalizationService.SynchronizeAsync(p.EffectiveLanguage, p.LocalizationBaseUrl);
+                    await LocalizationService.SynchronizeAsync(p.EffectiveLanguage, p.LocalizationBaseUrl);
                     _connectBox.Dispose();
                     _login.Show();
                     break;

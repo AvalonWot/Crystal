@@ -106,14 +106,14 @@ namespace Server.Library.Utils
         private static void WriteLocalization(HttpListenerRequest request, HttpListenerResponse response)
         {
             string hash = request.QueryString["hash"] ?? string.Empty;
-            ItemLocalizationHttpResult result = ItemLocalizationHttpResolver.Resolve(request.Url.AbsolutePath, hash);
+            LocalizationHttpResult result = LocalizationHttpResolver.Resolve(request.Url.AbsolutePath, hash);
             if (result.StatusCode is HttpStatusCode.BadRequest or HttpStatusCode.NotFound)
             {
                 WriteStatus(response, result.StatusCode);
                 return;
             }
 
-            ItemLocalizationSnapshot snapshot = result.Snapshot;
+            LocalizationSnapshot snapshot = result.Snapshot;
             response.Headers["ETag"] = $"\"{snapshot.Hash}\"";
             response.Headers["X-Content-SHA256"] = snapshot.Hash;
             response.Headers["Cache-Control"] = "no-cache";

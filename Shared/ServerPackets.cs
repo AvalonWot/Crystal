@@ -2318,6 +2318,7 @@ namespace ServerPackets
         public bool BindingShotCenter;
         public uint MasterObjectId;
         public MonsterType Rarity;
+        public int MonsterIndex;
 
         public List<BuffType> Buffs = new List<BuffType>();
 
@@ -2348,6 +2349,9 @@ namespace ServerPackets
             {
                 Buffs.Add((BuffType)reader.ReadByte());
             }
+
+            if (reader.BaseStream.Position < reader.BaseStream.Length)
+                MonsterIndex = reader.ReadInt32();
         }
 
         protected override void WritePacket(BinaryWriter writer)
@@ -2378,6 +2382,8 @@ namespace ServerPackets
             {
                 writer.Write((byte)Buffs[i]);
             }
+
+            writer.Write(MonsterIndex);
         }
 
     }

@@ -3,6 +3,7 @@ using Client.MirScenes;
 using Client.MirSounds;
 using S = ServerPackets;
 using Client.MirControls;
+using Client.Localization;
 
 namespace Client.MirObjects
 {
@@ -68,12 +69,12 @@ namespace Client.MirObjects
         public uint MasterObjectId;
 
         public MonsterType Rarity;
+        public int MonsterIndex;
 
         public MonsterObject(uint objectID) : base(objectID) { }
 
         public void Load(S.ObjectMonster info, bool update = false)
         {
-            Name = info.Name;
             NameColour = info.NameColour;
             BaseImage = info.Image;
 
@@ -86,6 +87,7 @@ namespace Client.MirObjects
             Effect = info.Effect;
             AI = info.AI;
             Light = info.Light;
+            if (info.MonsterIndex > 0 || !update) MonsterIndex = info.MonsterIndex;
 
             Direction = info.Direction;
             Dead = info.Dead;
@@ -97,13 +99,7 @@ namespace Client.MirObjects
 
             MasterObjectId = info.MasterObjectId;
             Rarity = info.Rarity;
-
-            if (MasterObjectId == 0 && Rarity != MonsterType.Normal)
-            {
-                //Moving the rarity tag processing from the server to the client allows for more complex tag displays in the future, such as adding special markers on monster health bars.
-                //Add localization for rarity text
-                Name = $"{Rarity.ToLocalizedString()}_{Name}";
-            }
+            SetLocalizedName(info.Name);
             Buffs = info.Buffs;
 
             if (Stage != info.ExtraByte)
@@ -322,6 +318,13 @@ namespace Client.MirObjects
             }
 
             ProcessBuffs();
+        }
+
+        public void SetLocalizedName(string sourceName)
+        {
+            Name = LocalizationService.GetMonsterObjectDisplayName(MonsterIndex, sourceName, AI);
+            if (MasterObjectId == 0 && Rarity != MonsterType.Normal)
+                Name = $"{Rarity.ToLocalizedString()}_{Name}";
         }
 
         public void ProcessBuffs()

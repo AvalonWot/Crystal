@@ -584,7 +584,7 @@ namespace Server.MirObjects
                         var con = CurrentMap.GetConquest(CurrentLocation);
                         if (con == null)
                         {
-                            ReceiveChat(GameLanguage.ServerTextMap.GetLocalization((ServerTextKeys.MonsterOnlySpawnDuringConquest), monsterInfo.GameName), ChatType.Hint);
+                            ReceiveChat(GetLocalizedText(ServerTextKeys.MonsterOnlySpawnDuringConquest, GetMonsterDisplayName(monsterInfo)), ChatType.Hint);
                             Owner.Enqueue(p);
                             return;
                         }

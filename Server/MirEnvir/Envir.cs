@@ -2032,7 +2032,7 @@ namespace Server.MirEnvir
                     return;
                 }
 
-                ItemLocalizationManager.Start();
+                LocalizationManager.Start();
 
                 if (Settings.Multithreaded)
                 {
@@ -2199,7 +2199,7 @@ namespace Server.MirEnvir
                     MessageQueue.Enqueue(GameLanguage.ServerTextMap.GetLocalization((ServerTextKeys.InnerWorkloopErrorLine), line, ex));
                 }
 
-                ItemLocalizationManager.Stop();
+                LocalizationManager.Stop();
                 StopNetwork();
                 StopEnvir();
                 SaveAccounts();
@@ -3290,7 +3290,7 @@ namespace Server.MirEnvir
             }
 
             http?.Stop();
-            ItemLocalizationManager.Stop();
+            LocalizationManager.Stop();
 
             while (_thread != null)
                 Thread.Sleep(1);
