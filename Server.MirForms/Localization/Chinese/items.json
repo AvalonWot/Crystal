@@ -473,27 +473,27 @@
     },
     "95": {
       "sourceName": "WhiteGoldBelt(H)",
-      "displayName": "雷霆腰带",
+      "displayName": "雷霆腰带(改)",
       "tooltip": ""
     },
     "96": {
       "sourceName": "WhiteGoldShoes(H)",
-      "displayName": "雷霆战靴",
+      "displayName": "雷霆战靴(改)",
       "tooltip": ""
     },
     "97": {
       "sourceName": "WhiteGoldNecklace(H)",
-      "displayName": "雷霆项链",
+      "displayName": "雷霆项链(改)",
       "tooltip": ""
     },
     "98": {
       "sourceName": "WhiteGoldBracelet(H)",
-      "displayName": "雷霆手镯",
+      "displayName": "雷霆手镯(改)",
       "tooltip": ""
     },
     "99": {
       "sourceName": "WhiteGoldRing(H)",
-      "displayName": "雷霆战戒",
+      "displayName": "雷霆战戒(改)",
       "tooltip": ""
     },
     "100": {
@@ -523,27 +523,27 @@
     },
     "105": {
       "sourceName": "RedJadeBelt(H)",
-      "displayName": "赤玉腰带",
+      "displayName": "赤玉腰带(改)",
       "tooltip": ""
     },
     "106": {
       "sourceName": "RedJadeShoes(H)",
-      "displayName": "赤玉靴",
+      "displayName": "赤玉靴(改)",
       "tooltip": ""
     },
     "107": {
       "sourceName": "RedJadeNecklace(H)",
-      "displayName": "赤玉项链",
+      "displayName": "赤玉项链(改)",
       "tooltip": ""
     },
     "108": {
       "sourceName": "RedJadeBracelet(H)",
-      "displayName": "赤玉手镯",
+      "displayName": "赤玉手镯(改)",
       "tooltip": ""
     },
     "109": {
       "sourceName": "RedJadeRing(H)",
-      "displayName": "赤玉戒指",
+      "displayName": "赤玉戒指(改)",
       "tooltip": ""
     },
     "110": {
@@ -573,27 +573,27 @@
     },
     "115": {
       "sourceName": "NephriteBelt(H)",
-      "displayName": "软玉腰带",
+      "displayName": "软玉腰带(改)",
       "tooltip": ""
     },
     "116": {
       "sourceName": "NephriteShoes(H)",
-      "displayName": "软玉靴",
+      "displayName": "软玉靴(改)",
       "tooltip": ""
     },
     "117": {
       "sourceName": "NephriteNecklace(H)",
-      "displayName": "软玉项链",
+      "displayName": "软玉项链(改)",
       "tooltip": ""
     },
     "118": {
       "sourceName": "NephriteBracelet(H)",
-      "displayName": "软玉手镯",
+      "displayName": "软玉手镯(改)",
       "tooltip": ""
     },
     "119": {
       "sourceName": "NephriteRing(H)",
-      "displayName": "软玉戒指",
+      "displayName": "软玉戒指(改)",
       "tooltip": ""
     },
     "120": {
@@ -1028,77 +1028,77 @@
     },
     "206": {
       "sourceName": "CheongboHelmet(WAR)",
-      "displayName": "青宝冠(勇猛)",
+      "displayName": "青宝冠(战)",
       "tooltip": ""
     },
     "207": {
       "sourceName": "CheongboBelt(WAR)",
-      "displayName": "青宝腰带(勇猛)",
+      "displayName": "青宝腰带(战)",
       "tooltip": ""
     },
     "208": {
       "sourceName": "CheongboBoots(WAR)",
-      "displayName": "青宝靴(勇猛)",
+      "displayName": "青宝靴(战)",
       "tooltip": ""
     },
     "209": {
       "sourceName": "CheongboHelmet(WIZ)",
-      "displayName": "青宝冠(魔性)",
+      "displayName": "青宝冠(法)",
       "tooltip": ""
     },
     "210": {
       "sourceName": "CheongboBelt(WIZ)",
-      "displayName": "青宝腰带(魔性)",
+      "displayName": "青宝腰带(法)",
       "tooltip": ""
     },
     "211": {
       "sourceName": "CheongboBoots(WIZ)",
-      "displayName": "青宝靴(魔性)",
+      "displayName": "青宝靴(法)",
       "tooltip": ""
     },
     "212": {
       "sourceName": "CheongboHelmet(TAO)",
-      "displayName": "青宝冠(仙界)",
+      "displayName": "青宝冠(道)",
       "tooltip": ""
     },
     "213": {
       "sourceName": "CheongboBelt(TAO)",
-      "displayName": "青宝腰带(仙界)",
+      "displayName": "青宝腰带(道)",
       "tooltip": ""
     },
     "214": {
       "sourceName": "CheongboBoots(TAO)",
-      "displayName": "青宝靴(仙界)",
+      "displayName": "青宝靴(道)",
       "tooltip": ""
     },
     "215": {
       "sourceName": "CheongboHelmet(ASSA)",
-      "displayName": "青宝冠(机敏)",
+      "displayName": "青宝冠(刺)",
       "tooltip": ""
     },
     "216": {
       "sourceName": "CheongboBelt(ASSA)",
-      "displayName": "青宝腰带(机敏)",
+      "displayName": "青宝腰带(刺)",
       "tooltip": ""
     },
     "217": {
       "sourceName": "CheongboBoots(ASSA)",
-      "displayName": "青宝靴(机敏)",
+      "displayName": "青宝靴(刺)",
       "tooltip": ""
     },
     "218": {
       "sourceName": "CheongboHelmet(ARCH)",
-      "displayName": "青宝头盔",
+      "displayName": "青宝头盔(弓)",
       "tooltip": ""
     },
     "219": {
       "sourceName": "CheongboBelt(ARCH)",
-      "displayName": "青宝腰带",
+      "displayName": "青宝腰带(弓)",
       "tooltip": ""
     },
     "220": {
       "sourceName": "CheongboBoots(ARCH)",
-      "displayName": "青宝靴",
+      "displayName": "青宝靴(弓)",
       "tooltip": ""
     },
     "221": {
@@ -3538,7 +3538,7 @@
     },
     "708": {
       "sourceName": "[H]WarGodOil",
-      "displayName": "战神油",
+      "displayName": "[H]战神油",
       "tooltip": ""
     },
     "709": {
@@ -3963,7 +3963,7 @@
     },
     "794": {
       "sourceName": "RedFishingRod[6M]",
-      "displayName": "红色鱼竿",
+      "displayName": "红色鱼竿[6M]",
       "tooltip": ""
     },
     "795": {
@@ -6438,17 +6438,17 @@
     },
     "1290": {
       "sourceName": "GuardRental[7d]",
-      "displayName": "随身护卫",
+      "displayName": "随身护卫[7d]",
       "tooltip": ""
     },
     "1291": {
       "sourceName": "AncientBanga[Green]",
-      "displayName": "大喇叭",
+      "displayName": "大喇叭[绿]",
       "tooltip": ""
     },
     "1292": {
       "sourceName": "AncientBanga[Purple]",
-      "displayName": "大喇叭",
+      "displayName": "大喇叭[紫]",
       "tooltip": ""
     },
     "1293": {
@@ -6458,37 +6458,37 @@
     },
     "1294": {
       "sourceName": "MysteriousStone[3d]",
-      "displayName": "远古神石",
+      "displayName": "远古神石[3d]",
       "tooltip": ""
     },
     "1295": {
       "sourceName": "DCTorch[3h]",
-      "displayName": "攻击火炬",
+      "displayName": "攻击火炬[3h]",
       "tooltip": ""
     },
     "1296": {
       "sourceName": "MCTorch[3h]",
-      "displayName": "魔力火炬",
+      "displayName": "魔力火炬[3h]",
       "tooltip": ""
     },
     "1297": {
       "sourceName": "SCTorch[3h]",
-      "displayName": "道力火炬",
+      "displayName": "道力火炬[3h]",
       "tooltip": ""
     },
     "1298": {
       "sourceName": "DCTorch[2h]",
-      "displayName": "攻击火炬",
+      "displayName": "攻击火炬[2h]",
       "tooltip": ""
     },
     "1299": {
       "sourceName": "MCTorch[2h]",
-      "displayName": "魔力火炬",
+      "displayName": "魔力火炬[2h]",
       "tooltip": ""
     },
     "1300": {
       "sourceName": "SCTorch[2h]",
-      "displayName": "道力火炬",
+      "displayName": "道力火炬[2h]",
       "tooltip": ""
     },
     "1301": {
@@ -6678,42 +6678,42 @@
     },
     "1338": {
       "sourceName": "ElixirOfMight[1d]",
-      "displayName": "力量灵药",
+      "displayName": "力量灵药[1d]",
       "tooltip": ""
     },
     "1339": {
       "sourceName": "ElixirOfDefensive[1d]",
-      "displayName": "防御灵药",
+      "displayName": "防御灵药[1d]",
       "tooltip": ""
     },
     "1340": {
       "sourceName": "ElixirOfGinseng[1d]",
-      "displayName": "千年雪霜",
+      "displayName": "千年雪霜[1d]",
       "tooltip": ""
     },
     "1341": {
       "sourceName": "EXP20%[1d]",
-      "displayName": "经验加成20%",
+      "displayName": "经验加成20%[1d]",
       "tooltip": ""
     },
     "1342": {
       "sourceName": "PremiumPass[1d]",
-      "displayName": "远古英雄之证",
+      "displayName": "远古英雄之证[1d]",
       "tooltip": ""
     },
     "1343": {
       "sourceName": "PremiumPass[3d]",
-      "displayName": "远古英雄之证",
+      "displayName": "远古英雄之证[3d]",
       "tooltip": ""
     },
     "1344": {
       "sourceName": "PremiumPass[7d]",
-      "displayName": "远古英雄之证",
+      "displayName": "远古英雄之证[7d]",
       "tooltip": ""
     },
     "1345": {
       "sourceName": "PremiumPass[15d]",
-      "displayName": "远古英雄之证",
+      "displayName": "远古英雄之证[15d]",
       "tooltip": ""
     },
     "1346": {
