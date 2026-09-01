@@ -2140,7 +2140,8 @@ namespace Client.MirScenes
                 Title = p.Title,
                 MiniMap = p.MiniMap,
                 BigMap = p.BigMap,
-                Lights = p.Lights,
+                // Lights = p.Lights,
+                Lights = LightSetting.Day,
                 Lightning = p.Lightning,
                 Fire = p.Fire,
                 MapDarkLight = p.MapDarkLight,
@@ -3983,7 +3984,8 @@ namespace Client.MirScenes
                 MapControl.Title = p.Title;
                 MapControl.MiniMap = p.MiniMap;
                 MapControl.BigMap = p.BigMap;
-                MapControl.Lights = p.Lights;
+                // MapControl.Lights = p.Lights;
+                MapControl.Lights = LightSetting.Day;
                 MapControl.MapDarkLight = p.MapDarkLight;
                 MapControl.Music = p.Music;
                 MapControl.Weather = p.Weather;
