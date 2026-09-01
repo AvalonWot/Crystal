@@ -616,6 +616,7 @@
     "MoonMistSkillDescription": "Moon Mist\n\nBuff Skill\nMana Cost {2}\n\nAbility to hide your self from Monster\nYour first attack will be stronger than normal.\n\nCurrent Skill Level {0}\nNext Level {1}",
     "FocusSkillDescription": "Focus\n\nPassive Skill\n\nIncreases chance to hit with physical attacks.\n\nCurrent Skill Level {0}\nNext Level {1}",
     "StraightShotSkillDescription": "Straight Shot\n\nActive Skill\nMana Cost {2} \n\nInfuses an arrow with mana to deal extra damage.\n\nCurrent Skill Level {0}\nNext Level {1}",
+    "MentalStateSkillDescription": "Mental State\n\nActive Skill\n\nDifferent bow attack patterns.\n\nCurrent Skill Level {0}\nNext Level {1}",
     "DoubleShotSkillDescription": "Double Shot\n\nActive Skill\nMana Cost {2} \n\nFire two arrows in quick succession.\n\nCurrent Skill Level {0}\nNext Level {1}",
     "ExplosiveTrapSkillDescription": "Explosive Trap\n\nTrap Skill\nMana Cost {2} \n\nLay down a row of traps that explode\non contact with an enemy.\n\nCurrent Skill Level {0}\nNext Level {1}",
     "DelayedExplosionSkillDescription": "Delayed Explosion\n\nActive Skill\nMana Cost {2} \n\nFire an arrow that explodes after a short delay.\nUses Elements to cause additional damage.\n\nCurrent Skill Level {0}\nNext Level {1}",

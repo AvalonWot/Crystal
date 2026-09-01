@@ -658,6 +658,7 @@ public enum ClientTextKeys
     MoonMistSkillDescription,
     FocusSkillDescription,
     StraightShotSkillDescription,
+    MentalStateSkillDescription,
     DoubleShotSkillDescription,
     ExplosiveTrapSkillDescription,
     DelayedExplosionSkillDescription,
@@ -3579,6 +3580,10 @@ public static class GameLanguage
             {
                 nameof(ClientTextKeys.StraightShotSkillDescription),
                 "Straight Shot\n\nActive Skill\nMana Cost {2} \n\nInfuses an arrow with mana to deal extra damage.\n\nCurrent Skill Level {0}\nNext Level {1}"
+            },
+            {
+                nameof(ClientTextKeys.MentalStateSkillDescription),
+                "Mental State\n\nActive Skill\n\nDifferent bow attack patterns.\n\nCurrent Skill Level {0}\nNext Level {1}"
             },
             { nameof(ClientTextKeys.DoubleShotSkillDescription), "Double Shot\n\nActive Skill\nMana Cost {2} \n\nFire two arrows in quick succession.\n\nCurrent Skill Level {0}\nNext Level {1}" },
             {
