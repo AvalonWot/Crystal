@@ -6547,7 +6547,7 @@
         ""
       ],
       "taskDescription": [
-        "在{稻草人/Crimson}身上找到{姜茶/LightSteelBlue}带给{边界村/Yellow}的{Assistant 周慧/LimeGreen}.",
+        "在{稻草人/Crimson}身上找到{姜茶/LightSteelBlue}带给{边界村/Yellow}的{助手_周慧/LimeGreen}.",
         ""
       ]
     },
@@ -6561,7 +6561,7 @@
       ],
       "description": [
         "你好,旅行者.",
-        "我听说{Butcher 吴华/LimeGreen}正在寻求帮助.",
+        "我听说{商人_吴华/LimeGreen}正在寻求帮助.",
         "我想他一定是遇上麻烦事了.",
         ""
       ],
@@ -6570,7 +6570,7 @@
         ""
       ],
       "taskDescription": [
-        "在坐标293:603附近找到{Butcher 吴华/LimeGreen}. ",
+        "在坐标293:603附近找到{商人_吴华/LimeGreen}. ",
         ""
       ]
     },
@@ -6639,7 +6639,7 @@
         ""
       ],
       "taskDescription": [
-        "消灭5只{多钩猫/Crimson}",
+        "消灭10只{多钩猫/Crimson}",
         ""
       ]
     },
@@ -6665,7 +6665,7 @@
         ""
       ],
       "taskDescription": [
-        "与坐标110:317附近的{Master_陈梅/LimeGreen}交谈.",
+        "与坐标110:317附近的{师父_陈梅/LimeGreen}交谈.",
         ""
       ]
     },
@@ -6679,7 +6679,7 @@
         ""
       ],
       "description": [
-        "{Assistant 周慧/LimeGreen}介绍你过来的? ",
+        "{助手_周慧/LimeGreen}介绍你过来的? ",
         "我倒是不能直接拒绝他推荐过来的人,",
         "但也不是随便来个阿猫阿狗就能成为我的弟子. ",
         "你能通过我的试炼再说吧.",
@@ -6690,7 +6690,7 @@
         ""
       ],
       "taskDescription": [
-        "消灭5个{半兽人/Crimson}和5个{钉耙猫/Crimson}.",
+        "消灭10个{半兽人/Crimson}和10个{钉耙猫/Crimson}.",
         ""
       ]
     },
@@ -6704,7 +6704,7 @@
       ],
       "description": [
         "现在你终于看起来像个训练有素的战士了.",
-        "我已经让{MirGuide 王欣/LimeGreen}给你安排了一些活儿.",
+        "我已经让{传奇向导_王欣/LimeGreen}给你安排了一些活儿.",
         "去吧,好好干,他不会亏待你的.",
         ""
       ],
@@ -6713,7 +6713,7 @@
         ""
       ],
       "taskDescription": [
-        "与坐标335:275附近的{MirGuide 王欣/LimeGreen} 交谈.",
+        "与坐标335:275附近的{传奇向导_王欣/LimeGreen} 交谈.",
         ""
       ]
     },
@@ -6739,7 +6739,7 @@
         ""
       ],
       "taskDescription": [
-        "与坐标314:474附近的{MasterMage/LimeGreen}交谈.",
+        "与坐标314:474附近的{高级法师/LimeGreen}交谈.",
         ""
       ]
     },
@@ -6753,7 +6753,7 @@
         ""
       ],
       "description": [
-        "{Assistant 周慧/LimeGreen}介绍你过来的? ",
+        "{助手_周慧/LimeGreen}介绍你过来的? ",
         "我倒是不能直接拒绝他推荐过来的人,",
         "但也不是随便来个阿猫阿狗就能成为我的弟子. ",
         "你能通过我的试炼再说吧.",
@@ -6764,7 +6764,7 @@
         ""
       ],
       "taskDescription": [
-        "消灭5个{半兽人/Crimson}和5个{钉耙猫/Crimson}.",
+        "消灭10个{半兽人/Crimson}和10个{钉耙猫/Crimson}.",
         ""
       ]
     },
@@ -6778,7 +6778,7 @@
       ],
       "description": [
         "现在你终于看起来像个训练有素的法师了.",
-        "我已经让{MirGuide 王欣/LimeGreen}给你安排了一些活儿.",
+        "我已经让{传奇向导_王欣/LimeGreen}给你安排了一些活儿.",
         "去吧,好好干,他不会亏待你的.",
         ""
       ],
@@ -6787,7 +6787,7 @@
         ""
       ],
       "taskDescription": [
-        "与坐标335:275附近的{MirGuide 王欣/LimeGreen}交谈.",
+        "与坐标335:275附近的{传奇向导_王欣/LimeGreen}交谈.",
         ""
       ]
     },
@@ -6815,7 +6815,7 @@
         ""
       ],
       "taskDescription": [
-        "与坐标429:475附近的{HighTaoist/LimeGreen}交谈.",
+        "与坐标429:475附近的{高级道士/LimeGreen}交谈.",
         ""
       ]
     },
@@ -6829,7 +6829,7 @@
         ""
       ],
       "description": [
-        "{Assistant 周慧/LimeGreen}介绍你过来的? ",
+        "{助手_周慧/LimeGreen}介绍你过来的? ",
         "我倒是不能直接拒绝他推荐过来的人,",
         "但也不是随便来个阿猫阿狗就能成为我的弟子. ",
         "你能通过我的试炼再说吧.",
@@ -6840,7 +6840,7 @@
         ""
       ],
       "taskDescription": [
-        "消灭5个{半兽人/Crimson}和5个{钉耙猫/Crimson}.",
+        "消灭10个{半兽人/Crimson}和10个{钉耙猫/Crimson}.",
         ""
       ]
     },
@@ -6854,7 +6854,7 @@
       ],
       "description": [
         "现在你终于看起来像个训练有素的法师了.",
-        "我已经让{MirGuide 王欣/LimeGreen}给你安排了一些活儿.",
+        "我已经让{传奇向导_王欣/LimeGreen}给你安排了一些活儿.",
         "去吧,好好干,他不会亏待你的.",
         ""
       ],
@@ -6863,7 +6863,7 @@
         ""
       ],
       "taskDescription": [
-        "与坐标335:275附近的{MirGuide 王欣/LimeGreen}交谈.",
+        "与坐标335:275附近的{传奇向导_王欣/LimeGreen}交谈.",
         ""
       ]
     },
@@ -6889,7 +6889,7 @@
         ""
       ],
       "taskDescription": [
-        "与坐标101:411附近的{HighAssassin/LimeGreen}交谈.",
+        "与坐标101:411附近的{高级刺客/LimeGreen}交谈.",
         ""
       ]
     },
@@ -6903,7 +6903,7 @@
         ""
       ],
       "description": [
-        "{Assistant 周慧/LimeGreen}介绍你过来的? ",
+        "{助手_周慧/LimeGreen}介绍你过来的? ",
         "我倒是不能直接拒绝他推荐过来的人,",
         "但也不是随便来个阿猫阿狗就能成为我的弟子. ",
         "你能通过我的试炼再说吧.",
@@ -6914,7 +6914,7 @@
         ""
       ],
       "taskDescription": [
-        "消灭5个{半兽人/Crimson}和5个{钉耙猫/Crimson}.",
+        "消灭10个{半兽人/Crimson}和10个{钉耙猫/Crimson}.",
         ""
       ]
     },
@@ -6928,7 +6928,7 @@
       ],
       "description": [
         "现在你终于看起来像个训练有素的刺客了.",
-        "我已经让{MirGuide 王欣/LimeGreen}给你安排了一些活儿.",
+        "我已经让{传奇向导_王欣/LimeGreen}给你安排了一些活儿.",
         "去吧,好好干,他不会亏待你的.",
         ""
       ],
@@ -6937,7 +6937,7 @@
         ""
       ],
       "taskDescription": [
-        "与坐标335:275附近的{MirGuide 王欣/LimeGreen}交谈.",
+        "与坐标335:275附近的{传奇向导_王欣/LimeGreen}交谈.",
         ""
       ]
     },
@@ -6962,7 +6962,7 @@
         ""
       ],
       "taskDescription": [
-        "与坐标320:476附近的{HighTaoist/LimeGreen}交谈.",
+        "与坐标320:476附近的{弓箭手队长/LimeGreen}交谈.",
         ""
       ]
     },
@@ -6987,7 +6987,7 @@
         ""
       ],
       "taskDescription": [
-        "消灭5个{Oma/Crimson}和5个{RakingCat/Crimson}.",
+        "消灭10个{半兽人/Crimson}和10个{钉耙猫/Crimson}.",
         ""
       ]
     },
@@ -7001,7 +7001,7 @@
       ],
       "description": [
         "现在你终于看起来像个训练有素的弓箭手了.",
-        "我已经让{MirGuide 王欣/LimeGreen}给你安排了一些活儿.",
+        "我已经让{传奇向导_王欣/LimeGreen}给你安排了一些活儿.",
         "去吧,好好干,他不会亏待你的.",
         ""
       ],
@@ -7010,7 +7010,7 @@
         ""
       ],
       "taskDescription": [
-        "与坐标335:275附近的{MirGuide 王欣/LimeGreen}交谈.",
+        "与坐标335:275附近的{传奇向导_王欣/LimeGreen}交谈.",
         ""
       ]
     },
@@ -7059,7 +7059,7 @@
         ""
       ],
       "taskDescription": [
-        "请消灭一些{半兽人/Crimson}并带回5个{兽人牙齿/LightSteelBlue}.",
+        "请消灭一些{半兽人/Crimson}并带回10个{兽人牙齿/LightSteelBlue}.",
         ""
       ]
     },
@@ -7073,7 +7073,7 @@
         ""
       ],
       "description": [
-        "{Blacksmith 周涛/LimeGreen}需要一些帮助.",
+        "{商人_周涛/LimeGreen}需要一些帮助.",
         "他住在{沃玛森林/Yellow}的北方,你可以顺着城西北的",
         "小路一路向北,就能到达{沃玛村/Yellow}.",
         "请你去帮帮他好吗?",
@@ -7116,8 +7116,8 @@
         ""
       ],
       "taskDescription": [
-        "从{食人花/Crimson}的尸体上收集1个{食人花茎/LightSteelBlue}和1个{食人花叶/LightSteelBlue},",
-        "并交给{沃玛森林/Yellow}的{Merchant 周涛/LimeGreen}.",
+        "从{食人花/Crimson}的尸体上收集10个{食人花茎/LightSteelBlue}和10个{食人花叶/LightSteelBlue},",
+        "并交给{沃玛森林/Yellow}的{商人_周涛/LimeGreen}.",
         ""
       ]
     },
@@ -7155,7 +7155,7 @@
       ],
       "description": [
         "你来的正好.",
-        "{MongchonEdwin/LimeGreen}刚才走的时候给你留了个口信儿.",
+        "{盟重侦查员/LimeGreen}刚才走的时候给你留了个口信儿.",
         "请去{客栈/Yellow}找他吧,客栈就在比奇城的南城.",
         ""
       ],
@@ -7164,7 +7164,7 @@
         ""
       ],
       "taskDescription": [
-        "去和{客栈/Yellow}的{MongchonEdwin/LimeGreen}谈谈.",
+        "去和{客栈/Yellow}的{盟重侦查员/LimeGreen}谈谈.",
         ""
       ]
     },
@@ -7195,7 +7195,7 @@
         ""
       ],
       "taskDescription": [
-        "在{毒蜘蛛/Crimson}身上收集5个{网/LightSteelBlue}. ",
+        "在{毒蜘蛛/Crimson}身上收集10个{网/LightSteelBlue}. ",
         ""
       ]
     },
@@ -7312,7 +7312,7 @@
         ""
       ],
       "taskDescription": [
-        "猎杀5只{红蛇/Crimson} 和 {虎蛇/Crimson}.",
+        "猎杀10只{红蛇/Crimson} 和 10只{虎蛇/Crimson}.",
         ""
       ]
     },
@@ -7386,7 +7386,7 @@
         ""
       ],
       "taskDescription": [
-        "从蛇身上收集5个{蛇躯/LightSteelBlue}.",
+        "从蛇身上收集10个{蛇躯/LightSteelBlue}.",
         ""
       ]
     },
@@ -7399,7 +7399,7 @@
       ],
       "description": [
         "这是酿好的{蛇酒/LightSteelBlue}.",
-        "请再辛苦一趟,把它带给{MongchonScout/LimeGreen}吧!",
+        "请再辛苦一趟,把它带给{盟重侦查员/LimeGreen}吧!",
         ""
       ],
       "sourceTaskDescription": [
@@ -7407,7 +7407,7 @@
         ""
       ],
       "taskDescription": [
-        "带{蛇酒/LightSteelBlue}给{MongchonScout/LimeGreen}.",
+        "带{蛇酒/LightSteelBlue}给{盟重侦查员/LimeGreen}.",
         ""
       ]
     },
@@ -7420,7 +7420,7 @@
       ],
       "description": [
         "你好旅行者.我还需要一些水果来酿酒.",
-        "你能帮我收集5{乌木果/LightSteelBlue}吗.",
+        "你能帮我收集10个{乌木果/LightSteelBlue}吗.",
         ""
       ],
       "sourceTaskDescription": [
@@ -7428,7 +7428,7 @@
         ""
       ],
       "taskDescription": [
-        "收集5{乌木果/LightSteelBlue}",
+        "收集10个{乌木果/LightSteelBlue}",
         ""
       ]
     },
@@ -7480,7 +7480,7 @@
         ""
       ],
       "taskDescription": [
-        "为{师父_冯静/LimeGreen}猎杀5只{半兽战士/Crimson}",
+        "为{师父_冯静/LimeGreen}猎杀10只{半兽战士/Crimson}",
         ""
       ]
     },
@@ -7530,7 +7530,7 @@
         ""
       ],
       "taskDescription": [
-        "消灭5{赤色毒蛇/Crimson}和{斑纹虎蛇/Crimson}",
+        "消灭15只{赤色毒蛇/Crimson}和15只{斑纹虎蛇/Crimson}",
         ""
       ]
     },
@@ -7636,7 +7636,7 @@
       ],
       "taskDescription": [
         "在{天然洞穴/Yellow}猎杀{骷髅/Crimson}",
-        "并收集5个{骷髅骨/LightSteelBlue}",
+        "并收集15个{骷髅骨/LightSteelBlue}",
         ""
       ]
     },
@@ -7680,7 +7680,7 @@
         "Collect 10 {Relics/LightSteelBlue} by hunting {CaveMaggots/Crimson}"
       ],
       "taskDescription": [
-        "猎杀{洞蛆/Crimson}收集5个{遗物/LightSteelBlue}",
+        "猎杀{洞蛆/Crimson}收集10个{遗物/LightSteelBlue}",
         ""
       ]
     },
@@ -7708,7 +7708,7 @@
         ""
       ],
       "taskDescription": [
-        "猎杀10只{骷髅/Crimson}",
+        "猎杀25只{骷髅/Crimson}",
         ""
       ]
     },
@@ -7723,7 +7723,7 @@
       ],
       "description": [
         "你知道怎么去{封魔谷/Yellow}吗?",
-        "我想送一本菜谱给封魔谷的{ButcherJim/LimeGreen}.",
+        "我想送一本菜谱给封魔谷的{商人_吴宁/LimeGreen}.",
         ""
       ],
       "sourceTaskDescription": [
@@ -7770,7 +7770,7 @@
       "description": [
         "你想让我帮你做{食人花茶/LightSteelBlue}?嗯..",
         "我需要一些原料.",
-        "你能帮我找到1个{食人花叶/LightSteelBlue}和1个{食人花果实/LightSteelBlue}吗?",
+        "你能帮我找到10个{食人花叶/LightSteelBlue}和10个{食人花果实/LightSteelBlue}吗?",
         ""
       ],
       "sourceTaskDescription": [
@@ -7779,7 +7779,7 @@
         ""
       ],
       "taskDescription": [
-        "从{食人花/Crimson}身上收集{食人花叶/LightSteelBlue}和{食人花果实/LightSteelBlue}各1个",
+        "从{食人花/Crimson}身上收集{食人花叶/LightSteelBlue}和{食人花果实/LightSteelBlue}各10个",
         ""
       ]
     },
@@ -7799,7 +7799,7 @@
         ""
       ],
       "taskDescription": [
-        "将{食人花茶/LightSteelBlue}带给{MirGuide/LimeGreen}",
+        "将{食人花茶/LightSteelBlue}带给{传奇向导/LimeGreen}",
         ""
       ]
     },
@@ -7846,7 +7846,7 @@
         ""
       ],
       "taskDescription": [
-        "在{天然洞穴/Yellow}收集5个{蝙蝠牙/LightSteelBlue}和{骷髅头/LightSteelBlue},",
+        "在{天然洞穴/Yellow}收集5个{蝙蝠牙/LightSteelBlue}和5个{骷髅头/LightSteelBlue},",
         "在{废矿/Yellow}收集{僵尸之眼/LightSteelBlue}.",
         ""
       ]
@@ -7870,7 +7870,7 @@
         ""
       ],
       "taskDescription": [
-        "收集5个{蝙蝠翅膀/LightSteelBlue}然后向{冯慧/LimeGreen}复命",
+        "收集10个{蝙蝠翅膀/LightSteelBlue}然后向{冯慧/LimeGreen}复命",
         ""
       ]
     },
@@ -7938,7 +7938,7 @@
         ""
       ],
       "taskDescription": [
-        "猎杀{僵尸/Crimson}找到5块{稀有铜矿/LightSteelBlue}.",
+        "猎杀{僵尸/Crimson}找到10块{稀有铜矿/LightSteelBlue}.",
         ""
       ]
     },
@@ -7964,7 +7964,7 @@
       ],
       "taskDescription": [
         "在{沃玛森林/Yellow}里找到昆虫洞",
-        "在里面猎杀5只{血蛙/Crimson}",
+        "在里面猎杀25只{血蛙/Crimson}",
         ""
       ]
     },
@@ -8011,7 +8011,7 @@
         ""
       ],
       "taskDescription": [
-        "猎杀5{虎虫/Crimson}和{紫虎虫/Crimson}",
+        "猎杀10只{虎虫/Crimson}和10只{紫虎虫/Crimson}",
         ""
       ]
     },
@@ -8099,7 +8099,7 @@
         ""
       ],
       "taskDescription": [
-        "前往{废矿/Yellow}消灭10只{萨满僵尸/Crimson}.",
+        "前往{废矿/Yellow}消灭30只{萨满僵尸/Crimson}.",
         ""
       ]
     },
@@ -8127,7 +8127,7 @@
       ],
       "taskDescription": [
         "杀掉{魔眼/Crimson}和{碧蓝魔眼/Crimson}",
-        "收集5个{虫眼/LightSteelBlue}",
+        "收集12个{虫眼/LightSteelBlue}",
         ""
       ]
     },
@@ -8142,7 +8142,7 @@
       "description": [
         "{碧蓝魔眼/Crimson}生活在{昆虫洞/Yellow}.",
         "这种昆虫的血可以提升药物的疗效.",
-        "你能帮我带6份{虫血/LightSteelBlue}吗?",
+        "你能帮我带12份{虫血/LightSteelBlue}吗?",
         ""
       ],
       "sourceTaskDescription": [
@@ -8152,7 +8152,7 @@
       ],
       "taskDescription": [
         "在{昆虫洞/Yellow}杀掉{碧蓝魔眼/Crimson}",
-        "然后收集6份{虫血/LightSteelBlue}",
+        "然后收集12份{虫血/LightSteelBlue}",
         ""
       ]
     },
@@ -8262,7 +8262,7 @@
         ""
       ],
       "taskDescription": [
-        "与{Heleny/LimeGreen}交谈,他在{沃玛村/Yellow}",
+        "与{周明/LimeGreen}交谈,他在{沃玛村/Yellow}",
         ""
       ]
     },
@@ -8305,7 +8305,7 @@
         ""
       ],
       "taskDescription": [
-        "消灭5只{石肤僵尸/Crimson}和5只{蹒跚僵尸/Crimson}.",
+        "消灭10只{石肤僵尸/Crimson}和10只{蹒跚僵尸/Crimson}.",
         ""
       ]
     },
@@ -8327,7 +8327,7 @@
         ""
       ],
       "taskDescription": [
-        "消灭5只{爬行僵尸/Crimson}.",
+        "消灭15只{爬行僵尸/Crimson}.",
         ""
       ]
     },
@@ -8385,7 +8385,7 @@
       ],
       "description": [
         "谢谢你旅行者.",
-        "从我儿子{Robe/LightSteelBlue}的回复中我发现.",
+        "从我儿子{法袍/LightSteelBlue}的回复中我发现.",
         "他正在寻找埋藏在{蛇谷矿区/Yellow}中的财宝",
         "这是在他法袍中发现的线索.",
         "请去取回{失窃的金币/LightSteelBlue}",
@@ -8512,7 +8512,7 @@
       ],
       "taskDescription": [
         "前往{沃玛森林/Yellow}北方的道馆",
-        "把{见习套装/LightSteelBlue}带给{DraperySam/LimeGreen}.",
+        "把{见习套装/LightSteelBlue}带给{商人_冯芳/LimeGreen}.",
         ""
       ]
     },
@@ -8537,7 +8537,7 @@
       ],
       "taskDescription": [
         "猎杀{黑锷蜘蛛/Crimson}",
-        "收集5个{红线/LightSteelBlue}和{黑线/LightSteelBlue}",
+        "收集10个{红线/LightSteelBlue}和10个{黑线/LightSteelBlue}",
         ""
       ]
     },
@@ -8624,7 +8624,7 @@
         ""
       ],
       "taskDescription": [
-        "向{LeadTrainer/LimeGreen}回复.",
+        "向{首席教官/LimeGreen}回复.",
         ""
       ]
     },
@@ -8647,7 +8647,7 @@
       ],
       "taskDescription": [
         "消灭{被诅咒的萨满/Crimson},{被诅咒的僵尸/Crimson},",
-        "{被诅咒的神父/Crimson}各5只.",
+        "{被诅咒的神父/Crimson}各10只.",
         ""
       ]
     },
@@ -8667,7 +8667,7 @@
         ""
       ],
       "taskDescription": [
-        "猎杀{幻影蜘蛛/Crimson},找到2个{老树根/LightSteelBlue}.",
+        "猎杀{幻影蜘蛛/Crimson},找到5个{老树根/LightSteelBlue}.",
         ""
       ]
     },
@@ -8712,8 +8712,8 @@
         ""
       ],
       "taskDescription": [
-        "消灭2只{钢牙蜘蛛/Crimson},2只{幻影蜘蛛/Crimson}",
-        "3只{花吻蜘蛛/Crimson}和{黑锷蜘蛛/Crimson}.",
+        "消灭4只{钢牙蜘蛛/Crimson},5只{幻影蜘蛛/Crimson}",
+        "5只{花吻蜘蛛/Crimson}和5只{黑锷蜘蛛/Crimson}.",
         ""
       ]
     },
@@ -8775,7 +8775,7 @@
         ""
       ],
       "taskDescription": [
-        "带{飞鸽之书/LightSteelBlue}给{Sir.郑玲/LimeGreen}",
+        "带{飞鸽之书/LightSteelBlue}给{先生_郑玲/LimeGreen}",
         "他就住在{比奇城/Yellow}的客栈内.",
         ""
       ]
@@ -8788,7 +8788,7 @@
         ""
       ],
       "description": [
-        "{Butcher/LimeGreen}在{沃玛村/Yellow}开了一家新店,",
+        "{商人_李静/LimeGreen}在{沃玛村/Yellow}开了一家新店,",
         "他似乎需要一些帮助.",
         ""
       ],
@@ -8798,8 +8798,8 @@
         ""
       ],
       "taskDescription": [
-        "猎杀{沃玛军士/Crimson}收集5个{牛肋排/LightSteelBlue}",
-        "然后回到{沃玛村/Yellow},将牛肋排带给{Butcher/LimeGreen}",
+        "猎杀{沃玛军士/Crimson}收集10个{牛肋排/LightSteelBlue}",
+        "然后回到{沃玛村/Yellow},将牛肋排带给{商人_李静/LimeGreen}",
         ""
       ]
     },
@@ -8811,7 +8811,7 @@
         ""
       ],
       "description": [
-        "旅行者,请前往{沃玛村/Yellow}鼓舞{SubjugationLead/LimeGreen}的士气.",
+        "旅行者,请前往{沃玛村/Yellow}鼓舞{讨伐队长/LimeGreen}的士气.",
         ""
       ],
       "sourceTaskDescription": [
@@ -8842,7 +8842,7 @@
         ""
       ],
       "taskDescription": [
-        "猎杀10只{粪虫/Crimson}和{沃玛战士/Crimson}",
+        "猎杀20只{粪虫/Crimson}和20只{沃玛战士/Crimson}",
         ""
       ]
     },
@@ -8866,7 +8866,7 @@
         ""
       ],
       "taskDescription": [
-        "前往{沃玛寺庙/Yellow}猎杀10只{火焰沃玛/Crimson}和10只{沃玛军士/Crimson}.",
+        "前往{沃玛寺庙/Yellow}猎杀20只{火焰沃玛/Crimson}和20只{沃玛军士/Crimson}.",
         ""
       ]
     },
@@ -8889,7 +8889,7 @@
         ""
       ],
       "taskDescription": [
-        "猎杀5只{沃玛勇士/Crimson}和1只{沃玛卫士/Crimson}",
+        "猎杀30只{沃玛勇士/Crimson}和1只{沃玛卫士/Crimson}",
         "然后取得它的{号角/LightSteelBlue}.",
         ""
       ]
@@ -9169,7 +9169,7 @@
         ""
       ],
       "taskDescription": [
-        "猎杀5只{爬行僵尸/Crimson}.",
+        "猎杀50只{爬行僵尸/Crimson}.",
         ""
       ]
     },
@@ -9194,7 +9194,7 @@
         " "
       ],
       "taskDescription": [
-        "前往{石墓/Yellow}猎杀5只{黑色恶蛆/Crimson}和{楔蛾/Crimson}.",
+        "前往{石墓/Yellow}猎杀10只{黑色恶蛆/Crimson}和10只{楔蛾/Crimson}.",
         ""
       ]
     },
@@ -9221,7 +9221,7 @@
         ""
       ],
       "taskDescription": [
-        "前往{石墓/Yellow}消灭5只{黑野猪/Crimson}和5只{红野猪/Crimson}",
+        "前往{石墓/Yellow}消灭15只{黑野猪/Crimson}和15只{红野猪/Crimson}",
         "",
         ""
       ]
@@ -9263,7 +9263,7 @@
         ""
       ],
       "taskDescription": [
-        "向{SubjugationManager/LimeGreen}汇报",
+        "向{讨伐管理员/LimeGreen}汇报",
         "他就在比奇城皇宫门口的池塘边上",
         ""
       ]
@@ -9275,7 +9275,7 @@
         ""
       ],
       "description": [
-        "与{CaveGuide/LimeGreen}交谈,",
+        "与{洞穴向导/LimeGreen}交谈,",
         "他就在{道馆矿区/Yellow}洞口",
         ""
       ],
@@ -9286,7 +9286,7 @@
       ],
       "taskDescription": [
         "前往{道馆/Yellow}西部的{道馆矿区/Yellow}洞口",
-        "与{CaveGuide/LimeGreen}交谈.",
+        "与{洞穴向导/LimeGreen}交谈.",
         ""
       ]
     },
@@ -9320,7 +9320,7 @@
         ""
       ],
       "description": [
-        "请向{BichonExaminer/LimeGreen}回复.",
+        "请向{检察官/LimeGreen}回复.",
         ""
       ],
       "sourceTaskDescription": [
@@ -9328,7 +9328,7 @@
         ""
       ],
       "taskDescription": [
-        "与{BichonExaminer/LimeGreen}交谈,他在{比奇城/Yellow}的桥头",
+        "与{检察官/LimeGreen}交谈,他在{比奇城/Yellow}的桥头",
         ""
       ]
     },
@@ -9355,7 +9355,7 @@
       ],
       "taskDescription": [
         "前往苍月岛,猎杀{恶灵僵尸/Crimson}",
-        "收集5个{尸灵花/LightSteelBlue}",
+        "收集10个{尸灵花/LightSteelBlue}",
         ""
       ]
     },
@@ -9376,7 +9376,7 @@
         ""
       ],
       "taskDescription": [
-        "前往苍月岛并杀死10只{恶灵僵尸/Crimson}和5只{恶灵尸王/Crimson}.",
+        "前往苍月岛并杀死15只{恶灵僵尸/Crimson}和10只{恶灵尸王/Crimson}.",
         ""
       ]
     },
@@ -9406,7 +9406,7 @@
       ],
       "taskDescription": [
         "前往东方的{骨魔洞/Yellow},",
-        "猎杀10只{骷髅弓箭手/Crimson}和10只{骷髅长枪兵/Crimson}",
+        "猎杀15只{骷髅弓箭手/Crimson}和15只{骷髅长枪兵/Crimson}",
         ""
       ]
     },
@@ -9430,7 +9430,7 @@
         ""
       ],
       "taskDescription": [
-        "回到洞窟,消灭10只{骷髅刀斧手/Crimson}",
+        "回到洞窟,消灭15只{骷髅刀斧手/Crimson}",
         ""
       ]
     },
@@ -9454,7 +9454,7 @@
       ],
       "taskDescription": [
         "猎杀{骷髅弓箭手/Crimson},{骷髅刀斧手/Crimson}和{骷髅长枪兵/Crimson}",
-        "并收集10个{雪白的骷髅/LightSteelBlue}",
+        "并收集20个{雪白的骷髅/LightSteelBlue}",
         ""
       ]
     },
@@ -9465,7 +9465,7 @@
         ""
       ],
       "description": [
-        "{VillageChief/LimeGreen}有些事麻烦你.",
+        "{村长/LimeGreen}有些事麻烦你.",
         ""
       ],
       "sourceTaskDescription": [
@@ -9473,7 +9473,7 @@
         ""
       ],
       "taskDescription": [
-        "与{VillageChief/LimeGreen}交谈,",
+        "与{村长/LimeGreen}交谈,",
         "他就在{苍月岛/Yellow}安全区旁的小屋中",
         ""
       ]
@@ -9486,7 +9486,7 @@
         ""
       ],
       "description": [
-        "回到{道馆/Yellow}与{LeadTrainer/LimeGreen}交谈.",
+        "回到{道馆/Yellow}与{首席教官/LimeGreen}交谈.",
         ""
       ],
       "sourceTaskDescription": [
@@ -9507,7 +9507,7 @@
         ""
       ],
       "description": [
-        "{苍月岛/Yellow}的{VillageChief/LimeGreen}需要{苍月史书/LightSteelBlue}?",
+        "{苍月岛/Yellow}的{村长/LimeGreen}需要{苍月史书/LightSteelBlue}?",
         "很抱歉,之前我被怪物袭击,",
         "很多东西都遗失了,包括那本书.",
         "对了,袭击我的怪物是{邪恶巨人王/Crimson}.",
@@ -9540,7 +9540,7 @@
         ""
       ],
       "taskDescription": [
-        "将{苍月史书/LightSteelBlue}交还给{VillageChief/LimeGreen}",
+        "将{苍月史书/LightSteelBlue}交还给{村长/LimeGreen}",
         ""
       ]
     },
@@ -9560,7 +9560,7 @@
         ""
       ],
       "taskDescription": [
-        "猎杀{月魔蜘蛛/Crimson}并收集10个{蝙蝠毒/LightSteelBlue}.",
+        "猎杀{月魔蜘蛛/Crimson}并收集20个{蝙蝠毒/LightSteelBlue}.",
         ""
       ]
     },
@@ -9597,7 +9597,7 @@
         ""
       ],
       "taskDescription": [
-        "前往东南方的{牛魔寺庙/Yellow}然后击杀15只{牛头魔/Crimson}.",
+        "前往东南方的{牛魔寺庙/Yellow}然后击杀30只{牛头魔/Crimson}.",
         ""
       ]
     },
@@ -9615,7 +9615,7 @@
         ""
       ],
       "taskDescription": [
-        "猎杀各10只{风之牛魔/Crimson},{冰牛魔/Crimson},",
+        "猎杀各20只{风之牛魔/Crimson},{冰牛魔/Crimson},",
         "{电光牛魔/Crimson}和{火焰牛魔/Crimson}.",
         ""
       ]
@@ -9633,7 +9633,7 @@
         ""
       ],
       "taskDescription": [
-        "猎杀15只{左护法/Crimson}和{右护法/Crimson}.",
+        "猎杀30只{左护法/Crimson}和30只{右护法/Crimson}.",
         ""
       ]
     },
@@ -9715,7 +9715,7 @@
       ],
       "description": [
         "你已经去过{远古石墓/Yellow}了吗?",
-        "能帮我再去收集12瓶{血之药/LightSteelBlue}吗?",
+        "能帮我再去收集17瓶{血之药/LightSteelBlue}吗?",
         "据说远古蝎蛇身上可以采集到这种药.",
         ""
       ],
@@ -9926,7 +9926,7 @@
         ""
       ],
       "description": [
-        "穿过{丛林迷宫/Yellow}进入{RedValley/Yellow}",
+        "穿过{丛林迷宫/Yellow}进入{赤月峡谷/Yellow}",
         ""
       ],
       "sourceTaskDescription": [
@@ -9945,7 +9945,7 @@
         ""
       ],
       "description": [
-        "聆听{Abel/LimeGreen}的故事.",
+        "聆听{周杰/LimeGreen}的故事.",
         ""
       ],
       "sourceTaskDescription": [
