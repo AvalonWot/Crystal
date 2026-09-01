@@ -586,15 +586,15 @@ namespace Server.MirObjects
                 ((HumanObject)Caster).Enqueue(new S.CancelReincarnation { });
             }
 
-            if (Spell == Spell.ExplosiveTrap && Caster != null)
-            {
-                var linkedTraps = CurrentMap.GetSpellObjects(Spell.ExplosiveTrap, Owner).Where(x => x.ExplosiveTrapID == ExplosiveTrapID);
-
-                foreach (var trap in linkedTraps)
-                {
-                    trap.DetonateTrapNow();
-                }
-            }
+            // if (Spell == Spell.ExplosiveTrap && Caster != null)
+            // {
+            //     var linkedTraps = CurrentMap.GetSpellObjects(Spell.ExplosiveTrap, Owner).Where(x => x.ExplosiveTrapID == ExplosiveTrapID);
+            //
+            //     foreach (var trap in linkedTraps)
+            //     {
+            //         trap.DetonateTrapNow();
+            //     }
+            // }
 
             if (Spell == Spell.Portal && Caster != null)
             {
