@@ -3400,7 +3400,10 @@ namespace Client.MirScenes.Dialogs
         {
             Magic = magic;
 
-            NameLabel.Text = Magic.Name;
+            if (Enum.TryParse($"{Magic.Spell}SkillName", out ClientTextKeys skillNameKey))
+                NameLabel.Text = GameLanguage.ClientTextMap.GetLocalization(skillNameKey);
+            else
+                NameLabel.Text = Magic.Name;
 
             LevelLabel.Text = Magic.Level.ToString();
             switch (Magic.Level)

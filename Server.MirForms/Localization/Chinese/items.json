@@ -4888,7 +4888,7 @@
     },
     "979": {
       "sourceName": "Entrapment",
-      "displayName": "捕绳剑",
+      "displayName": "捕蝇剑",
       "tooltip": ""
     },
     "980": {
@@ -4908,7 +4908,7 @@
     },
     "983": {
       "sourceName": "BladeAvalanche",
-      "displayName": "攻破斩",
+      "displayName": "空破闪",
       "tooltip": ""
     },
     "984": {
@@ -4918,7 +4918,7 @@
     },
     "985": {
       "sourceName": "Rage",
-      "displayName": "剑气爆",
+      "displayName": "狂暴",
       "tooltip": ""
     },
     "986": {
@@ -4933,7 +4933,7 @@
     },
     "988": {
       "sourceName": "Fury",
-      "displayName": "血龙剑法",
+      "displayName": "嗜血",
       "tooltip": ""
     },
     "989": {
@@ -5023,7 +5023,7 @@
     },
     "1006": {
       "sourceName": "FlameDisruptor",
-      "displayName": "火龙术",
+      "displayName": "灭天火",
       "tooltip": ""
     },
     "1007": {
@@ -5043,7 +5043,7 @@
     },
     "1010": {
       "sourceName": "MagicBooster",
-      "displayName": "深延术",
+      "displayName": "魔法强化",
       "tooltip": ""
     },
     "1011": {
@@ -5053,12 +5053,12 @@
     },
     "1012": {
       "sourceName": "IceThrust",
-      "displayName": "冰焰术",
+      "displayName": "冰刺术",
       "tooltip": ""
     },
     "1013": {
       "sourceName": "Blink",
-      "displayName": "瞬移术",
+      "displayName": "闪现",
       "tooltip": ""
     },
     "1014": {
@@ -5103,7 +5103,7 @@
     },
     "1022": {
       "sourceName": "MassHiding",
-      "displayName": "集体隐身术",
+      "displayName": "群体隐身术",
       "tooltip": ""
     },
     "1023": {
@@ -5163,7 +5163,7 @@
     },
     "1034": {
       "sourceName": "SummonHolyDeva",
-      "displayName": "召唤月灵",
+      "displayName": "召唤圣灵",
       "tooltip": ""
     },
     "1035": {
@@ -5173,12 +5173,12 @@
     },
     "1036": {
       "sourceName": "Plague",
-      "displayName": "瘟疫",
+      "displayName": "瘟疫术",
       "tooltip": ""
     },
     "1037": {
       "sourceName": "PoisonCloud",
-      "displayName": "毒云",
+      "displayName": "毒雾",
       "tooltip": ""
     },
     "1038": {
@@ -5188,12 +5188,12 @@
     },
     "1039": {
       "sourceName": "PetEnhancer",
-      "displayName": "血龙水",
+      "displayName": "宠物强化",
       "tooltip": ""
     },
     "1040": {
       "sourceName": "HealingCircle",
-      "displayName": "群体治愈术",
+      "displayName": "阴阳五行阵",
       "tooltip": ""
     },
     "1041": {
@@ -5208,7 +5208,7 @@
     },
     "1043": {
       "sourceName": "Haste",
-      "displayName": "体迅风",
+      "displayName": "急速",
       "tooltip": ""
     },
     "1044": {
@@ -5218,12 +5218,12 @@
     },
     "1045": {
       "sourceName": "LightBody",
-      "displayName": "风身术",
+      "displayName": "轻身术",
       "tooltip": ""
     },
     "1046": {
       "sourceName": "HeavenlySword",
-      "displayName": "迁移剑",
+      "displayName": "天剑",
       "tooltip": ""
     },
     "1047": {
@@ -5253,32 +5253,32 @@
     },
     "1052": {
       "sourceName": "SwiftFeet",
-      "displayName": "轻身步",
+      "displayName": "迅雷疾足",
       "tooltip": ""
     },
     "1053": {
       "sourceName": "DarkBody",
-      "displayName": "烈火身",
+      "displayName": "暗影替身",
       "tooltip": ""
     },
     "1054": {
       "sourceName": "Hemorrhage",
-      "displayName": "血风击",
+      "displayName": "血凤击",
       "tooltip": ""
     },
     "1055": {
       "sourceName": "CresentSlash",
-      "displayName": "猫舌兰",
+      "displayName": "月华乱舞",
       "tooltip": ""
     },
     "1056": {
       "sourceName": "MoonMist",
-      "displayName": "月华乱舞",
+      "displayName": "月影迷雾",
       "tooltip": ""
     },
     "1057": {
       "sourceName": "Focus",
-      "displayName": "凝神术",
+      "displayName": "聚焦",
       "tooltip": ""
     },
     "1058": {
@@ -5288,12 +5288,12 @@
     },
     "1059": {
       "sourceName": "MentalState",
-      "displayName": "心境",
+      "displayName": "精神状态",
       "tooltip": ""
     },
     "1060": {
       "sourceName": "DoubleShot",
-      "displayName": "双重射击",
+      "displayName": "连射",
       "tooltip": ""
     },
     "1061": {
@@ -5323,17 +5323,17 @@
     },
     "1066": {
       "sourceName": "SummonVampire",
-      "displayName": "召唤吸血鬼",
+      "displayName": "召唤吸血蜘蛛",
       "tooltip": ""
     },
     "1067": {
       "sourceName": "BackStep",
-      "displayName": "后跃",
+      "displayName": "后撤步",
       "tooltip": ""
     },
     "1068": {
       "sourceName": "DelayedExplosion",
-      "displayName": "延时爆破",
+      "displayName": "延爆箭",
       "tooltip": ""
     },
     "1069": {
@@ -5343,7 +5343,7 @@
     },
     "1070": {
       "sourceName": "BindingShot",
-      "displayName": "束缚箭",
+      "displayName": "(暂定)束缚箭",
       "tooltip": ""
     },
     "1071": {
@@ -5378,12 +5378,12 @@
     },
     "1077": {
       "sourceName": "StoneTrap",
-      "displayName": "岩石陷阱",
+      "displayName": "石陷阱",
       "tooltip": ""
     },
     "1078": {
       "sourceName": "Portal",
-      "displayName": "传送门",
+      "displayName": "(暂定)传送门",
       "tooltip": ""
     },
     "1079": {
@@ -6803,17 +6803,17 @@
     },
     "1365": {
       "sourceName": "CatTognue",
-      "displayName": "猫舌刺",
+      "displayName": "(暂定)猫舌刺",
       "tooltip": ""
     },
     "1366": {
       "sourceName": "MeteorShower",
-      "displayName": "流星火雨",
+      "displayName": "(暂定)流星雨",
       "tooltip": ""
     },
     "1367": {
       "sourceName": "BattleCry",
-      "displayName": "战吼",
+      "displayName": "(暂定)战吼",
       "tooltip": ""
     },
     "1368": {
