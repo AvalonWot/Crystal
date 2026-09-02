@@ -113,6 +113,7 @@ namespace Server.MirEnvir
         public List<MapInfo> MapInfoList = new List<MapInfo>();
         public List<ItemInfo> ItemInfoList = new List<ItemInfo>();
         public List<MonsterInfo> MonsterInfoList = new List<MonsterInfo>();
+        private MonsterDropSearchIndex _monsterDropSearchIndex;
         public List<MagicInfo> MagicInfoList = new List<MagicInfo>();
         public List<NPCInfo> NPCInfoList = new List<NPCInfo>();
         public DragonInfo DragonInfo = new DragonInfo();
@@ -5424,12 +5425,7 @@ namespace Server.MirEnvir
         {
             for (var i = 0; i < MonsterInfoList.Count; i++)
             {
-                string path = Path.Combine(Settings.DropPath, MonsterInfoList[i].Name + ".txt");
-
-                if (!string.IsNullOrEmpty(MonsterInfoList[i].DropPath))
-                {
-                    path = Path.Combine(Settings.DropPath, MonsterInfoList[i].DropPath + ".txt");
-                }
+                string path = GetMonsterDropFilePath(MonsterInfoList[i]);
 
                 MonsterInfoList[i].Drops.Clear();
 
@@ -5454,7 +5450,24 @@ namespace Server.MirEnvir
             BlackstoneDrops.Clear();
             DropInfo.Load(BlackstoneDrops, "Blackstone", Path.Combine(Settings.DropPath, Settings.BlackstoneDropFilename + ".txt"));
 
+            Volatile.Write(ref _monsterDropSearchIndex, MonsterDropSearchIndex.Build(MonsterInfoList));
+
             MessageQueue.Enqueue(GameLanguage.ServerTextMap.GetLocalization(ServerTextKeys.DropsLoaded));
+        }
+
+        public bool MonsterDropSearchReady => Volatile.Read(ref _monsterDropSearchIndex) != null;
+
+        public IReadOnlyList<MonsterInfo> FindMonstersDroppingItem(int itemIndex)
+        {
+            MonsterDropSearchIndex index = Volatile.Read(ref _monsterDropSearchIndex);
+            return index?.FindMonsters(itemIndex) ?? Array.Empty<MonsterInfo>();
+        }
+
+        public static string GetMonsterDropFilePath(MonsterInfo monster)
+        {
+            ArgumentNullException.ThrowIfNull(monster);
+            string fileName = string.IsNullOrEmpty(monster.DropPath) ? monster.Name : monster.DropPath;
+            return Path.Combine(Settings.DropPath, fileName + ".txt");
         }
 
         public void ReloadLineMessages()

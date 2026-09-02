@@ -489,6 +489,26 @@ namespace Server
             GenForm.ShowDialog();
         }
 
+        private void dropQueryToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (!Envir.Running)
+            {
+                MessageBox.Show("Server must be running to query drops.", "Drop Query",
+                    MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
+            if (!Envir.MonsterDropSearchReady)
+            {
+                MessageBox.Show("Monster drops have not finished loading.", "Drop Query",
+                    MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
+            using DropQueryForm form = new();
+            form.ShowDialog(this);
+        }
+
         private void clearBlockedIPsToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Envir.IPBlocks.Clear();

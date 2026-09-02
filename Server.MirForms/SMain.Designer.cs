@@ -95,6 +95,7 @@ namespace Server
             magicInfoToolStripMenuItem = new ToolStripMenuItem();
             gameshopToolStripMenuItem = new ToolStripMenuItem();
             recipeToolStripMenuItem = new ToolStripMenuItem();
+            dropQueryToolStripMenuItem = new ToolStripMenuItem();
             configToolStripMenuItem1 = new ToolStripMenuItem();
             serverToolStripMenuItem = new ToolStripMenuItem();
             balanceToolStripMenuItem = new ToolStripMenuItem();
@@ -532,7 +533,7 @@ namespace Server
             // 
             // databaseFormsToolStripMenuItem
             // 
-            databaseFormsToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { mapInfoToolStripMenuItem, itemInfoToolStripMenuItem, monsterInfoToolStripMenuItem, itemNEWToolStripMenuItem, monsterExperimentalToolStripMenuItem, nPCInfoToolStripMenuItem, questInfoToolStripMenuItem, magicInfoToolStripMenuItem, gameshopToolStripMenuItem, recipeToolStripMenuItem });
+            databaseFormsToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { mapInfoToolStripMenuItem, itemInfoToolStripMenuItem, monsterInfoToolStripMenuItem, itemNEWToolStripMenuItem, monsterExperimentalToolStripMenuItem, nPCInfoToolStripMenuItem, questInfoToolStripMenuItem, magicInfoToolStripMenuItem, gameshopToolStripMenuItem, recipeToolStripMenuItem, dropQueryToolStripMenuItem });
             databaseFormsToolStripMenuItem.Name = "databaseFormsToolStripMenuItem";
             databaseFormsToolStripMenuItem.Size = new Size(67, 20);
             databaseFormsToolStripMenuItem.Text = "Database";
@@ -609,6 +610,13 @@ namespace Server
             recipeToolStripMenuItem.Size = new Size(203, 22);
             recipeToolStripMenuItem.Text = "Recipe";
             recipeToolStripMenuItem.Click += recipeToolStripMenuItem_Click;
+            //
+            // dropQueryToolStripMenuItem
+            //
+            dropQueryToolStripMenuItem.Name = "dropQueryToolStripMenuItem";
+            dropQueryToolStripMenuItem.Size = new Size(203, 22);
+            dropQueryToolStripMenuItem.Text = "Drop Query";
+            dropQueryToolStripMenuItem.Click += dropQueryToolStripMenuItem_Click;
             // 
             // configToolStripMenuItem1
             // 
@@ -883,6 +891,7 @@ namespace Server
         private ToolStripMenuItem heroesToolStripMenuItem;
         private ToolStripMenuItem CharacterToolStripMenuItem;
         private ToolStripMenuItem recipeToolStripMenuItem;
+        private ToolStripMenuItem dropQueryToolStripMenuItem;
         private ToolStripMenuItem accountsToolStripMenuItem1;
         private ToolStripMenuItem marketToolStripMenuItem;
         private ToolStripMenuItem namelistsToolStripMenuItem;
