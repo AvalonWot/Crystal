@@ -1459,16 +1459,16 @@ namespace Client.MirObjects
 
                                 Network.Enqueue(new C.Magic { ObjectID = GameScene.User.ObjectID, Spell = Spell, Direction = Direction, TargetID = targetID, Location = location });
 
-                                if (Spell == Spell.FlashDash)
-                                {
-                                    GameScene.SpellTime = CMain.Time + 250;
-                                    MapControl.NextAction = CMain.Time;
-                                }
-                                else
-                                {
-                                    GameScene.SpellTime = Spell == Spell.FlameField ? CMain.Time + 2500 : CMain.Time + 1800;
-                                    MapControl.NextAction = CMain.Time + 2500;
-                                }
+                                // if (Spell == Spell.FlashDash)
+                                // {
+                                //     GameScene.SpellTime = CMain.Time + 250;
+                                //     MapControl.NextAction = CMain.Time;
+                                // }
+                                // else
+                                // {
+                                //     GameScene.SpellTime = Spell == Spell.FlameField ? CMain.Time + 2500 : CMain.Time + 500;
+                                //     MapControl.NextAction = CMain.Time + 2500;
+                                // }
                             }
                             break;                         
                         case MirAction.Harvest:

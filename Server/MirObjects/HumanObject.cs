@@ -3452,7 +3452,7 @@ namespace Server.MirObjects
             }
 
             AttackTime = Envir.Time + MoveDelay;
-            SpellTime = Envir.Time + 1800; //Spell Delay
+            SpellTime = Envir.Time + magic.GetDelay(); //Spell Delay
 
             if (spell != Spell.ShoulderDash)
             {
