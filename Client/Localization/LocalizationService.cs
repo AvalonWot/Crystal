@@ -72,10 +72,9 @@ public static class LocalizationService
     public static string GetItemDisplayName(int index, string sourceName)
     {
         IReadOnlyDictionary<int, ItemLocalizationEntry> items = Volatile.Read(ref _items);
-        if (items.TryGetValue(index, out ItemLocalizationEntry entry) &&
-            entry.SourceName.Equals(sourceName ?? string.Empty, StringComparison.Ordinal) &&
-            !string.IsNullOrWhiteSpace(entry.DisplayName)) return entry.DisplayName;
-        return sourceName ?? string.Empty;
+        return items.TryGetValue(index, out ItemLocalizationEntry entry)
+            ? ItemLocalizationNames.GetObjectDisplayName(entry, sourceName)
+            : sourceName ?? string.Empty;
     }
 
     public static string GetMonsterDisplayName(int index, string sourceName)

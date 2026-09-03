@@ -1,4 +1,5 @@
 using System.Text.Json;
+using System.Text.RegularExpressions;
 
 public sealed class ItemLocalizationDocument
 {
@@ -100,5 +101,32 @@ public static class ItemLocalizationFormat
         }
 
         return true;
+    }
+}
+
+public static class ItemLocalizationNames
+{
+    public static string GetGameName(string sourceName)
+    {
+        string name = Regex.Replace(sourceName ?? string.Empty, @"\d+$", string.Empty);
+        return Regex.Replace(name, @"\[[^\]]*\]", string.Empty);
+    }
+
+    public static string GetObjectDisplayName(ItemLocalizationEntry entry, string objectName)
+    {
+        objectName ??= string.Empty;
+        if (entry == null || string.IsNullOrWhiteSpace(entry.DisplayName)) return objectName;
+
+        string sourceGameName = GetGameName(entry.SourceName);
+        if (sourceGameName.Length == 0) return objectName;
+        if (objectName.Equals(sourceGameName, StringComparison.Ordinal)) return entry.DisplayName;
+
+        if (objectName.StartsWith(sourceGameName + " (", StringComparison.Ordinal) && objectName.EndsWith(')'))
+        {
+            ReadOnlySpan<char> count = objectName.AsSpan(sourceGameName.Length + 2, objectName.Length - sourceGameName.Length - 3);
+            if (uint.TryParse(count, out _)) return entry.DisplayName + objectName[sourceGameName.Length..];
+        }
+
+        return objectName;
     }
 }
