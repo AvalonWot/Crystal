@@ -1031,6 +1031,7 @@ namespace Client.MirObjects
 
 
                 bool ArcherLayTrap = false;
+                var oldSpellTime = GameScene.SpellTime;
 
                 switch (CurrentAction)
                 {
@@ -1469,6 +1470,11 @@ namespace Client.MirObjects
                                 //     GameScene.SpellTime = Spell == Spell.FlameField ? CMain.Time + 2500 : CMain.Time + 500;
                                 //     MapControl.NextAction = CMain.Time + 2500;
                                 // }
+                                if (GameScene.SpellTime == oldSpellTime)
+                                {
+                                    GameScene.SpellTime = CMain.Time + User.GetMagic(Spell).Delay;
+                                    MapControl.NextAction = CMain.Time + User.GetMagic(Spell).Delay + 50;
+                                }
                             }
                             break;                         
                         case MirAction.Harvest:
