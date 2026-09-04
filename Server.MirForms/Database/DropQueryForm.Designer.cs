@@ -97,6 +97,7 @@ partial class DropQueryForm
         ResultsGrid.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
         ResultsGrid.Size = new Size(884, 469);
         ResultsGrid.TabIndex = 1;
+        ResultsGrid.CellDoubleClick += ResultsGrid_CellDoubleClick;
         // 
         // MonsterNameColumn
         // 

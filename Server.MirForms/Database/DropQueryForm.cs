@@ -1,5 +1,7 @@
 using Server.MirDatabase;
 using Server.MirEnvir;
+using System.ComponentModel;
+using System.Diagnostics;
 
 namespace Server.Database;
 
@@ -26,6 +28,36 @@ public partial class DropQueryForm : Form
     private void QueryButton_Click(object sender, EventArgs e)
     {
         RunQuery();
+    }
+
+    private void ResultsGrid_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
+    {
+        if (e.RowIndex < 0 || e.ColumnIndex < 0) return;
+
+        string path = ResultsGrid.Rows[e.RowIndex].Cells[DropFilePathColumn.Index].Value as string;
+        if (string.IsNullOrWhiteSpace(path)) return;
+
+        if (!File.Exists(path))
+        {
+            MessageBox.Show(this, $"Drops file not found:\n{path}", "Drop Query",
+                MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            return;
+        }
+
+        try
+        {
+            Process.Start(new ProcessStartInfo
+            {
+                FileName = path,
+                UseShellExecute = true,
+                Verb = "open"
+            });
+        }
+        catch (Exception ex) when (ex is Win32Exception or InvalidOperationException or IOException or UnauthorizedAccessException)
+        {
+            MessageBox.Show(this, $"Unable to open drops file:\n{path}\n\n{ex.Message}", "Drop Query",
+                MessageBoxButtons.OK, MessageBoxIcon.Error);
+        }
     }
 
     private void RunQuery()
