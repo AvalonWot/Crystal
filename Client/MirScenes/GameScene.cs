@@ -667,6 +667,7 @@ namespace Client.MirScenes
                         return;
 
                     case KeybindOptions.Closeall:
+                        MapControl.CancelPoisonSwap();
                         InventoryDialog.Hide();
                         CharacterDialog.Hide();
                         OptionDialog.Hide();
@@ -963,6 +964,7 @@ namespace Client.MirScenes
 
         public void UseSpell(int key)
         {
+            if (key <= 16) MapControl.CancelPoisonSwap();
             UserObject actor = User;
             if (key > 16)
             {
@@ -2440,12 +2442,20 @@ namespace Client.MirScenes
                     return;
             }
 
-            if (toCell == null || fromCell == null) return;
+            if (toCell == null || fromCell == null)
+            {
+                MapControl.CompletePoisonSwap(p, false);
+                return;
+            }
 
             toCell.Locked = false;
             fromCell.Locked = false;
 
-            if (!p.Success) return;
+            if (!p.Success)
+            {
+                MapControl.CompletePoisonSwap(p, false);
+                return;
+            }
 
             UserItem i = fromCell.Item;
             fromCell.Item = toCell.Item;
@@ -2455,6 +2465,7 @@ namespace Client.MirScenes
                 Hero.RefreshStats();
             else
                 User.RefreshStats();
+            MapControl.CompletePoisonSwap(p, true);
         }
         private void EquipSlotItem(S.EquipSlotItem p)
         {
@@ -10289,6 +10300,158 @@ namespace Client.MirScenes
 
     public sealed class MapControl : MirControl
     {
+        private sealed class PendingPoisonSwap
+        {
+            public ClientMagic Magic;
+            public MapObject Target;
+            public Point Origin;
+            public ulong ItemID;
+            public long Expires;
+            public bool Ready;
+        }
+
+        private PendingPoisonSwap pendingPoisonSwap;
+
+        public void CancelPoisonSwap()
+        {
+            var pending = pendingPoisonSwap;
+            pendingPoisonSwap = null;
+            if (pending != null && User?.NextMagic == pending.Magic)
+                User.ClearMagic();
+        }
+
+        private void ProcessPoisonSwap()
+        {
+            var pending = pendingPoisonSwap;
+            if (pending == null) return;
+
+            if (User == null || User.Dead || !Network.Connected || GameScene.Observing ||
+                User.NextMagic != pending.Magic || User.CurrentLocation != pending.Origin ||
+                pending.Target.Dead || !Objects.TryGetValue(pending.Target.ObjectID, out var target) ||
+                target != pending.Target)
+            {
+                CancelPoisonSwap();
+                return;
+            }
+
+            if (CMain.Time >= pending.Expires)
+            {
+                CancelPoisonSwap();
+                GameScene.Scene.OutputMessage("自动换毒超时，请重新施毒。");
+            }
+        }
+
+        public void CompletePoisonSwap(S.EquipItem packet, bool success)
+        {
+            var pending = pendingPoisonSwap;
+            if (pending == null || packet.Grid != MirGridType.Inventory ||
+                packet.To != (int)EquipmentSlot.Torch || packet.UniqueID != pending.ItemID) return;
+
+            ProcessPoisonSwap();
+            if (pendingPoisonSwap != pending) return;
+            if (!success)
+            {
+                CancelPoisonSwap();
+                GameScene.Scene.OutputMessage("自动换毒失败，请检查装备条件。");
+                return;
+            }
+
+            pending.Ready = true;
+        }
+
+        private static bool IsPoison(UserItem item, int shape = 0)
+        {
+            return item != null && item.Count > 0 && item.Info.Type == ItemType.Amulet &&
+                (item.Info.Shape == 1 || item.Info.Shape == 2) &&
+                (shape == 0 || item.Info.Shape == shape);
+        }
+
+        private UserItem SelectedPoison()
+        {
+            UserItem torch = User.Equipment[(int)EquipmentSlot.Torch];
+            if (IsPoison(torch)) return torch;
+            return User.Equipment.FirstOrDefault(item => IsPoison(item));
+        }
+
+        private MirItemCell FindPoison(int shape)
+        {
+            var slot = GameScene.Scene.CharacterDialog.Grid[(int)EquipmentSlot.Torch];
+            if (slot.Locked) return null;
+            foreach (var item in User.Inventory)
+            {
+                if (!IsPoison(item, shape)) continue;
+                var cell = GameScene.Scene.InventoryDialog.GetCell(item.UniqueID) ??
+                    GameScene.Scene.BeltDialog.GetCell(item.UniqueID);
+                if (cell != null && !cell.Locked && slot.CanWearItem(User, item))
+                    return cell;
+            }
+            return null;
+        }
+
+        private bool PreparePoison(ClientMagic magic, MapObject target)
+        {
+            string failure = null;
+            if (target == null || target == User || target.Dead ||
+                (target.Race != ObjectType.Monster && target.Race != ObjectType.Player && target.Race != ObjectType.Hero) ||
+                !Objects.TryGetValue(target.ObjectID, out var current) || current != target)
+                failure = "请选择有效的施毒目标。";
+            else if (target.Poison.HasFlag(PoisonType.Red) && target.Poison.HasFlag(PoisonType.Green))
+                failure = "目标已具有红毒和绿毒，无需补毒。";
+
+            if (failure != null)
+            {
+                CancelPoisonSwap();
+                User.ClearMagic();
+                GameScene.Scene.OutputMessage(failure);
+                return false;
+            }
+
+            int shape = target.Poison.HasFlag(PoisonType.Red) ? 1 : 2;
+            var equipped = SelectedPoison();
+            MirItemCell source = null;
+            if (!IsPoison(equipped, shape))
+            {
+                source = FindPoison(shape);
+                if (source == null && shape == 2 && !target.Poison.HasFlag(PoisonType.Green))
+                {
+                    shape = 1;
+                    if (!IsPoison(equipped, shape)) source = FindPoison(shape);
+                }
+            }
+
+            if (IsPoison(equipped, shape))
+            {
+                pendingPoisonSwap = null;
+                return true;
+            }
+
+            if (source == null)
+            {
+                CancelPoisonSwap();
+                User.ClearMagic();
+                GameScene.Scene.OutputMessage(shape == 2 ? "缺少可用的红毒。" : "缺少可用的绿毒。");
+                return false;
+            }
+
+            pendingPoisonSwap = new PendingPoisonSwap
+            {
+                Magic = magic,
+                Target = target,
+                Origin = User.CurrentLocation,
+                ItemID = source.Item.UniqueID,
+                Expires = pendingPoisonSwap?.Expires ?? CMain.Time + 5000
+            };
+            source.Locked = true;
+            GameScene.Scene.CharacterDialog.Grid[(int)EquipmentSlot.Torch].Locked = true;
+            Network.Enqueue(new C.EquipItem
+            {
+                Grid = MirGridType.Inventory,
+                UniqueID = source.Item.UniqueID,
+                To = (int)EquipmentSlot.Torch
+            });
+            return false;
+        }
+
         public static UserObject User
         {
             get { return MapObject.User; }
@@ -10427,6 +10590,7 @@ namespace Client.MirScenes
 
         public void ResetMap()
         {
+            CancelPoisonSwap();
             GameScene.Scene.NPCDialog.Hide();
 
             MapObject.MouseObjectID = 0;
@@ -10487,6 +10651,7 @@ namespace Client.MirScenes
         public void Process()
         {
             Processdoors();
+            ProcessPoisonSwap();
             User.Process();
             for (int i = ObjectsList.Count - 1; i >= 0; i--)
             {
@@ -11373,6 +11538,7 @@ namespace Client.MirScenes
 
         private static void OnMouseDown(object sender, MouseEventArgs e)
         {
+            GameScene.Scene.MapControl.CancelPoisonSwap();
             MapButtons |= e.Button;
             if (e.Button != MouseButtons.Right || !Settings.NewMove)
                 GameScene.CanRun = false;
@@ -11790,6 +11956,11 @@ namespace Client.MirScenes
 
         public void UseMagic(ClientMagic magic, UserObject actor)
         {
+            if (actor == User && pendingPoisonSwap != null)
+            {
+                ProcessPoisonSwap();
+                if (pendingPoisonSwap == null || !pendingPoisonSwap.Ready) return;
+            }
             if (CMain.Time < GameScene.SpellTime || actor.Poison.HasFlag(PoisonType.Stun))
             {
                 actor.ClearMagic();
@@ -11993,6 +12164,9 @@ namespace Client.MirScenes
                     break;
             }
 
+            if (actor == User && magic.Spell == Spell.Poisoning && pendingPoisonSwap != null)
+                target = pendingPoisonSwap.Target;
+
             MirDirection dir = (target == null || target == User) ? actor.NextMagicDirection : Functions.DirectionFromPoint(actor.CurrentLocation, target.CurrentLocation);
 
             Point location = target != null ? target.CurrentLocation : actor.NextMagicLocation;
@@ -12012,6 +12186,8 @@ namespace Client.MirScenes
                 actor.ClearMagic();
                 return;
             }
+
+            if (actor == User && magic.Spell == Spell.Poisoning && !PreparePoison(magic, target)) return;
 
             GameScene.LogTime = CMain.Time + Globals.LogDelay;
 

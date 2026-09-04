@@ -359,7 +359,7 @@ namespace Server.MirObjects
             {
                 TorchTime = Envir.Time + 10000;
                 item = Info.Equipment[(int)EquipmentSlot.Torch];
-                if (item != null)
+                if (item != null && item.Info.Type == ItemType.Torch)
                 {
                     DamageItem(item, 5);
 
@@ -4396,7 +4396,7 @@ namespace Server.MirObjects
         {
             if (target == null || !target.IsAttackTarget(this)) return false;
 
-            UserItem item = GetPoison(1);
+            UserItem item = GetPoison(1, preferTorch: true);
             if (item == null) return false;
 
             int power = magic.GetDamage(GetAttackPower(Stats[Stat.MinSC], Stats[Stat.MaxSC]));
@@ -6897,8 +6897,17 @@ namespace Server.MirObjects
 
             return null;
         }
-        protected UserItem GetPoison(int count, byte shape = 0)
+        protected UserItem GetPoison(int count, byte shape = 0, bool preferTorch = false)
         {
+            if (preferTorch)
+            {
+                UserItem poison = Info.Equipment[(int)EquipmentSlot.Torch];
+                if (poison != null && poison.Info.Type == ItemType.Amulet && poison.Count >= count &&
+                    (poison.Info.Shape == 1 || poison.Info.Shape == 2) &&
+                    (shape == 0 || poison.Info.Shape == shape))
+                    return poison;
+            }
+
             for (int i = 0; i < Info.Equipment.Length; i++)
             {
                 UserItem item = Info.Equipment[i];
@@ -7705,7 +7714,8 @@ namespace Server.MirObjects
                         return false;
                     break;
                 case EquipmentSlot.Torch:
-                    if (item.Info.Type != ItemType.Torch)
+                    if (item.Info.Type != ItemType.Torch &&
+                        !(item.Info.Type == ItemType.Amulet && (item.Info.Shape == 1 || item.Info.Shape == 2)))
                         return false;
                     break;
                 case EquipmentSlot.Necklace:

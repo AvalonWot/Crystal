@@ -476,26 +476,28 @@ namespace Client.MirControls
                     }
                     break;
                 case ItemType.Amulet:
-                    //if (Item.Info.Shape == 0) return;
-
-                    if (dialog.Grid[(int)EquipmentSlot.Amulet].Item != null && Item.Info.Type == ItemType.Amulet)
                     {
-                        if (dialog.Grid[(int)EquipmentSlot.Amulet].Item.Info == Item.Info && dialog.Grid[(int)EquipmentSlot.Amulet].Item.Count < dialog.Grid[(int)EquipmentSlot.Amulet].Item.Info.StackSize)
+                        int materialSlot = Item.Info.Shape == 1 || Item.Info.Shape == 2
+                            ? (int)EquipmentSlot.Torch : (int)EquipmentSlot.Amulet;
+                        if (dialog.Grid[materialSlot].Item != null)
                         {
-                            Network.Enqueue(new C.MergeItem { GridFrom = GridType, GridTo = GridType == MirGridType.HeroInventory ? MirGridType.HeroEquipment : MirGridType.Equipment, IDFrom = Item.UniqueID, IDTo = dialog.Grid[(int)EquipmentSlot.Amulet].Item.UniqueID });
+                            if (dialog.Grid[materialSlot].Item.Info == Item.Info && dialog.Grid[materialSlot].Item.Count < dialog.Grid[materialSlot].Item.Info.StackSize)
+                            {
+                                Network.Enqueue(new C.MergeItem { GridFrom = GridType, GridTo = GridType == MirGridType.HeroInventory ? MirGridType.HeroEquipment : MirGridType.Equipment, IDFrom = Item.UniqueID, IDTo = dialog.Grid[materialSlot].Item.UniqueID });
 
-                            Locked = true;
-                            return;
+                                Locked = true;
+                                return;
+                            }
                         }
-                    }
 
-                    if (dialog.Grid[(int)EquipmentSlot.Amulet].CanWearItem(actor, Item))
-                    {
-                        Network.Enqueue(new C.EquipItem { Grid = GridType, UniqueID = Item.UniqueID, To = (int)EquipmentSlot.Amulet });
-                        dialog.Grid[(int)EquipmentSlot.Amulet].Locked = true;
-                        Locked = true;
+                        if (dialog.Grid[materialSlot].CanWearItem(actor, Item))
+                        {
+                            Network.Enqueue(new C.EquipItem { Grid = GridType, UniqueID = Item.UniqueID, To = materialSlot });
+                            dialog.Grid[materialSlot].Locked = true;
+                            Locked = true;
+                        }
+                        break;
                     }
-                    break;
                 case ItemType.Belt:
                     if (dialog.Grid[(int)EquipmentSlot.Belt].CanWearItem(actor, Item))
                     {
@@ -2099,7 +2101,8 @@ namespace Client.MirControls
                 case EquipmentSlot.Helmet:
                     return type == ItemType.Helmet;
                 case EquipmentSlot.Torch:
-                    return type == ItemType.Torch;
+                    return type == ItemType.Torch ||
+                        (type == ItemType.Amulet && (i.Info.Shape == 1 || i.Info.Shape == 2));
                 case EquipmentSlot.Necklace:
                     return type == ItemType.Necklace;
                 case EquipmentSlot.BraceletL:
@@ -2305,7 +2308,7 @@ namespace Client.MirControls
             return true;
         }
 
-        private bool CanWearItem(UserObject actor, UserItem i)
+        internal bool CanWearItem(UserObject actor, UserItem i)
         {
             if (i == null) return false;
 
