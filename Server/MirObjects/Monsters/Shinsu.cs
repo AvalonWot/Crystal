@@ -23,6 +23,15 @@ namespace Server.MirObjects.Monsters
             ActionTime = Envir.Time + 1000;
         }
 
+        public override void RefreshAll()
+        {
+            base.RefreshAll();
+            Stats[Stat.MinDC] += (int)Math.Floor(master.Stats[Stat.MinSC] * (PetLevel * PetLevel * 0.005f));
+            Stats[Stat.MaxDC] += (int)Math.Floor(master.Stats[Stat.MaxSC] * (PetLevel * PetLevel * 0.005f));
+            Stats[Stat.Accuracy] += (int)Math.Floor((master.Stats[Stat.MinSC] + master.Stats[Stat.MaxSC]) / 5.0f);
+            Stats[Stat.Agility] += (int)Math.Floor((master.Stats[Stat.MinSC] + master.Stats[Stat.MaxSC]) / 10.0f);
+        }
+
         protected override void ProcessAI()
         {
             if (!Dead && Envir.Time > ActionTime)
