@@ -2207,12 +2207,12 @@ namespace Server.MirEnvir
                     value = (int)data[2];
                     location = (Point)data[3];
 
-                    for (int y = location.Y - 1; y <= location.Y + 1; y++)
+                    for (int y = location.Y - 2; y <= location.Y + 2; y++)
                     {
                         if (y < 0) continue;
                         if (y >= Height) break;
 
-                        for (int x = location.X - 1; x <= location.X + 1; x++)
+                        for (int x = location.X - 2; x <= location.X + 2; x++)
                         {
                             if (x < 0) continue;
                             if (x >= Width) break;

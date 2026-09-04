@@ -1,5 +1,5 @@
 using System.Drawing;
-﻿using Server.MirDatabase;
+using Server.MirDatabase;
 using Server.MirEnvir;
 using S = ServerPackets;
 
@@ -20,6 +20,16 @@ namespace Server.MirObjects.Monsters
         {
             get { return Master == null ? Info.GameName : (Dead ? Info.GameName : string.Format("{0}({1})", Info.GameName, Master.Name)); }
             set { throw new NotSupportedException(); }
+        }
+
+        public override void RefreshAll()
+        {
+            base.RefreshAll();
+            Stats[Stat.MinDC] += 2 * master.Stats[Stat.MinMC];
+            Stats[Stat.MaxDC] += 2 * master.Stats[Stat.MaxMC];
+            Stats[Stat.MinMC] += master.Stats[Stat.MinMC];
+            Stats[Stat.MaxMC] += master.Stats[Stat.MaxMC];
+            Stats[Stat.Accuracy] += master.Stats[Stat.Accuracy];
         }
 
         public override void Process()
@@ -72,15 +82,13 @@ namespace Server.MirObjects.Monsters
 
         public override void Die()
         {
-            base.Die();
-
             //Explosion
-            for (int y = CurrentLocation.Y - 1; y <= CurrentLocation.Y + 1; y++)
+            for (int y = CurrentLocation.Y - 2; y <= CurrentLocation.Y + 2; y++)
             {
                 if (y < 0) continue;
                 if (y >= CurrentMap.Height) break;
 
-                for (int x = CurrentLocation.X - 1; x <= CurrentLocation.X + 1; x++)
+                for (int x = CurrentLocation.X - 2; x <= CurrentLocation.X + 2; x++)
                 {
                     if (x < 0) continue;
                     if (x >= CurrentMap.Width) break;
@@ -98,7 +106,7 @@ namespace Server.MirObjects.Monsters
                             case ObjectType.Player:
                                 //Only targets
                                 if (!target.IsAttackTarget(this) || target.Dead) break;
-                                int value = target.Attacked(this,10*PetLevel,DefenceType.MACAgility);
+                                int value = target.Attacked(this,10*PetLevel + Stats[Stat.MaxMC],DefenceType.MACAgility);
                                 if (value <= 0) break;
                                 if (Master != null) MasterVampire(value, target);
                                 break;
@@ -106,6 +114,7 @@ namespace Server.MirObjects.Monsters
                     }
                 }
             }
+            base.Die();
         }
 
         protected override bool InAttackRange()
