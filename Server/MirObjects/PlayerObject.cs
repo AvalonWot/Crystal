@@ -2174,6 +2174,26 @@ namespace Server.MirObjects
 
                 switch (parts[0].ToUpper())
                 {
+                    case "PET":
+                        {
+                            if (Pets.Count == 0)
+                            {
+                                ReceiveChat("[PET] 当前没有宠物", ChatType.System);
+                                return;
+                            }
+
+                            foreach (MonsterObject pet in Pets)
+                            {
+                                ReceiveChat($"[PET] {GetMonsterDisplayName(pet)} ObjectID={pet.ObjectID} 等级={pet.PetLevel} {(pet.Dead ? "死亡" : "存活")} 当前HP={pet.HP}", ChatType.System);
+
+                                foreach (var stat in pet.Stats.Values)
+                                    ReceiveChat($"{stat.Key} = {stat.Value}", ChatType.System);
+                            }
+
+                            ReceiveChat("[PET] 未列出的属性为 0", ChatType.System);
+                            return;
+                        }
+
                     case "LOGIN":
                         GMLogin = true;
                         ReceiveChat(GameLanguage.ServerTextMap.GetLocalization(ServerTextKeys.EnterGmPassword), ChatType.Hint);
