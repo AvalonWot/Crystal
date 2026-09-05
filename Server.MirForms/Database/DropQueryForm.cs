@@ -30,6 +30,22 @@ public partial class DropQueryForm : Form
         RunQuery();
     }
 
+    private void ResultsGrid_SortCompare(object sender, DataGridViewSortCompareEventArgs e)
+    {
+        if (e.Column != DropRateColumn) return;
+
+        decimal first = (decimal)ResultsGrid.Rows[e.RowIndex1].Cells[DropRateColumn.Index].Tag;
+        decimal second = (decimal)ResultsGrid.Rows[e.RowIndex2].Cells[DropRateColumn.Index].Tag;
+        e.SortResult = first.CompareTo(second);
+        if (e.SortResult == 0)
+        {
+            e.SortResult = StringComparer.OrdinalIgnoreCase.Compare(
+                ResultsGrid.Rows[e.RowIndex1].Cells[MonsterNameColumn.Index].Value as string,
+                ResultsGrid.Rows[e.RowIndex2].Cells[MonsterNameColumn.Index].Value as string);
+        }
+        e.Handled = true;
+    }
+
     private void ResultsGrid_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
     {
         if (e.RowIndex < 0 || e.ColumnIndex < 0) return;
@@ -94,6 +110,7 @@ public partial class DropQueryForm : Form
         }
 
         Dictionary<int, MonsterInfo> monsters = new();
+        HashSet<int> matchingItemIndexes = matchingItems.Select(item => item.Index).ToHashSet();
         foreach (ItemInfo item in matchingItems)
         {
             foreach (MonsterInfo monster in Envir.FindMonstersDroppingItem(item.Index))
@@ -112,11 +129,22 @@ public partial class DropQueryForm : Form
 
         foreach (var result in results)
         {
-            ResultsGrid.Rows.Add(
+            int rowIndex = ResultsGrid.Rows.Add(
                 result.Monster.Name,
                 GetMonsterTranslation(result.Monster),
+                GetDropRates(result.Monster, matchingItemIndexes),
                 result.DropFilePath);
+            // A row can contain several direct drop entries; sort by its highest chance.
+            ResultsGrid.Rows[rowIndex].Cells[DropRateColumn.Index].Tag = result.Monster.Drops
+                .Where(drop => drop?.Item != null && matchingItemIndexes.Contains(drop.Item.Index))
+                .Select(drop => 1m / Math.Max(1, drop.Chance))
+                .DefaultIfEmpty(0m)
+                .Max();
         }
+
+        if (ResultsGrid.SortedColumn != null)
+            ResultsGrid.Sort(ResultsGrid.SortedColumn, ResultsGrid.SortOrder == SortOrder.Descending
+                ? ListSortDirection.Descending : ListSortDirection.Ascending);
 
         StatusLabel.Text = results.Count == 0
             ? "No monsters have this item as a direct drop."
@@ -130,6 +158,19 @@ public partial class DropQueryForm : Form
         return _itemLocalization.TryGetEntry(item.Index, out string displayName, out _, out string sourceName) &&
                sourceName.Equals(item.Name, StringComparison.Ordinal) &&
                displayName.Equals(query, StringComparison.OrdinalIgnoreCase);
+    }
+
+    private static string GetDropRates(MonsterInfo monster, HashSet<int> itemIndexes)
+    {
+        return string.Join(Environment.NewLine, monster.Drops
+            .Where(drop => drop?.Item != null && itemIndexes.Contains(drop.Item.Index))
+            .Select(drop =>
+            {
+                int denominator = Math.Max(1, drop.Chance);
+                string itemName = itemIndexes.Count > 1 ? $"{drop.Item.Name}: " : string.Empty;
+                string quest = drop.QuestRequired ? " [Quest]" : string.Empty;
+                return $"{itemName}1/{denominator} ({100m / denominator:0.########}%){quest}";
+            }));
     }
 
     private string GetMonsterTranslation(MonsterInfo monster)
