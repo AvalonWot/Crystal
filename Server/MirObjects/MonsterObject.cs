@@ -1331,6 +1331,8 @@ namespace Server.MirObjects
             }
         }
 
+        public const int PetRecallDistance = 20;
+
         public void PetRecall()
         {
             if (Master == null || Master.CurrentMap == null) return;
@@ -1360,19 +1362,15 @@ namespace Server.MirObjects
             Frozen = false;
             Target = null;
             PMode = PetMode.Both;
+            
+            if (!Teleport(Master.CurrentMap, Master.Back))
+                Teleport(Master.CurrentMap, Master.CurrentLocation);
 
-            // Only teleport if needed
-            if (CurrentMap != Master.CurrentMap)
+            // Only show message if returning from frozen/waiting state
+            if (wasFrozen)
             {
-                if (!Teleport(Master.CurrentMap, Master.Back))
-                    Teleport(Master.CurrentMap, Master.CurrentLocation);
-
-                // Only show message if returning from frozen/waiting state
-                if (wasFrozen)
-                {
-                    if (Master is HumanObject owner)
-                        owner.ReceiveChat(owner.GetLocalizedText(ServerTextKeys.HasReturnedToYourSide, owner.GetMonsterDisplayName(this)), ChatType.System);
-                }
+                if (Master is HumanObject owner)
+                    owner.ReceiveChat(owner.GetLocalizedText(ServerTextKeys.HasReturnedToYourSide, owner.GetMonsterDisplayName(this)), ChatType.System);
             }
         }
         protected virtual void CompleteAttack(IList<object> data)
@@ -1712,7 +1710,8 @@ namespace Server.MirObjects
                 if ((mode == PetMode.Both || mode == PetMode.MoveOnly || mode == PetMode.FocusMasterTarget)
                     && masterMap != null)
                 {
-                    if (!Functions.InRange(CurrentLocation, masterLocation, Globals.DataRange) || CurrentMap != masterMap)
+                    int recallDistance = Race == ObjectType.Creature ? Globals.DataRange : PetRecallDistance;
+                    if (!Functions.InRange(CurrentLocation, masterLocation, recallDistance) || CurrentMap != masterMap)
                         PetRecall();
                 }
 

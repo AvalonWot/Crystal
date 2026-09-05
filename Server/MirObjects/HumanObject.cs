@@ -2505,6 +2505,8 @@ namespace Server.MirObjects
 
             AddObjects(dir, 1);
 
+            RecallDistantPets();
+
             _stepCounter++;
 
             SafeZoneInfo szi = CurrentMap.GetSafeZone(CurrentLocation);
@@ -2631,6 +2633,7 @@ namespace Server.MirObjects
             CurrentMap.GetCell(CurrentLocation).Add(this);
             AddObjects(dir, steps);
 
+            RecallDistantPets();
 
             SafeZoneInfo szi = CurrentMap.GetSafeZone(CurrentLocation);
 
@@ -2673,6 +2676,21 @@ namespace Server.MirObjects
 
             return true;
         }
+        private void RecallDistantPets()
+        {
+            if (Dead || CurrentMap == null || CurrentMap.Info.NoPets) return;
+
+            foreach (MonsterObject pet in Pets)
+            {
+                if (pet.Dead || pet.Master != this || pet.Race == ObjectType.Creature || pet.CurrentMap == null)
+                    continue;
+
+                if (pet.CurrentMap != CurrentMap ||
+                    !Functions.InRange(pet.CurrentLocation, CurrentLocation, MonsterObject.PetRecallDistance))
+                    pet.PetRecall();
+            }
+        }
+
         protected virtual void Moved()
         {
         }
