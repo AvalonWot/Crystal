@@ -7500,7 +7500,7 @@ namespace Server.MirObjects
             Account.Gold -= gold;
             Enqueue(new S.LoseGold { Gold = gold });
         }
-        public void PickUp()
+        public void PickUp(uint? objectID = null)
         {
             if (Dead)
             {
@@ -7517,6 +7517,8 @@ namespace Server.MirObjects
                 MapObject ob = cell.Objects[i];
 
                 if (ob.Race != ObjectType.Item) continue;
+
+                if (objectID is {} v && ob.ObjectID != v) continue;
 
                 if (ob.Owner != null && ob.Owner != this && !IsGroupMember(ob.Owner)) //Or Group member.
                 {

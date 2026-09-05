@@ -77,6 +77,15 @@ public static class LocalizationService
             : sourceName ?? string.Empty;
     }
 
+    internal static bool MatchesGroundItemFilter(int index, string objectName)
+    {
+        var items = Volatile.Read(ref _items);
+        if (!items.TryGetValue(index, out ItemLocalizationEntry entry) ||
+            !ItemLocalizationNames.GetGameName(entry.SourceName).Equals(
+                GroundItemFilter.WithoutCount(objectName), StringComparison.Ordinal)) return false;
+        return GroundItemFilter.Contains(entry.SourceName) || GroundItemFilter.Contains(entry.DisplayName);
+    }
+
     public static string GetMonsterDisplayName(int index, string sourceName)
     {
         IReadOnlyDictionary<int, MonsterLocalizationEntry> monsters = Volatile.Read(ref _monsters);

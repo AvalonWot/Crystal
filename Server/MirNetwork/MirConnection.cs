@@ -406,7 +406,7 @@ namespace Server.MirNetwork
                     DropGold((C.DropGold) p);
                     break;
                 case (short)ClientPacketIds.PickUp:
-                    PickUp();
+                    PickUp((C.PickUp)p);
                     break;
                 case (short)ClientPacketIds.RequestMapInfo:
                     RequestMapInfo((C.RequestMapInfo)p);
@@ -1375,11 +1375,11 @@ namespace Server.MirNetwork
 
             Player.DropGold(p.Amount);
         }
-        private void PickUp()
+        private void PickUp(C.PickUp p)
         {
             if (Stage != GameStage.Game) return;
 
-            Player.PickUp();
+            Player.PickUp(p.ObjectID);
         }
 
         private void RequestMapInfo(C.RequestMapInfo p)

@@ -17,6 +17,12 @@ namespace Client.MirObjects
         }
 
         public Size Size;
+        public bool IsGold { get; private set; }
+        public int ItemIndex { get; private set; }
+        public string SourceName { get; private set; } = string.Empty;
+        public bool IsFiltered => !IsGold && NameColour.R == 255 && NameColour.G == 255 && NameColour.B == 255 &&
+            (GroundItemFilter.Contains(SourceName) || GroundItemFilter.Contains(Name) ||
+             Client.Localization.LocalizationService.MatchesGroundItemFilter(ItemIndex, SourceName));
 
 
         public ItemObject(uint objectID) : base(objectID)
@@ -26,7 +32,10 @@ namespace Client.MirObjects
 
         public void Load(S.ObjectItem info)
         {
-            Name = info.Name;
+            IsGold = false;
+            ItemIndex = info.ItemIndex;
+            SourceName = info.Name;
+            Name = Client.Localization.LocalizationService.GetItemDisplayName(ItemIndex, SourceName);
             NameColour = info.NameColour;
 
             BodyLibrary = Libraries.FloorItems;
@@ -43,6 +52,7 @@ namespace Client.MirObjects
         }
         public void Load(S.ObjectGold info)
         {
+            IsGold = true;
             Name = GameLanguage.ClientTextMap.GetLocalization((ClientTextKeys.GoldAmount), info.Gold);
 
 
@@ -69,6 +79,7 @@ namespace Client.MirObjects
         }
         public override void Draw()
         {
+            if (IsFiltered) return;
             if (BodyLibrary != null)
                 BodyLibrary.Draw(DrawFrame, DrawLocation, DrawColour);
         }
@@ -85,12 +96,14 @@ namespace Client.MirObjects
         }
         public override bool MouseOver(Point p)
         {
+            if (IsFiltered) return false;
             return MapControl.MapLocation == CurrentLocation;
             // return DisplayRectangle.Contains(p);
         }
 
         public override void DrawName()
         {
+            if (IsFiltered) return;
             CreateLabel(Color.Transparent, false, true);
 
             if (NameLabel == null) return;
@@ -112,6 +125,7 @@ namespace Client.MirObjects
 
         public void DrawName(int y)
         {
+            if (IsFiltered) return;
             CreateLabel(Color.FromArgb(100, 0, 24, 48), true, false);
 
             NameLabel.Location = new Point(

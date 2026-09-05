@@ -706,11 +706,19 @@ namespace ClientPackets
     {
         public override short Index { get { return (short)ClientPacketIds.PickUp; } }
 
+        // Null represents a legacy request without a target.
+        public uint? ObjectID;
+
         protected override void ReadPacket(BinaryReader reader)
         {
+            long remaining = reader.BaseStream.Length - reader.BaseStream.Position;
+            if (remaining == 0) return;
+            if (remaining != sizeof(uint)) throw new InvalidDataException("Invalid pickup request length.");
+            ObjectID = reader.ReadUInt32();
         }
         protected override void WritePacket(BinaryWriter writer)
         {
+            if (ObjectID.HasValue) writer.Write(ObjectID.Value);
         }
     }
     public sealed class Inspect : Packet

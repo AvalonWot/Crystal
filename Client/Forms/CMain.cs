@@ -356,6 +356,7 @@ namespace Client
 
         private static void UpdateEnviroment()
         {
+            GroundItemFilter.Process();
             if (Time >= _cleanTime)
             {
                 _cleanTime = Time + 1000;

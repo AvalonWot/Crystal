@@ -730,8 +730,7 @@ namespace Client.MirScenes
                     case KeybindOptions.Pickup:
                         if (CMain.Time > PickUpTime)
                         {
-                            PickUpTime = CMain.Time + 200;
-                            Network.Enqueue(new C.PickUp());
+                            TryPickUp();
                         }
                         break;
                     case KeybindOptions.Belt1:
@@ -1183,6 +1182,16 @@ namespace Client.MirScenes
             for (int i = 0; i < OutputLines.Length; i++)
                 OutputLines[i].Draw();
         }
+        public static void TryPickUp()
+        {
+            if (User == null || CMain.Time <= PickUpTime) return;
+            ItemObject target = Client.MirScenes.MapControl.Objects.Values.OfType<ItemObject>()
+                .FirstOrDefault(item => item.CurrentLocation == User.CurrentLocation && !item.IsFiltered);
+            if (target == null) return;
+            PickUpTime = CMain.Time + 200;
+            Network.Enqueue(new C.PickUp { ObjectID = target.ObjectID });
+        }
+
         public override void Process()
         {
             if (MapControl == null || User == null)
@@ -3277,7 +3286,6 @@ namespace Client.MirScenes
 
         private void ObjectItem(S.ObjectItem p)
         {
-            p.Name = LocalizationService.GetItemDisplayName(p.ItemIndex, p.Name);
             ItemObject ob = new ItemObject(p.ObjectID);
             ob.Load(p);
             /*
@@ -11809,8 +11817,7 @@ namespace Client.MirScenes
                         {
                             if (CMain.Time > GameScene.PickUpTime)
                             {
-                                GameScene.PickUpTime = CMain.Time + 200;
-                                Network.Enqueue(new C.PickUp());
+                                GameScene.TryPickUp();
                             }
                             return;
                         }
