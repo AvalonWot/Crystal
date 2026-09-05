@@ -1837,7 +1837,7 @@ namespace Server
             // 
             MapSearchTextBox.Location = new Point(14, 41);
             MapSearchTextBox.Name = "MapSearchTextBox";
-            MapSearchTextBox.PlaceholderText = "Search...";
+            MapSearchTextBox.PlaceholderText = "地图名称 / mob:怪物名称";
             MapSearchTextBox.Size = new Size(220, 23);
             MapSearchTextBox.TabIndex = 35;
             // 

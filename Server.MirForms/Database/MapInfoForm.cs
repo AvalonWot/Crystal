@@ -1,5 +1,6 @@
 ﻿using Server.MirDatabase;
 using Server.MirEnvir;
+using Server.Database;
 
 
 namespace Server
@@ -14,10 +15,15 @@ namespace Server
         private List<MovementInfo> _selectedMovementInfos;
         private List<MineZone> _selectedMineZones;
         private MapInfo _info;
+        private readonly LocalizationEditorStore _monsterLocalization;
 
         public MapInfoForm()
         {
             InitializeComponent();
+
+            string language = LocalizationEditorStore.ResolveEditorLanguage(Settings.Language);
+            string localizationPath = Path.GetFullPath(Path.Combine(Settings.LocalizationDirectory, language, "monsters.json"));
+            _monsterLocalization = LocalizationEditorStore.LoadMonsters(language, localizationPath);
 
             List<string> mineItems = new() { { "Disabled" } };
             Settings.MineSetList.ForEach(x => mineItems.Add(x.Name));
@@ -57,10 +63,27 @@ namespace Server
                 DestMapComboBox.Items.Clear();
                 lstParticles.SelectedItems.Clear();
 
+                string searchText = MapSearchTextBox.Text ?? string.Empty;
+                bool searchMonsters = searchText.StartsWith("mob:", StringComparison.OrdinalIgnoreCase);
+                string monsterName = searchMonsters ? searchText[4..].Trim() : string.Empty;
+                HashSet<int> matchingMonsters = null;
+                if (searchMonsters && monsterName.Length > 0)
+                {
+                    matchingMonsters = new HashSet<int>();
+                    foreach (MonsterInfo monster in Envir.MonsterInfoList)
+                    {
+                        bool matches = monster.Name.Contains(monsterName, StringComparison.OrdinalIgnoreCase);
+                        if (!matches && _monsterLocalization.TryGetEntry(monster.Index, out string translatedName, out _))
+                            matches = translatedName.Contains(monsterName, StringComparison.OrdinalIgnoreCase);
+                        if (matches) matchingMonsters.Add(monster.Index);
+                    }
+                }
+
                 for (int i = 0; i < Envir.MapInfoList.Count; i++)
                 {
-                    if (!string.IsNullOrEmpty(MapSearchTextBox.Text) &&
-                        !Envir.MapInfoList[i].Title.Contains(MapSearchTextBox.Text, StringComparison.OrdinalIgnoreCase))
+                    if (searchMonsters
+                        ? matchingMonsters != null && !Envir.MapInfoList[i].Respawns.Any(respawn => matchingMonsters.Contains(respawn.MonsterIndex))
+                        : searchText.Length > 0 && !Envir.MapInfoList[i].Title.Contains(searchText, StringComparison.OrdinalIgnoreCase))
                         continue;
 
                     MapInfoListBox.Items.Add(Envir.MapInfoList[i]);
