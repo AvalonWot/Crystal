@@ -472,7 +472,9 @@ namespace Server.Database
                 return;
             }
 
-            string rowFilter = string.Format("([ItemType] = '{0}' OR '{0}' = -1) AND [ItemName] LIKE '%{1}%'", filterType, filterText);
+            string rowFilter = string.Format(
+                "([ItemType] = '{0}' OR '{0}' = -1) AND ([ItemName] LIKE '%{1}%' OR [ItemTranslatedName] LIKE '%{1}%')",
+                filterType, NameSearchFilter.Escape(filterText));
 
             (itemInfoGridView.DataSource as DataTable).DefaultView.RowFilter = rowFilter;
         }

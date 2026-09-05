@@ -37,6 +37,68 @@ namespace Server.Database
             monsterInfoGridView.CellBeginEdit += MonsterInfoGridView_CellBeginEdit;
             monsterInfoGridView.CellEndEdit += MonsterInfoGridView_CellEndEdit;
             monsterInfoGridView.CellValueChanged += MonsterInfoGridView_CellValueChanged;
+            InitializeDropFileMenu();
+        }
+
+        private void InitializeDropFileMenu()
+        {
+            components ??= new System.ComponentModel.Container();
+            var menu = new ContextMenuStrip(components);
+            var openDropFile = new ToolStripMenuItem("打开 Drop File");
+            menu.Items.Add(openDropFile);
+            openDropFile.Click += (_, _) => OpenSelectedDropFile();
+
+            monsterInfoGridView.CellMouseDown += (_, e) =>
+            {
+                if (e.Button != MouseButtons.Right || e.RowIndex < 0) return;
+                var row = monsterInfoGridView.Rows[e.RowIndex];
+                if (row.IsNewRow || !monsterInfoGridView.EndEdit()) return;
+
+                int columnIndex = e.ColumnIndex >= 0
+                    ? e.ColumnIndex
+                    : monsterInfoGridView.Columns.GetFirstColumn(DataGridViewElementStates.Visible).Index;
+                monsterInfoGridView.ClearSelection();
+                monsterInfoGridView.CurrentCell = row.Cells[columnIndex];
+                row.Selected = true;
+                menu.Show(monsterInfoGridView, monsterInfoGridView.PointToClient(Cursor.Position));
+            };
+        }
+
+        private void OpenSelectedDropFile()
+        {
+            var row = monsterInfoGridView.CurrentRow;
+            if (row == null || row.IsNewRow) return;
+
+            // Use the row's source name and drop path, including pending edits, not its translated name.
+            var monster = new MonsterInfo
+            {
+                Name = Convert.ToString(row.Cells["MonsterName"].Value) ?? string.Empty,
+                DropPath = Convert.ToString(row.Cells["MonsterDropPath"].Value) ?? string.Empty
+            };
+            string path = string.Empty;
+            try
+            {
+                path = Path.GetFullPath(Server.MirEnvir.Envir.GetMonsterDropFilePath(monster));
+                if (!File.Exists(path))
+                {
+                    MessageBox.Show(this, $"掉落文件不存在：\n{path}", "打开 Drop File",
+                        MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
+                System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
+                {
+                    FileName = path,
+                    UseShellExecute = true,
+                    Verb = "open"
+                });
+            }
+            catch (Exception ex) when (ex is System.ComponentModel.Win32Exception or InvalidOperationException
+                or IOException or UnauthorizedAccessException or ArgumentException or NotSupportedException)
+            {
+                MessageBox.Show(this, $"无法打开掉落文件：\n{path}\n\n{ex.Message}", "打开 Drop File",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         private void InitializeLocalizationEditor()
@@ -224,7 +286,9 @@ namespace Server.Database
                 return;
             }
 
-            string rowFilter = string.Format("[MonsterName] LIKE '%{0}%'", filterText);
+            string rowFilter = string.Format(
+                "([MonsterName] LIKE '%{0}%' OR [MonsterTranslatedName] LIKE '%{0}%')",
+                NameSearchFilter.Escape(filterText));
 
             (monsterInfoGridView.DataSource as DataTable).DefaultView.RowFilter = rowFilter;
         }
