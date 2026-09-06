@@ -32,6 +32,9 @@ namespace Server.MirObjects.Monsters
                 Stats[Stat.MaxDC] += (int)Math.Floor(master.Stats[Stat.MaxSC] * (PetLevel * PetLevel * 0.005f));
                 Stats[Stat.Accuracy] += (int)Math.Floor((master.Stats[Stat.MinSC] + master.Stats[Stat.MaxSC]) / 5.0f);
                 Stats[Stat.Agility] += (int)Math.Floor((master.Stats[Stat.MinSC] + master.Stats[Stat.MaxSC]) / 10.0f);
+                Stats[Stat.MinAC] += (int)Math.Round(master.Stats[Stat.MinSC] * 0.12f);
+                Stats[Stat.MaxAC] += (int)Math.Round(master.Stats[Stat.MaxSC] * 0.12f);
+                Stats[Stat.HP] = (int)Math.Floor(Info.Stats[Stat.HP] * (1 + PetLevel * (PetLevel * 0.06)));
             }
         }
 
