@@ -2679,6 +2679,7 @@ namespace Server.MirObjects
         private void RecallDistantPets()
         {
             if (Dead || CurrentMap == null || CurrentMap.Info.NoPets) return;
+            if (PMode != PetMode.Both && PMode != PetMode.MoveOnly && PMode != PetMode.FocusMasterTarget) return;
 
             foreach (MonsterObject pet in Pets)
             {
