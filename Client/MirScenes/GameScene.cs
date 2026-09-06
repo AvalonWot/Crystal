@@ -137,6 +137,7 @@ namespace Client.MirScenes
         public ItemRentalDialog ItemRentalDialog;
 
         public BuffDialog BuffsDialog;
+        public SummonStatusDialog SummonStatus;
         public BuffDialog HeroBuffsDialog;
 
         public KeyboardLayoutDialog KeyboardLayoutDialog;
@@ -309,6 +310,7 @@ namespace Client.MirScenes
 
             HelpDialog = new HelpDialog { Parent = this, Visible = false };
             KeyboardLayoutDialog = new KeyboardLayoutDialog { Parent = this, Visible = false };
+            SummonStatus = new SummonStatusDialog(this);
             NoticeDialog = new NoticeDialog { Parent = this, Visible = false };
 
             MountDialog = new MountDialog { Parent = this, Visible = false };
@@ -1108,9 +1110,12 @@ namespace Client.MirScenes
                     break;
                 default:
                     actor.NextMagic = magic;
-                    actor.NextMagicLocation = MapControl.MapLocation;
-                    actor.NextMagicObject = MapObject.MouseObject;
-                    actor.NextMagicDirection = MapControl.MouseDirection();
+                    MonsterObject summonTarget = Scene.SummonStatus?.HoveredTarget;
+                    actor.NextMagicLocation = summonTarget?.CurrentLocation ?? MapControl.MapLocation;
+                    actor.NextMagicObject = summonTarget ?? MapObject.MouseObject;
+                    actor.NextMagicDirection = summonTarget != null
+                        ? Functions.DirectionFromPoint(actor.CurrentLocation, summonTarget.CurrentLocation)
+                        : MapControl.MouseDirection();
 
                     if (actor == Hero)
                         MapControl.UseMagic(Hero.NextMagic, Hero);
@@ -1299,6 +1304,7 @@ namespace Client.MirScenes
             }
 
             BuffsDialog.Process();
+            SummonStatus.Process();
             HeroBuffsDialog?.Process();
 
             MapControl.Process();
