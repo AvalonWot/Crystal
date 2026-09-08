@@ -191,7 +191,7 @@ namespace Server.MirObjects
         {
             if (CurrentMap == null) return false;
 
-            Cell best = null;
+            bool foundBest = false;
             int bestCount = 0;
             Point bestLocation = Point.Empty;
 
@@ -219,22 +219,15 @@ namespace Server.MirObjects
 
                         if (movement) continue;
 
-                        Cell cell = CurrentMap.GetCell(x, y);
-
-                        if (cell.Objects == null)
-                        {
-                            CurrentLocation = new Point(x, y);
-                            CurrentMap.AddObject(this);
-                            Spawned();
-                            return true;
-                        }
+                        using var cellQuery0 = CurrentMap.RentObjectsSnapshot(x, y);
 
                         int count = 0;
                         bool blocking = false;
 
-                        for (int i = 0; i < cell.Objects.Count; i++)
+                        for (int i = 0; i < cellQuery0.Count; i++)
                         {
-                            MapObject ob = cell.Objects[i];
+                            MapObject ob = cellQuery0[i];
+                            if (!cellQuery0.IsCurrent(ob)) continue;
                             if (ob.Blocking)
                             {
                                 blocking = true;
@@ -254,9 +247,9 @@ namespace Server.MirObjects
                             return true;
                         }
 
-                        if (best == null || count < bestCount)
+                        if (!foundBest || count < bestCount)
                         {
-                            best = cell;
+                            foundBest = true;
                             bestCount = count;
                             bestLocation = new Point(x, y);
                         }
@@ -264,7 +257,7 @@ namespace Server.MirObjects
                 }
             }
 
-            if (best == null)
+            if (!foundBest)
 
                 return false;
 
@@ -278,7 +271,7 @@ namespace Server.MirObjects
         {
             if (CurrentMap == null) return false;
 
-            Cell best = null;
+            bool foundBest = false;
             int bestCount = 0;
             Point bestLocation = Point.Empty;
 
@@ -306,22 +299,15 @@ namespace Server.MirObjects
 
                         if (movement) continue;
 
-                        Cell cell = CurrentMap.GetCell(x, y);
-
-                        if (cell.Objects == null)
-                        {
-                            CurrentLocation = new Point(x, y);
-                            CurrentMap.AddObject(this);
-                            Spawned();
-                            return true;
-                        }
+                        using var cellQuery1 = CurrentMap.RentObjectsSnapshot(x, y);
 
                         int count = 0;
                         bool blocking = false;
 
-                        for (int i = 0; i < cell.Objects.Count; i++)
+                        for (int i = 0; i < cellQuery1.Count; i++)
                         {
-                            MapObject ob = cell.Objects[i];
+                            MapObject ob = cellQuery1[i];
+                            if (!cellQuery1.IsCurrent(ob)) continue;
                             if (ob.Blocking)
                             {
                                 blocking = true;
@@ -341,9 +327,9 @@ namespace Server.MirObjects
                             return true;
                         }
 
-                        if (best == null || count < bestCount)
+                        if (!foundBest || count < bestCount)
                         {
-                            best = cell;
+                            foundBest = true;
                             bestCount = count;
                             bestLocation = new Point(x, y);
                         }
@@ -351,7 +337,7 @@ namespace Server.MirObjects
                 }
             }
 
-            if (best == null)
+            if (!foundBest)
 
                 return false;
 

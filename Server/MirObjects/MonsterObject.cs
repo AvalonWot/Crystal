@@ -947,20 +947,17 @@ namespace Server.MirObjects
         {
             if (temp == null || !temp.ValidPoint(location)) return false;
 
-            CurrentMap.RemoveObject(this);
+            Map sourceMap = CurrentMap;
             if (effects) Broadcast(new S.ObjectTeleportOut { ObjectID = ObjectID, Type = effectnumber });
             Broadcast(new S.ObjectRemove { ObjectID = ObjectID });
 
-            CurrentMap.MonsterCount--;
-
-            CurrentMap = temp;
-            CurrentLocation = location;
-
-            CurrentMap.MonsterCount++;
+            sourceMap.MoveObject(this, temp, location);
+            if (CurrentMap != temp || CurrentLocation != location) return false;
+            sourceMap.MonsterCount--;
+            temp.MonsterCount++;
 
             InTrapRock = false;
 
-            CurrentMap.AddObject(this);
             BroadcastInfo();
 
             if (effects) Broadcast(new S.ObjectTeleportIn { ObjectID = ObjectID, Type = effectnumber });
@@ -1053,24 +1050,23 @@ namespace Server.MirObjects
 
                 if (!CurrentMap.ValidPoint(location)) return result;
 
-                Cell cell = CurrentMap.GetCell(location);
+                using var cellQuery0 = CurrentMap.RentObjectsSnapshot(location);
 
                 bool stop = false;
-                if (cell.Objects != null)
-                    for (int c = 0; c < cell.Objects.Count; c++)
+
+                    for (int c = 0; c < cellQuery0.Count; c++)
                     {
-                        MapObject ob = cell.Objects[c];
+                        MapObject ob = cellQuery0[c];
+                        if (!cellQuery0.IsCurrent(ob)) continue;
                         if (!ob.Blocking) continue;
                         stop = true;
                     }
                 if (stop) break;
 
-                CurrentMap.GetCell(CurrentLocation).Remove(this);
 
                 Direction = reverse;
                 RemoveObjects(dir, 1);
-                CurrentLocation = location;
-                CurrentMap.GetCell(CurrentLocation).Add(this);
+                CurrentMap.MoveObject(this, location);
                 AddObjects(dir, 1);
 
                 Broadcast(new S.ObjectPushed { ObjectID = ObjectID, Direction = Direction, Location = CurrentLocation });
@@ -1083,12 +1079,14 @@ namespace Server.MirObjects
 
             if (result > 0)
             {
-                Cell cell = CurrentMap.GetCell(CurrentLocation);
+                using var cellQuery1 = CurrentMap.RentObjectsSnapshot(CurrentLocation);
 
-                for (int i = 0; i < cell.Objects.Count; i++)
+                for (int i = 0; i < cellQuery1.Count; i++)
                 {
-                    if (cell.Objects[i].Race != ObjectType.Spell) continue;
-                    SpellObject ob = (SpellObject)cell.Objects[i];
+                    MapObject currentCellObject = cellQuery1[i];
+                    if (!cellQuery1.IsCurrent(currentCellObject)) continue;
+                    if (currentCellObject.Race != ObjectType.Spell) continue;
+                    SpellObject ob = (SpellObject)currentCellObject;
 
                     ob.ProcessSpell(this);
                     //break;
@@ -1945,11 +1943,12 @@ namespace Server.MirObjects
                     {
                         if (x < 0) continue;
                         if (x >= Current.Width) break;
-                        Cell cell = Current.Cells[x, y];
-                        if (cell.Objects == null || !cell.Valid) continue;
-                        for (int i = 0; i < cell.Objects.Count; i++)
+                        using var cellQuery2 = Current.RentObjectsSnapshot(x, y);
+                        if (!cellQuery2.Valid) continue;
+                        for (int i = 0; i < cellQuery2.Count; i++)
                         {
-                            MapObject ob = cell.Objects[i];
+                            MapObject ob = cellQuery2[i];
+                            if (!cellQuery2.IsCurrent(ob)) continue;
                             switch (ob.Race)
                             {
                                 case ObjectType.Monster:
@@ -2048,11 +2047,12 @@ namespace Server.MirObjects
             if (inRange)
             {
                 if (!CurrentMap.ValidPoint(location)) return;
-                Cell cell = CurrentMap.GetCell(location);
-                if (cell.Objects != null)
-                    for (int i = 0; i < cell.Objects.Count; i++)
+                using var cellQuery3 = CurrentMap.RentObjectsSnapshot(location);
+
+                    for (int i = 0; i < cellQuery3.Count; i++)
                     {
-                        MapObject ob = cell.Objects[i];
+                        MapObject ob = cellQuery3[i];
+                        if (!cellQuery3.IsCurrent(ob)) continue;
                         if (!ob.Blocking) continue;
                         return;
                     }
@@ -2093,12 +2093,14 @@ namespace Server.MirObjects
 
             InSafeZone = CurrentMap.GetSafeZone(CurrentLocation) != null;
 
-            Cell cell = CurrentMap.GetCell(CurrentLocation);
+            using var cellQuery4 = CurrentMap.RentObjectsSnapshot(CurrentLocation);
 
-            for (int i = 0; i < cell.Objects.Count; i++)
+            for (int i = 0; i < cellQuery4.Count; i++)
             {
-                if (cell.Objects[i].Race != ObjectType.Spell) continue;
-                SpellObject ob = (SpellObject)cell.Objects[i];
+                MapObject currentCellObject = cellQuery4[i];
+                if (!cellQuery4.IsCurrent(currentCellObject)) continue;
+                if (currentCellObject.Race != ObjectType.Spell) continue;
+                SpellObject ob = (SpellObject)currentCellObject;
 
                 ob.ProcessSpell(this);
                 //break;
@@ -2115,23 +2117,22 @@ namespace Server.MirObjects
 
             if (!CurrentMap.ValidPoint(location)) return false;
 
-            Cell cell = CurrentMap.GetCell(location);
+            using var cellQuery5 = CurrentMap.RentObjectsSnapshot(location);
 
-            if (cell.Objects != null)
-                for (int i = 0; i < cell.Objects.Count; i++)
+
+                for (int i = 0; i < cellQuery5.Count; i++)
                 {
-                    MapObject ob = cell.Objects[i];
+                    MapObject ob = cellQuery5[i];
+                    if (!cellQuery5.IsCurrent(ob)) continue;
                     if (!ob.Blocking || Race == ObjectType.Creature) continue;
 
                     return false;
                 }
 
-            CurrentMap.GetCell(CurrentLocation).Remove(this);
 
             Direction = dir;
             RemoveObjects(dir, 1);
-            CurrentLocation = location;
-            CurrentMap.GetCell(CurrentLocation).Add(this);
+            CurrentMap.MoveObject(this, location);
             AddObjects(dir, 1);
 
             if (Hidden)
@@ -2149,12 +2150,14 @@ namespace Server.MirObjects
 
             Broadcast(new S.ObjectWalk { ObjectID = ObjectID, Direction = Direction, Location = CurrentLocation });
 
-            cell = CurrentMap.GetCell(CurrentLocation);
+            using var cellQuery6 = CurrentMap.RentObjectsSnapshot(CurrentLocation);
 
-            for (int i = 0; i < cell.Objects.Count; i++)
+            for (int i = 0; i < cellQuery6.Count; i++)
             {
-                if (cell.Objects[i].Race != ObjectType.Spell) continue;
-                SpellObject ob = (SpellObject)cell.Objects[i];
+                MapObject currentCellObject = cellQuery6[i];
+                if (!cellQuery6.IsCurrent(currentCellObject)) continue;
+                if (currentCellObject.Race != ObjectType.Spell) continue;
+                SpellObject ob = (SpellObject)currentCellObject;
 
                 ob.ProcessSpell(this);
                 //break;
@@ -2207,12 +2210,13 @@ namespace Server.MirObjects
                     if (x < 0) continue;
                     if (x >= CurrentMap.Width) break;
 
-                    Cell cell = CurrentMap.GetCell(x, y);
-                    if (!cell.Valid || cell.Objects == null) continue;
+                    using var cellQuery7 = CurrentMap.RentObjectsSnapshot(x, y);
+                    if (!cellQuery7.Valid) continue;
 
-                    for (int i = 0; i < cell.Objects.Count; i++)
+                    for (int i = 0; i < cellQuery7.Count; i++)
                     {
-                        MapObject targetob = cell.Objects[i];
+                        MapObject targetob = cellQuery7[i];
+                        if (!cellQuery7.IsCurrent(targetob)) continue;
                         if (targetob == null || targetob.Node == null || targetob.Race != ObjectType.Monster) continue;
                         if (((MonsterObject)targetob).ShockTime == 0) continue;
 
@@ -2240,12 +2244,11 @@ namespace Server.MirObjects
                         if (x < 0) continue;
                         if (x >= CurrentMap.Width) break;
                         if (!CurrentMap.ValidPoint(x, y)) continue;
-                        Cell cell = CurrentMap.GetCell(x, y);
-                        if (cell.Objects == null) continue;
-
-                        for (int i = 0; i < cell.Objects.Count; i++)
+                        using var cellQuery8 = CurrentMap.RentObjectsSnapshot(x, y);
+                        for (int i = 0; i < cellQuery8.Count; i++)
                         {
-                            MapObject ob = cell.Objects[i];
+                            MapObject ob = cellQuery8[i];
+                            if (!cellQuery8.IsCurrent(ob)) continue;
                             switch (ob.Race)
                             {
                                 case ObjectType.Monster:
@@ -2283,12 +2286,11 @@ namespace Server.MirObjects
                         if (x < 0) continue;
                         if (x >= CurrentMap.Width) break;
                         if (!CurrentMap.ValidPoint(x, y)) continue;
-                        Cell cell = CurrentMap.GetCell(x, y);
-                        if (cell.Objects == null) continue;
-
-                        for (int i = 0; i < cell.Objects.Count; i++)
+                        using var cellQuery9 = CurrentMap.RentObjectsSnapshot(x, y);
+                        for (int i = 0; i < cellQuery9.Count; i++)
                         {
-                            MapObject ob = cell.Objects[i];
+                            MapObject ob = cellQuery9[i];
+                            if (!cellQuery9.IsCurrent(ob)) continue;
                             switch (ob.Race)
                             {
                                 case ObjectType.Monster:
@@ -2328,12 +2330,13 @@ namespace Server.MirObjects
                         if (x < 0) continue;
                         if (x >= CurrentMap.Width) break;
 
-                        Cell cell = CurrentMap.GetCell(x, y);
-                        if (!cell.Valid || cell.Objects == null) continue;
+                        using var cellQuery10 = CurrentMap.RentObjectsSnapshot(x, y);
+                        if (!cellQuery10.Valid) continue;
 
-                        for (int i = 0; i < cell.Objects.Count; i++)
+                        for (int i = 0; i < cellQuery10.Count; i++)
                         {
-                            MapObject ob = cell.Objects[i];
+                            MapObject ob = cellQuery10[i];
+                            if (!cellQuery10.IsCurrent(ob)) continue;
 
                             if (ob == this) continue;
 
@@ -2374,12 +2377,13 @@ namespace Server.MirObjects
                         if (x < 0) continue;
                         if (x >= CurrentMap.Width) break;
 
-                        Cell cell = CurrentMap.GetCell(x, y);
-                        if (!cell.Valid || cell.Objects == null) continue;
+                        using var cellQuery11 = CurrentMap.RentObjectsSnapshot(x, y);
+                        if (!cellQuery11.Valid) continue;
 
-                        for (int i = 0; i < cell.Objects.Count; i++)
+                        for (int i = 0; i < cellQuery11.Count; i++)
                         {
-                            MapObject ob = cell.Objects[i];
+                            MapObject ob = cellQuery11[i];
+                            if (!cellQuery11.IsCurrent(ob)) continue;
                             switch (ob.Race)
                             {
                                 case ObjectType.Monster:
@@ -2412,12 +2416,13 @@ namespace Server.MirObjects
                         if (x < 0) continue;
                         if (x >= CurrentMap.Width) break;
 
-                        Cell cell = CurrentMap.GetCell(x, y);
-                        if (!cell.Valid || cell.Objects == null) continue;
+                        using var cellQuery12 = CurrentMap.RentObjectsSnapshot(x, y);
+                        if (!cellQuery12.Valid) continue;
 
-                        for (int i = 0; i < cell.Objects.Count; i++)
+                        for (int i = 0; i < cellQuery12.Count; i++)
                         {
-                            MapObject ob = cell.Objects[i];
+                            MapObject ob = cellQuery12[i];
+                            if (!cellQuery12.IsCurrent(ob)) continue;
                             switch (ob.Race)
                             {
                                 case ObjectType.Monster:
@@ -2916,13 +2921,14 @@ namespace Server.MirObjects
                             int x = CurrentLocation.X + b;
                             if (x < 0 || x >= CurrentMap.Width) continue;
 
-                            Cell cell = CurrentMap.GetCell(x, y);
+                            using var cellQuery13 = CurrentMap.RentObjectsSnapshot(x, y);
 
-                            if (!cell.Valid || cell.Objects == null) continue;
+                            if (!cellQuery13.Valid) continue;
 
-                            for (int i = 0; i < cell.Objects.Count; i++)
+                            for (int i = 0; i < cellQuery13.Count; i++)
                             {
-                                MapObject ob = cell.Objects[i];
+                                MapObject ob = cellQuery13[i];
+                                if (!cellQuery13.IsCurrent(ob)) continue;
                                 if (ob.Race != ObjectType.Player) continue;
                                 ob.Remove(this);
                             }
@@ -2941,13 +2947,14 @@ namespace Server.MirObjects
                             int x = CurrentLocation.X + b;
                             if (x < 0 || x >= CurrentMap.Width) continue;
 
-                            Cell cell = CurrentMap.GetCell(x, y);
+                            using var cellQuery14 = CurrentMap.RentObjectsSnapshot(x, y);
 
-                            if (!cell.Valid || cell.Objects == null) continue;
+                            if (!cellQuery14.Valid) continue;
 
-                            for (int i = 0; i < cell.Objects.Count; i++)
+                            for (int i = 0; i < cellQuery14.Count; i++)
                             {
-                                MapObject ob = cell.Objects[i];
+                                MapObject ob = cellQuery14[i];
+                                if (!cellQuery14.IsCurrent(ob)) continue;
                                 if (ob.Race != ObjectType.Player) continue;
                                 ob.Remove(this);
                             }
@@ -2965,13 +2972,14 @@ namespace Server.MirObjects
                             int x = CurrentLocation.X - Globals.DataRange + b;
                             if (x < 0 || x >= CurrentMap.Width) continue;
 
-                            Cell cell = CurrentMap.GetCell(x, y);
+                            using var cellQuery15 = CurrentMap.RentObjectsSnapshot(x, y);
 
-                            if (!cell.Valid || cell.Objects == null) continue;
+                            if (!cellQuery15.Valid) continue;
 
-                            for (int i = 0; i < cell.Objects.Count; i++)
+                            for (int i = 0; i < cellQuery15.Count; i++)
                             {
-                                MapObject ob = cell.Objects[i];
+                                MapObject ob = cellQuery15[i];
+                                if (!cellQuery15.IsCurrent(ob)) continue;
                                 if (ob.Race != ObjectType.Player) continue;
                                 ob.Remove(this);
                             }
@@ -2990,13 +2998,14 @@ namespace Server.MirObjects
                             int x = CurrentLocation.X - Globals.DataRange + b;
                             if (x < 0 || x >= CurrentMap.Width) continue;
 
-                            Cell cell = CurrentMap.GetCell(x, y);
+                            using var cellQuery16 = CurrentMap.RentObjectsSnapshot(x, y);
 
-                            if (!cell.Valid || cell.Objects == null) continue;
+                            if (!cellQuery16.Valid) continue;
 
-                            for (int i = 0; i < cell.Objects.Count; i++)
+                            for (int i = 0; i < cellQuery16.Count; i++)
                             {
-                                MapObject ob = cell.Objects[i];
+                                MapObject ob = cellQuery16[i];
+                                if (!cellQuery16.IsCurrent(ob)) continue;
                                 if (ob.Race != ObjectType.Player) continue;
                                 ob.Remove(this);
                             }
@@ -3015,13 +3024,14 @@ namespace Server.MirObjects
                             int x = CurrentLocation.X + b;
                             if (x < 0 || x >= CurrentMap.Width) continue;
 
-                            Cell cell = CurrentMap.GetCell(x, y);
+                            using var cellQuery17 = CurrentMap.RentObjectsSnapshot(x, y);
 
-                            if (!cell.Valid || cell.Objects == null) continue;
+                            if (!cellQuery17.Valid) continue;
 
-                            for (int i = 0; i < cell.Objects.Count; i++)
+                            for (int i = 0; i < cellQuery17.Count; i++)
                             {
-                                MapObject ob = cell.Objects[i];
+                                MapObject ob = cellQuery17[i];
+                                if (!cellQuery17.IsCurrent(ob)) continue;
                                 if (ob.Race != ObjectType.Player) continue;
                                 ob.Remove(this);
                             }
@@ -3039,13 +3049,14 @@ namespace Server.MirObjects
                             int x = CurrentLocation.X - Globals.DataRange + b;
                             if (x < 0 || x >= CurrentMap.Width) continue;
 
-                            Cell cell = CurrentMap.GetCell(x, y);
+                            using var cellQuery18 = CurrentMap.RentObjectsSnapshot(x, y);
 
-                            if (!cell.Valid || cell.Objects == null) continue;
+                            if (!cellQuery18.Valid) continue;
 
-                            for (int i = 0; i < cell.Objects.Count; i++)
+                            for (int i = 0; i < cellQuery18.Count; i++)
                             {
-                                MapObject ob = cell.Objects[i];
+                                MapObject ob = cellQuery18[i];
+                                if (!cellQuery18.IsCurrent(ob)) continue;
                                 if (ob.Race != ObjectType.Player) continue;
                                 ob.Remove(this);
                             }
@@ -3063,13 +3074,14 @@ namespace Server.MirObjects
                             int x = CurrentLocation.X + b;
                             if (x < 0 || x >= CurrentMap.Width) continue;
 
-                            Cell cell = CurrentMap.GetCell(x, y);
+                            using var cellQuery19 = CurrentMap.RentObjectsSnapshot(x, y);
 
-                            if (!cell.Valid || cell.Objects == null) continue;
+                            if (!cellQuery19.Valid) continue;
 
-                            for (int i = 0; i < cell.Objects.Count; i++)
+                            for (int i = 0; i < cellQuery19.Count; i++)
                             {
-                                MapObject ob = cell.Objects[i];
+                                MapObject ob = cellQuery19[i];
+                                if (!cellQuery19.IsCurrent(ob)) continue;
                                 if (ob.Race != ObjectType.Player) continue;
                                 ob.Remove(this);
                             }
@@ -3088,13 +3100,14 @@ namespace Server.MirObjects
                             int x = CurrentLocation.X + b;
                             if (x < 0 || x >= CurrentMap.Width) continue;
 
-                            Cell cell = CurrentMap.GetCell(x, y);
+                            using var cellQuery20 = CurrentMap.RentObjectsSnapshot(x, y);
 
-                            if (!cell.Valid || cell.Objects == null) continue;
+                            if (!cellQuery20.Valid) continue;
 
-                            for (int i = 0; i < cell.Objects.Count; i++)
+                            for (int i = 0; i < cellQuery20.Count; i++)
                             {
-                                MapObject ob = cell.Objects[i];
+                                MapObject ob = cellQuery20[i];
+                                if (!cellQuery20.IsCurrent(ob)) continue;
                                 if (ob.Race != ObjectType.Player) continue;
                                 ob.Remove(this);
                             }
@@ -3112,13 +3125,14 @@ namespace Server.MirObjects
                             int x = CurrentLocation.X + Globals.DataRange - b;
                             if (x < 0 || x >= CurrentMap.Width) continue;
 
-                            Cell cell = CurrentMap.GetCell(x, y);
+                            using var cellQuery21 = CurrentMap.RentObjectsSnapshot(x, y);
 
-                            if (!cell.Valid || cell.Objects == null) continue;
+                            if (!cellQuery21.Valid) continue;
 
-                            for (int i = 0; i < cell.Objects.Count; i++)
+                            for (int i = 0; i < cellQuery21.Count; i++)
                             {
-                                MapObject ob = cell.Objects[i];
+                                MapObject ob = cellQuery21[i];
+                                if (!cellQuery21.IsCurrent(ob)) continue;
                                 if (ob.Race != ObjectType.Player) continue;
                                 ob.Remove(this);
                             }
@@ -3136,13 +3150,14 @@ namespace Server.MirObjects
                             int x = CurrentLocation.X + Globals.DataRange - b;
                             if (x < 0 || x >= CurrentMap.Width) continue;
 
-                            Cell cell = CurrentMap.GetCell(x, y);
+                            using var cellQuery22 = CurrentMap.RentObjectsSnapshot(x, y);
 
-                            if (!cell.Valid || cell.Objects == null) continue;
+                            if (!cellQuery22.Valid) continue;
 
-                            for (int i = 0; i < cell.Objects.Count; i++)
+                            for (int i = 0; i < cellQuery22.Count; i++)
                             {
-                                MapObject ob = cell.Objects[i];
+                                MapObject ob = cellQuery22[i];
+                                if (!cellQuery22.IsCurrent(ob)) continue;
                                 if (ob.Race != ObjectType.Player) continue;
                                 ob.Remove(this);
                             }
@@ -3162,13 +3177,14 @@ namespace Server.MirObjects
                             if (x < 0 || x >= CurrentMap.Width) continue;
                             if (x < 0 || x >= CurrentMap.Width) continue;
 
-                            Cell cell = CurrentMap.GetCell(x, y);
+                            using var cellQuery23 = CurrentMap.RentObjectsSnapshot(x, y);
 
-                            if (!cell.Valid || cell.Objects == null) continue;
+                            if (!cellQuery23.Valid) continue;
 
-                            for (int i = 0; i < cell.Objects.Count; i++)
+                            for (int i = 0; i < cellQuery23.Count; i++)
                             {
-                                MapObject ob = cell.Objects[i];
+                                MapObject ob = cellQuery23[i];
+                                if (!cellQuery23.IsCurrent(ob)) continue;
                                 if (ob.Race != ObjectType.Player) continue;
                                 ob.Remove(this);
                             }
@@ -3186,13 +3202,14 @@ namespace Server.MirObjects
                             int x = CurrentLocation.X + Globals.DataRange - b;
                             if (x < 0 || x >= CurrentMap.Width) continue;
 
-                            Cell cell = CurrentMap.GetCell(x, y);
+                            using var cellQuery24 = CurrentMap.RentObjectsSnapshot(x, y);
 
-                            if (!cell.Valid || cell.Objects == null) continue;
+                            if (!cellQuery24.Valid) continue;
 
-                            for (int i = 0; i < cell.Objects.Count; i++)
+                            for (int i = 0; i < cellQuery24.Count; i++)
                             {
-                                MapObject ob = cell.Objects[i];
+                                MapObject ob = cellQuery24[i];
+                                if (!cellQuery24.IsCurrent(ob)) continue;
                                 if (ob.Race != ObjectType.Player) continue;
                                 ob.Remove(this);
                             }
@@ -3216,13 +3233,14 @@ namespace Server.MirObjects
                             int x = CurrentLocation.X + b;
                             if (x < 0 || x >= CurrentMap.Width) continue;
 
-                            Cell cell = CurrentMap.GetCell(x, y);
+                            using var cellQuery25 = CurrentMap.RentObjectsSnapshot(x, y);
 
-                            if (!cell.Valid || cell.Objects == null) continue;
+                            if (!cellQuery25.Valid) continue;
 
-                            for (int i = 0; i < cell.Objects.Count; i++)
+                            for (int i = 0; i < cellQuery25.Count; i++)
                             {
-                                MapObject ob = cell.Objects[i];
+                                MapObject ob = cellQuery25[i];
+                                if (!cellQuery25.IsCurrent(ob)) continue;
                                 if (ob.Race != ObjectType.Player) continue;
                                 ob.Add(this);
                             }
@@ -3241,13 +3259,14 @@ namespace Server.MirObjects
                             int x = CurrentLocation.X + b;
                             if (x < 0 || x >= CurrentMap.Width) continue;
 
-                            Cell cell = CurrentMap.GetCell(x, y);
+                            using var cellQuery26 = CurrentMap.RentObjectsSnapshot(x, y);
 
-                            if (!cell.Valid || cell.Objects == null) continue;
+                            if (!cellQuery26.Valid) continue;
 
-                            for (int i = 0; i < cell.Objects.Count; i++)
+                            for (int i = 0; i < cellQuery26.Count; i++)
                             {
-                                MapObject ob = cell.Objects[i];
+                                MapObject ob = cellQuery26[i];
+                                if (!cellQuery26.IsCurrent(ob)) continue;
                                 if (ob.Race != ObjectType.Player) continue;
                                 ob.Add(this);
                             }
@@ -3265,13 +3284,14 @@ namespace Server.MirObjects
                             int x = CurrentLocation.X + Globals.DataRange - b;
                             if (x < 0 || x >= CurrentMap.Width) continue;
 
-                            Cell cell = CurrentMap.GetCell(x, y);
+                            using var cellQuery27 = CurrentMap.RentObjectsSnapshot(x, y);
 
-                            if (!cell.Valid || cell.Objects == null) continue;
+                            if (!cellQuery27.Valid) continue;
 
-                            for (int i = 0; i < cell.Objects.Count; i++)
+                            for (int i = 0; i < cellQuery27.Count; i++)
                             {
-                                MapObject ob = cell.Objects[i];
+                                MapObject ob = cellQuery27[i];
+                                if (!cellQuery27.IsCurrent(ob)) continue;
                                 if (ob.Race != ObjectType.Player) continue;
                                 ob.Add(this);
                             }
@@ -3289,13 +3309,14 @@ namespace Server.MirObjects
                             int x = CurrentLocation.X + Globals.DataRange - b;
                             if (x < 0 || x >= CurrentMap.Width) continue;
 
-                            Cell cell = CurrentMap.GetCell(x, y);
+                            using var cellQuery28 = CurrentMap.RentObjectsSnapshot(x, y);
 
-                            if (!cell.Valid || cell.Objects == null) continue;
+                            if (!cellQuery28.Valid) continue;
 
-                            for (int i = 0; i < cell.Objects.Count; i++)
+                            for (int i = 0; i < cellQuery28.Count; i++)
                             {
-                                MapObject ob = cell.Objects[i];
+                                MapObject ob = cellQuery28[i];
+                                if (!cellQuery28.IsCurrent(ob)) continue;
                                 if (ob.Race != ObjectType.Player) continue;
                                 ob.Add(this);
                             }
@@ -3314,13 +3335,14 @@ namespace Server.MirObjects
                             int x = CurrentLocation.X + b;
                             if (x < 0 || x >= CurrentMap.Width) continue;
 
-                            Cell cell = CurrentMap.GetCell(x, y);
+                            using var cellQuery29 = CurrentMap.RentObjectsSnapshot(x, y);
 
-                            if (!cell.Valid || cell.Objects == null) continue;
+                            if (!cellQuery29.Valid) continue;
 
-                            for (int i = 0; i < cell.Objects.Count; i++)
+                            for (int i = 0; i < cellQuery29.Count; i++)
                             {
-                                MapObject ob = cell.Objects[i];
+                                MapObject ob = cellQuery29[i];
+                                if (!cellQuery29.IsCurrent(ob)) continue;
                                 if (ob.Race != ObjectType.Player) continue;
                                 ob.Add(this);
                             }
@@ -3338,13 +3360,14 @@ namespace Server.MirObjects
                             int x = CurrentLocation.X + Globals.DataRange - b;
                             if (x < 0 || x >= CurrentMap.Width) continue;
 
-                            Cell cell = CurrentMap.GetCell(x, y);
+                            using var cellQuery30 = CurrentMap.RentObjectsSnapshot(x, y);
 
-                            if (!cell.Valid || cell.Objects == null) continue;
+                            if (!cellQuery30.Valid) continue;
 
-                            for (int i = 0; i < cell.Objects.Count; i++)
+                            for (int i = 0; i < cellQuery30.Count; i++)
                             {
-                                MapObject ob = cell.Objects[i];
+                                MapObject ob = cellQuery30[i];
+                                if (!cellQuery30.IsCurrent(ob)) continue;
                                 if (ob.Race != ObjectType.Player) continue;
                                 ob.Add(this);
                             }
@@ -3363,13 +3386,14 @@ namespace Server.MirObjects
                             int x = CurrentLocation.X + b;
                             if (x < 0 || x >= CurrentMap.Width) continue;
 
-                            Cell cell = CurrentMap.GetCell(x, y);
+                            using var cellQuery31 = CurrentMap.RentObjectsSnapshot(x, y);
 
-                            if (!cell.Valid || cell.Objects == null) continue;
+                            if (!cellQuery31.Valid) continue;
 
-                            for (int i = 0; i < cell.Objects.Count; i++)
+                            for (int i = 0; i < cellQuery31.Count; i++)
                             {
-                                MapObject ob = cell.Objects[i];
+                                MapObject ob = cellQuery31[i];
+                                if (!cellQuery31.IsCurrent(ob)) continue;
                                 if (ob.Race != ObjectType.Player) continue;
                                 ob.Add(this);
                             }
@@ -3388,13 +3412,14 @@ namespace Server.MirObjects
                             int x = CurrentLocation.X + b;
                             if (x < 0 || x >= CurrentMap.Width) continue;
 
-                            Cell cell = CurrentMap.GetCell(x, y);
+                            using var cellQuery32 = CurrentMap.RentObjectsSnapshot(x, y);
 
-                            if (!cell.Valid || cell.Objects == null) continue;
+                            if (!cellQuery32.Valid) continue;
 
-                            for (int i = 0; i < cell.Objects.Count; i++)
+                            for (int i = 0; i < cellQuery32.Count; i++)
                             {
-                                MapObject ob = cell.Objects[i];
+                                MapObject ob = cellQuery32[i];
+                                if (!cellQuery32.IsCurrent(ob)) continue;
                                 if (ob.Race != ObjectType.Player) continue;
                                 ob.Add(this);
                             }
@@ -3412,13 +3437,14 @@ namespace Server.MirObjects
                             int x = CurrentLocation.X - Globals.DataRange + b;
                             if (x < 0 || x >= CurrentMap.Width) continue;
 
-                            Cell cell = CurrentMap.GetCell(x, y);
+                            using var cellQuery33 = CurrentMap.RentObjectsSnapshot(x, y);
 
-                            if (!cell.Valid || cell.Objects == null) continue;
+                            if (!cellQuery33.Valid) continue;
 
-                            for (int i = 0; i < cell.Objects.Count; i++)
+                            for (int i = 0; i < cellQuery33.Count; i++)
                             {
-                                MapObject ob = cell.Objects[i];
+                                MapObject ob = cellQuery33[i];
+                                if (!cellQuery33.IsCurrent(ob)) continue;
                                 if (ob.Race != ObjectType.Player) continue;
                                 ob.Add(this);
                             }
@@ -3437,13 +3463,14 @@ namespace Server.MirObjects
                             int x = CurrentLocation.X - Globals.DataRange + b;
                             if (x < 0 || x >= CurrentMap.Width) continue;
 
-                            Cell cell = CurrentMap.GetCell(x, y);
+                            using var cellQuery34 = CurrentMap.RentObjectsSnapshot(x, y);
 
-                            if (!cell.Valid || cell.Objects == null) continue;
+                            if (!cellQuery34.Valid) continue;
 
-                            for (int i = 0; i < cell.Objects.Count; i++)
+                            for (int i = 0; i < cellQuery34.Count; i++)
                             {
-                                MapObject ob = cell.Objects[i];
+                                MapObject ob = cellQuery34[i];
+                                if (!cellQuery34.IsCurrent(ob)) continue;
                                 if (ob.Race != ObjectType.Player) continue;
                                 ob.Add(this);
                             }
@@ -3462,13 +3489,14 @@ namespace Server.MirObjects
                             int x = CurrentLocation.X + b;
                             if (x < 0 || x >= CurrentMap.Width) continue;
 
-                            Cell cell = CurrentMap.GetCell(x, y);
+                            using var cellQuery35 = CurrentMap.RentObjectsSnapshot(x, y);
 
-                            if (!cell.Valid || cell.Objects == null) continue;
+                            if (!cellQuery35.Valid) continue;
 
-                            for (int i = 0; i < cell.Objects.Count; i++)
+                            for (int i = 0; i < cellQuery35.Count; i++)
                             {
-                                MapObject ob = cell.Objects[i];
+                                MapObject ob = cellQuery35[i];
+                                if (!cellQuery35.IsCurrent(ob)) continue;
                                 if (ob.Race != ObjectType.Player) continue;
                                 ob.Add(this);
                             }
@@ -3486,13 +3514,14 @@ namespace Server.MirObjects
                             int x = CurrentLocation.X - Globals.DataRange + b;
                             if (x < 0 || x >= CurrentMap.Width) continue;
 
-                            Cell cell = CurrentMap.GetCell(x, y);
+                            using var cellQuery36 = CurrentMap.RentObjectsSnapshot(x, y);
 
-                            if (!cell.Valid || cell.Objects == null) continue;
+                            if (!cellQuery36.Valid) continue;
 
-                            for (int i = 0; i < cell.Objects.Count; i++)
+                            for (int i = 0; i < cellQuery36.Count; i++)
                             {
-                                MapObject ob = cell.Objects[i];
+                                MapObject ob = cellQuery36[i];
+                                if (!cellQuery36.IsCurrent(ob)) continue;
                                 if (ob.Race != ObjectType.Player) continue;
                                 ob.Add(this);
                             }
@@ -3594,12 +3623,11 @@ namespace Server.MirObjects
 
             foreach (var point in points)
             {
-                Cell cell = CurrentMap.GetCell(point);
-                if (cell.Objects == null) continue;
-
-                for (int o = 0; o < cell.Objects.Count; o++)
+                using var cellQuery37 = CurrentMap.RentObjectsSnapshot(point);
+                for (int o = 0; o < cellQuery37.Count; o++)
                 {
-                    MapObject ob = cell.Objects[o];
+                    MapObject ob = cellQuery37[o];
+                    if (!cellQuery37.IsCurrent(ob)) continue;
                     if (ob.Race == ObjectType.Monster || ob.Race == ObjectType.Player || ob.Race == ObjectType.Hero)
                     {
                         if (!ob.IsAttackTarget(this)) continue;
@@ -3632,12 +3660,11 @@ namespace Server.MirObjects
 
                 if (!CurrentMap.ValidPoint(target)) continue;
 
-                Cell cell = CurrentMap.GetCell(target);
-                if (cell.Objects == null) continue;
-
-                for (int o = 0; o < cell.Objects.Count; o++)
+                using var cellQuery38 = CurrentMap.RentObjectsSnapshot(target);
+                for (int o = 0; o < cellQuery38.Count; o++)
                 {
-                    MapObject ob = cell.Objects[o];
+                    MapObject ob = cellQuery38[o];
+                    if (!cellQuery38.IsCurrent(ob)) continue;
                     if (ob.Race == ObjectType.Monster || ob.Race == ObjectType.Player || ob.Race == ObjectType.Hero)
                     {
                         if (!ob.IsAttackTarget(this)) continue;
@@ -3701,12 +3728,11 @@ namespace Server.MirObjects
 
                     if (!CurrentMap.ValidPoint(target)) continue;
 
-                    Cell cell = CurrentMap.GetCell(target);
-                    if (cell.Objects == null) continue;
-
-                    for (int o = 0; o < cell.Objects.Count; o++)
+                    using var cellQuery39 = CurrentMap.RentObjectsSnapshot(target);
+                    for (int o = 0; o < cellQuery39.Count; o++)
                     {
-                        MapObject ob = cell.Objects[o];
+                        MapObject ob = cellQuery39[o];
+                        if (!cellQuery39.IsCurrent(ob)) continue;
                         if (ob.Race == ObjectType.Monster || ob.Race == ObjectType.Player || ob.Race == ObjectType.Hero)
                         {
                             if (!ob.IsAttackTarget(this)) continue;
@@ -3739,12 +3765,11 @@ namespace Server.MirObjects
 
                 if (!CurrentMap.ValidPoint(target)) continue;
 
-                Cell cell = CurrentMap.GetCell(target);
-                if (cell.Objects == null) continue;
-
-                for (int o = 0; o < cell.Objects.Count; o++)
+                using var cellQuery40 = CurrentMap.RentObjectsSnapshot(target);
+                for (int o = 0; o < cellQuery40.Count; o++)
                 {
-                    MapObject ob = cell.Objects[o];
+                    MapObject ob = cellQuery40[o];
+                    if (!cellQuery40.IsCurrent(ob)) continue;
                     if (ob.Race != ObjectType.Player && ob.Race != ObjectType.Monster && ob.Race != ObjectType.Hero) continue;
                     if (!ob.IsAttackTarget(this)) continue;
 
@@ -3767,12 +3792,11 @@ namespace Server.MirObjects
 
                 if (!CurrentMap.ValidPoint(target)) continue;
 
-                Cell cell = CurrentMap.GetCell(target);
-                if (cell.Objects == null) continue;
-
-                for (int o = 0; o < cell.Objects.Count; o++)
+                using var cellQuery41 = CurrentMap.RentObjectsSnapshot(target);
+                for (int o = 0; o < cellQuery41.Count; o++)
                 {
-                    MapObject ob = cell.Objects[o];
+                    MapObject ob = cellQuery41[o];
+                    if (!cellQuery41.IsCurrent(ob)) continue;
                     if (ob.Race != ObjectType.Player && ob.Race != ObjectType.Monster && ob.Race != ObjectType.Hero) continue;
                     if (!ob.IsAttackTarget(this)) continue;
 
@@ -3798,10 +3822,8 @@ namespace Server.MirObjects
             {
                 location = Functions.PointMove(CurrentLocation, jumpDir, 1);
 
-                CurrentMap.GetCell(CurrentLocation).Remove(this);
                 RemoveObjects(jumpDir, 1);
-                CurrentLocation = location;
-                CurrentMap.GetCell(CurrentLocation).Add(this);
+                CurrentMap.MoveObject(this, location);
                 AddObjects(jumpDir, 1);
             }
 
@@ -3823,13 +3845,11 @@ namespace Server.MirObjects
 
                     if (!CurrentMap.ValidPoint(point)) continue;
 
-                    Cell cell = CurrentMap.GetCell(point);
-
-                    if (cell.Objects == null) continue;
-
-                    for (int o = 0; o < cell.Objects.Count; o++)
+                    using var cellQuery42 = CurrentMap.RentObjectsSnapshot(point);
+                    for (int o = 0; o < cellQuery42.Count; o++)
                     {
-                        MapObject ob = cell.Objects[o];
+                        MapObject ob = cellQuery42[o];
+                        if (!cellQuery42.IsCurrent(ob)) continue;
                         if (ob.Race != ObjectType.Player && ob.Race != ObjectType.Monster && ob.Race != ObjectType.Hero) continue;
                         if (!ob.IsAttackTarget(this)) continue;
 

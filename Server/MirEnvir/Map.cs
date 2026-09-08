@@ -6,7 +6,7 @@ using S = ServerPackets;
 
 namespace Server.MirEnvir
 {
-    public class Map
+    public partial class Map
     {
         private static Envir Envir
         {
@@ -23,7 +23,6 @@ namespace Server.MirEnvir
         public int Thread = 0;
 
         public int Width, Height;
-        public Cell[,] Cells;
         public List<Point> WalkableCells;
         public Door[,] DoorIndex;
         public List<Door> Doors = new List<Door>();
@@ -115,7 +114,7 @@ namespace Server.MirEnvir
             Width = BitConverter.ToInt16(fileBytes, offSet);
             offSet += 2;
             Height = BitConverter.ToInt16(fileBytes, offSet);
-            Cells = new Cell[Width, Height];
+            InitializeTerrain(Width, Height);
             DoorIndex = new Door[Width, Height];
 
             offSet = 52;
@@ -124,18 +123,17 @@ namespace Server.MirEnvir
                 for (int y = 0; y < Height; y++)
                 {//total 12
                     if ((BitConverter.ToInt16(fileBytes, offSet) & 0x8000) != 0)
-                        Cells[x, y] = Cell.HighWall; //Can Fire Over.
+                        SetTerrainAttribute(x, y, CellAttribute.HighWall); //Can Fire Over.
 
                     offSet += 2;
                     if ((BitConverter.ToInt16(fileBytes, offSet) & 0x8000) != 0)
-                        Cells[x, y] = Cell.LowWall; //Can't Fire Over.
+                        SetTerrainAttribute(x, y, CellAttribute.LowWall); //Can't Fire Over.
 
                     offSet += 2;
 
                     if ((BitConverter.ToInt16(fileBytes, offSet) & 0x8000) != 0)
-                        Cells[x, y] = Cell.HighWall; //No Floor Tile.
+                        SetTerrainAttribute(x, y, CellAttribute.HighWall); //No Floor Tile.
 
-                    if (Cells[x, y] == null) Cells[x, y] = new Cell { Attribute = CellAttribute.Walk };
 
                     offSet += 4;
 
@@ -147,7 +145,7 @@ namespace Server.MirEnvir
                     byte light = fileBytes[offSet++];
 
                     if (light >= 100 && light <= 119)
-                        Cells[x, y].FishingAttribute = (sbyte)(light - 100);
+                        SetFishingAttribute(x, y, (sbyte)(light - 100));
                 }
         }
         
@@ -162,7 +160,7 @@ namespace Server.MirEnvir
             int h = BitConverter.ToInt16(fileBytes, offSet);
             Width = w ^ xor;
             Height = h ^ xor;
-            Cells = new Cell[Width, Height];
+            InitializeTerrain(Width, Height);
             DoorIndex = new Door[Width, Height];
 
             offSet = 54;
@@ -171,13 +169,12 @@ namespace Server.MirEnvir
                 for (int y = 0; y < Height; y++)
                 {
                     if (((BitConverter.ToInt32(fileBytes, offSet) ^ 0xAA38AA38) & 0x20000000) != 0)
-                        Cells[x, y] = Cell.HighWall; //Can Fire Over.
+                        SetTerrainAttribute(x, y, CellAttribute.HighWall); //Can Fire Over.
 
                     offSet += 6;
                     if (((BitConverter.ToInt16(fileBytes, offSet) ^ xor) & 0x8000) != 0)
-                        Cells[x, y] = Cell.LowWall; //No Floor Tile.
+                        SetTerrainAttribute(x, y, CellAttribute.LowWall); //No Floor Tile.
 
-                    if (Cells[x, y] == null) Cells[x, y] = new Cell { Attribute = CellAttribute.Walk };
                     offSet += 2;
                     if (fileBytes[offSet] > 0)
                         DoorIndex[x, y] = AddDoor(fileBytes[offSet], new Point(x, y));
@@ -186,7 +183,7 @@ namespace Server.MirEnvir
                     byte light = fileBytes[offSet++];
 
                     if (light >= 100 && light <= 119)
-                        Cells[x, y].FishingAttribute = (sbyte)(light - 100);
+                        SetFishingAttribute(x, y, (sbyte)(light - 100));
 
                     offSet += 1;
                 }
@@ -198,7 +195,7 @@ namespace Server.MirEnvir
             Width = BitConverter.ToInt16(fileBytes, offSet);
             offSet += 2;
             Height = BitConverter.ToInt16(fileBytes, offSet);
-            Cells = new Cell[Width, Height];
+            InitializeTerrain(Width, Height);
             DoorIndex = new Door[Width, Height];
 
             offSet = 52;
@@ -207,17 +204,16 @@ namespace Server.MirEnvir
                 for (int y = 0; y < Height; y++)
                 {//total 14
                     if ((BitConverter.ToInt16(fileBytes, offSet) & 0x8000) != 0)
-                        Cells[x, y] = Cell.HighWall; //Can Fire Over.
+                        SetTerrainAttribute(x, y, CellAttribute.HighWall); //Can Fire Over.
 
                     offSet += 2;
                     if ((BitConverter.ToInt16(fileBytes, offSet) & 0x8000) != 0)
-                        Cells[x, y] = Cell.LowWall; //Can't Fire Over.
+                        SetTerrainAttribute(x, y, CellAttribute.LowWall); //Can't Fire Over.
 
                     offSet += 2;
                     if ((BitConverter.ToInt16(fileBytes, offSet) & 0x8000) != 0)
-                        Cells[x, y] = Cell.HighWall; //No Floor Tile.
+                        SetTerrainAttribute(x, y, CellAttribute.HighWall); //No Floor Tile.
 
-                    if (Cells[x, y] == null) Cells[x, y] = new Cell { Attribute = CellAttribute.Walk };
 
                     offSet += 2;
                     if (fileBytes[offSet] > 0)
@@ -227,7 +223,7 @@ namespace Server.MirEnvir
                     byte light = fileBytes[offSet++];
 
                     if (light >= 100 && light <= 119)
-                        Cells[x, y].FishingAttribute = (sbyte)(light - 100);
+                        SetFishingAttribute(x, y, (sbyte)(light - 100));
 
                     offSet += 2;
                 }
@@ -239,7 +235,7 @@ namespace Server.MirEnvir
             Width = BitConverter.ToInt16(fileBytes, offSet);
             offSet += 2;
             Height = BitConverter.ToInt16(fileBytes, offSet);
-            Cells = new Cell[Width, Height];
+            InitializeTerrain(Width, Height);
             DoorIndex = new Door[Width, Height];
 
             offSet = 52;
@@ -248,17 +244,16 @@ namespace Server.MirEnvir
                 for (int y = 0; y < Height; y++)
                 {//total 36
                     if ((BitConverter.ToInt16(fileBytes, offSet) & 0x8000) != 0)
-                        Cells[x, y] = Cell.HighWall; //Can Fire Over.
+                        SetTerrainAttribute(x, y, CellAttribute.HighWall); //Can Fire Over.
 
                     offSet += 2;
                     if ((BitConverter.ToInt16(fileBytes, offSet) & 0x8000) != 0)
-                        Cells[x, y] = Cell.LowWall; //Can't Fire Over.
+                        SetTerrainAttribute(x, y, CellAttribute.LowWall); //Can't Fire Over.
 
                     offSet += 2;
                     if ((BitConverter.ToInt16(fileBytes, offSet) & 0x8000) != 0)
-                        Cells[x, y] = Cell.HighWall; //No Floor Tile.
+                        SetTerrainAttribute(x, y, CellAttribute.HighWall); //No Floor Tile.
 
-                    if (Cells[x, y] == null) Cells[x, y] = new Cell { Attribute = CellAttribute.Walk };
                     offSet += 2;
                     if (fileBytes[offSet] > 0)
                         DoorIndex[x, y] = AddDoor(fileBytes[offSet], new Point(x, y));
@@ -267,7 +262,7 @@ namespace Server.MirEnvir
                     byte light = fileBytes[offSet++];
 
                     if (light >= 100 && light <= 119)
-                        Cells[x, y].FishingAttribute = (sbyte)(light - 100);
+                        SetFishingAttribute(x, y, (sbyte)(light - 100));
 
                     offSet += 17;
                 }
@@ -283,7 +278,7 @@ namespace Server.MirEnvir
             int h = BitConverter.ToInt16(fileBytes, offSet);
             Width = w ^ xor;
             Height = h ^ xor;
-            Cells = new Cell[Width, Height];
+            InitializeTerrain(Width, Height);
             DoorIndex = new Door[Width, Height];
 
             offSet = 64;
@@ -292,13 +287,12 @@ namespace Server.MirEnvir
                 for (int y = 0; y < Height; y++)
                 {//total 12
                     if ((BitConverter.ToInt16(fileBytes, offSet) & 0x8000) != 0)
-                        Cells[x, y] = Cell.HighWall; //Can Fire Over.
+                        SetTerrainAttribute(x, y, CellAttribute.HighWall); //Can Fire Over.
 
                     offSet += 2;
                     if ((BitConverter.ToInt16(fileBytes, offSet) & 0x8000) != 0)
-                        Cells[x, y] = Cell.LowWall; //Can't Fire Over.
+                        SetTerrainAttribute(x, y, CellAttribute.LowWall); //Can't Fire Over.
 
-                    if (Cells[x, y] == null) Cells[x, y] = new Cell { Attribute = CellAttribute.Walk };
                     offSet += 4;
                     if (fileBytes[offSet] > 0)
                         DoorIndex[x, y] = AddDoor(fileBytes[offSet], new Point(x, y));
@@ -312,7 +306,7 @@ namespace Server.MirEnvir
             Width = BitConverter.ToInt16(fileBytes, offSet);
             offSet += 2;
             Height = BitConverter.ToInt16(fileBytes, offSet);
-            Cells = new Cell[Width, Height];
+            InitializeTerrain(Width, Height);
             DoorIndex = new Door[Width, Height];
 
             offSet = 28 + (3 * ((Width / 2) + (Width % 2)) * (Height / 2));
@@ -320,17 +314,17 @@ namespace Server.MirEnvir
                 for (int y = 0; y < Height; y++)
                 {//total 14
                     if ((fileBytes[offSet] & 0x01) != 1)
-                        Cells[x, y] = Cell.HighWall;
+                        SetTerrainAttribute(x, y, CellAttribute.HighWall);
                     else if ((fileBytes[offSet] & 0x02) != 2)
-                        Cells[x, y] = Cell.LowWall;
+                        SetTerrainAttribute(x, y, CellAttribute.LowWall);
                     else
-                        Cells[x, y] = new Cell { Attribute = CellAttribute.Walk };
+                        SetTerrainAttribute(x, y, CellAttribute.Walk);
                     offSet += 13;
 
                     byte light = fileBytes[offSet++];
 
                     if (light >= 100 && light <= 119)
-                        Cells[x, y].FishingAttribute = (sbyte)(light - 100);
+                        SetFishingAttribute(x, y, (sbyte)(light - 100));
                 }
         }
 
@@ -340,7 +334,7 @@ namespace Server.MirEnvir
             Width = BitConverter.ToInt16(fileBytes, offSet);
             offSet += 2;
             Height = BitConverter.ToInt16(fileBytes, offSet);
-            Cells = new Cell[Width, Height];
+            InitializeTerrain(Width, Height);
             DoorIndex = new Door[Width, Height];
 
             offSet = 40;
@@ -349,11 +343,11 @@ namespace Server.MirEnvir
                 for (int y = 0; y < Height; y++)
                 {//total 20
                     if ((fileBytes[offSet] & 0x01) != 1)
-                        Cells[x, y] = Cell.HighWall;
+                        SetTerrainAttribute(x, y, CellAttribute.HighWall);
                     else if ((fileBytes[offSet] & 0x02) != 2)
-                        Cells[x, y] = Cell.LowWall;
+                        SetTerrainAttribute(x, y, CellAttribute.LowWall);
                     else
-                        Cells[x, y] = new Cell { Attribute = CellAttribute.Walk };
+                        SetTerrainAttribute(x, y, CellAttribute.Walk);
                     offSet += 20;
                 }
         }
@@ -364,7 +358,7 @@ namespace Server.MirEnvir
             Width = BitConverter.ToInt16(fileBytes, offSet);
             offSet += 4;
             Height = BitConverter.ToInt16(fileBytes, offSet);
-            Cells = new Cell[Width, Height];
+            InitializeTerrain(Width, Height);
             DoorIndex = new Door[Width, Height];
 
             offSet = 54;
@@ -373,12 +367,11 @@ namespace Server.MirEnvir
                 for (int y = 0; y < Height; y++)
                 {//total 15
                     if ((BitConverter.ToInt16(fileBytes, offSet) & 0x8000) != 0)
-                        Cells[x, y] = Cell.HighWall; //Can Fire Over.
+                        SetTerrainAttribute(x, y, CellAttribute.HighWall); //Can Fire Over.
                     offSet += 6;
                     if ((BitConverter.ToInt16(fileBytes, offSet) & 0x8000) != 0)
-                        Cells[x, y] = Cell.LowWall; //Can't Fire Over.
+                        SetTerrainAttribute(x, y, CellAttribute.LowWall); //Can't Fire Over.
                     //offSet += 2;
-                    if (Cells[x, y] == null) Cells[x, y] = new Cell { Attribute = CellAttribute.Walk };
                     offSet += 2;
                     if (fileBytes[offSet] > 0)
                         DoorIndex[x, y] = AddDoor(fileBytes[offSet], new Point(x, y));
@@ -387,7 +380,7 @@ namespace Server.MirEnvir
                     byte light = fileBytes[offSet++];
 
                     if (light >= 100 && light <= 119)
-                        Cells[x, y].FishingAttribute = (sbyte)(light - 100);
+                        SetFishingAttribute(x, y, (sbyte)(light - 100));
 
                     offSet += 2;
                 }
@@ -400,7 +393,7 @@ namespace Server.MirEnvir
             Width = BitConverter.ToInt16(Bytes, offset);
             offset += 2;
             Height = BitConverter.ToInt16(Bytes, offset);
-            Cells = new Cell[Width, Height];
+            InitializeTerrain(Width, Height);
             DoorIndex = new Door[Width, Height];
 
             offset = 8;
@@ -410,12 +403,11 @@ namespace Server.MirEnvir
                 {
                     offset += 2;
                     if ((BitConverter.ToInt32(Bytes, offset) & 0x20000000) != 0)
-                        Cells[x, y] = Cell.HighWall; //Can Fire Over.
+                        SetTerrainAttribute(x, y, CellAttribute.HighWall); //Can Fire Over.
                     offset += 10;
                     if ((BitConverter.ToInt16(Bytes, offset) & 0x8000) != 0)
-                        Cells[x, y] = Cell.LowWall; //Can't Fire Over.
+                        SetTerrainAttribute(x, y, CellAttribute.LowWall); //Can't Fire Over.
 
-                    if (Cells[x, y] == null) Cells[x, y] = new Cell { Attribute = CellAttribute.Walk };
                     offset += 2;
                     if (Bytes[offset] > 0)
                         DoorIndex[x, y] = AddDoor(Bytes[offset], new Point(x, y));
@@ -424,7 +416,7 @@ namespace Server.MirEnvir
                     byte light = Bytes[offset++];
 
                     if (light >= 100 && light <= 119)
-                        Cells[x, y].FishingAttribute = (sbyte)(light - 100);
+                        SetFishingAttribute(x, y, (sbyte)(light - 100));
                 }
                 
         }
@@ -521,7 +513,7 @@ namespace Server.MirEnvir
 
                 for (int x = 0; x < Width; x++)
                     for (int y = 0; y < Height; y++)
-                        if (Cells[x, y].Attribute == CellAttribute.Walk)
+                        if (GetTerrain(x, y).Attribute == CellAttribute.Walk)
                             WalkableCells.Add(new Point(x, y));
             }
         }
@@ -538,7 +530,7 @@ namespace Server.MirEnvir
                     {
                         if (x < 0) continue;
                         if (x >= Width) break;
-                        if (!Cells[x, y].Valid) continue;
+                        if (!GetTerrain(x, y).Valid) continue;
 
                         SpellObject spell = new SpellObject
                         {
@@ -550,7 +542,7 @@ namespace Server.MirEnvir
                             Decoration = true
                         };
 
-                        Cells[x, y].Add(spell);
+                        AddObjectAt(new Point(x, y), spell);
 
                         spell.Spawned();
                     }
@@ -567,7 +559,7 @@ namespace Server.MirEnvir
                     {
                         if (x < 0) continue;
                         if (x >= Width) break;
-                        if (!Cells[x, y].Valid) continue;
+                        if (!GetTerrain(x, y).Valid) continue;
 
                         SpellObject spell = new SpellObject
                             {
@@ -579,7 +571,7 @@ namespace Server.MirEnvir
                                 CurrentMap = this
                             };
 
-                        Cells[x, y].Add(spell);
+                        AddObjectAt(new Point(x, y), spell);
 
                         spell.Spawned();
                     }
@@ -624,23 +616,13 @@ namespace Server.MirEnvir
             }
         }
 
-        public Cell GetCell(Point location)
-        {
-            return Cells[location.X, location.Y];
-        }
-
-        public Cell GetCell(int x, int y)
-        {
-            return Cells[x, y];
-        }
-
         public bool ValidPoint(Point location)
         {
-            return location.X >= 0 && location.X < Width && location.Y >= 0 && location.Y < Height && GetCell(location).Valid;
+            return location.X >= 0 && location.X < Width && location.Y >= 0 && location.Y < Height && GetTerrain(location).Valid;
         }
         public bool ValidPoint(int x, int y)
         {
-            return x >= 0 && x < Width && y >= 0 && y < Height && GetCell(x, y).Valid;
+            return x >= 0 && x < Width && y >= 0 && y < Height && GetTerrain(x, y).Valid;
         }
 
         public bool CheckDoorOpen(Point location)
@@ -822,7 +804,7 @@ namespace Server.MirEnvir
 
          /**
          * return the coordinates of effect coordinates within an n x n square (n should be odd number. i.e. 3x3, 5x5, 7x7)
-         * then use GetCell() in Map.cs to retrive real objects
+         * then use RentObjectsSnapshot() in Map.cs to retrieve current objects
          * default 3x3
          */
         public static List<Point> GetPointsInEffectiveSquare(Point location, int mapWidth, int mapHeight, int squareEdgeLength = 3)
@@ -863,20 +845,22 @@ namespace Server.MirEnvir
 
             int value, value2;
             Point location;
-            Cell cell;
             MirDirection dir;
             MonsterObject monster;
             Point front;
+            int count;
+            SpellObject spellOb;
             switch (magic.Spell)
             {
 
                 #region HellFire
 
                 case Spell.HellFire:
+                {
                     value = (int)data[2];
                     dir = (MirDirection)data[4];
                     location = Functions.PointMove((Point)data[3], dir, 1);
-                    int count = (int)data[5] - 1;
+                    count = (int)data[5] - 1;
 
                     if (!ValidPoint(location)) return;
 
@@ -886,13 +870,11 @@ namespace Server.MirEnvir
                         ActionList.Add(action);
                     }
 
-                    cell = GetCell(location);
-
-                    if (cell.Objects == null) return;
-
-                    for (int i = 0; i < cell.Objects.Count; i++)
+                    using var cellSnapshot0 = RentObjectsSnapshot(location);
+                    for (int i = 0; i < cellSnapshot0.Count; i++)
                     {
-                        MapObject target = cell.Objects[i];
+                        MapObject target = cellSnapshot0[i];
+                        if (!cellSnapshot0.IsCurrent(target)) continue;
                         switch (target.Race)
                         {
                             case ObjectType.Monster:
@@ -909,6 +891,7 @@ namespace Server.MirEnvir
                     }
                     break;
 
+                }
                 #endregion
 
                 #region SummonSkeleton, SummonShinsu, SummonHolyDeva, ArcherSummons
@@ -963,13 +946,14 @@ namespace Server.MirEnvir
                             if (x < 0) continue;
                             if (x >= Width) break;
 
-                            cell = GetCell(x, y);
+                            using var cellSnapshot1 = RentObjectsSnapshot(x, y);
 
-                            if (!cell.Valid || cell.Objects == null) continue;
+                            if (!cellSnapshot1.Valid) continue;
 
-                            for (int i = 0; i < cell.Objects.Count; i++)
+                            for (int i = 0; i < cellSnapshot1.Count; i++)
                             {
-                                MapObject target = cell.Objects[i];
+                                MapObject target = cellSnapshot1[i];
+                                if (!cellSnapshot1.IsCurrent(target)) continue;
                                 switch (target.Race)
                                 {
                                     case ObjectType.Monster:
@@ -1008,13 +992,14 @@ namespace Server.MirEnvir
                             if (x < 0) continue;
                             if (x >= Width) break;
 
-                            cell = GetCell(x, y);
+                            using var cellSnapshot2 = RentObjectsSnapshot(x, y);
 
-                            if (!cell.Valid || cell.Objects == null) continue;
+                            if (!cellSnapshot2.Valid) continue;
 
-                            for (int i = 0; i < cell.Objects.Count; i++)
+                            for (int i = 0; i < cellSnapshot2.Count; i++)
                             {
-                                MapObject target = cell.Objects[i];
+                                MapObject target = cellSnapshot2[i];
+                                if (!cellSnapshot2.IsCurrent(target)) continue;
 
                                 if (target.Node == null) continue;
 
@@ -1059,13 +1044,14 @@ namespace Server.MirEnvir
                             if (x < 0) continue;
                             if (x >= Width) break;
 
-                            cell = GetCell(x, y);
+                            using var cellSnapshot3 = RentObjectsSnapshot(x, y);
 
-                            if (!cell.Valid || cell.Objects == null) continue;
+                            if (!cellSnapshot3.Valid) continue;
 
-                            for (int i = 0; i < cell.Objects.Count; i++)
+                            for (int i = 0; i < cellSnapshot3.Count; i++)
                             {
-                                MapObject target = cell.Objects[i];
+                                MapObject target = cellSnapshot3[i];
+                                if (!cellSnapshot3.IsCurrent(target)) continue;
 
                                 if (target.Node == null) continue;
 
@@ -1111,13 +1097,14 @@ namespace Server.MirEnvir
 
                     if (ValidPoint(location))
                     {
-                        cell = GetCell(location);
+                        using var cellSnapshot4 = RentObjectsSnapshot(location);
 
                         bool cast = true;
-                        if (cell.Objects != null)
-                            for (int o = 0; o < cell.Objects.Count; o++)
+
+                            for (int o = 0; o < cellSnapshot4.Count; o++)
                             {
-                                MapObject target = cell.Objects[o];
+                                MapObject target = cellSnapshot4[o];
+                                if (!cellSnapshot4.IsCurrent(target)) continue;
                                 if (target.Race != ObjectType.Spell || ((SpellObject)target).Spell != Spell.FireWall) continue;
 
                                 cast = false;
@@ -1150,13 +1137,14 @@ namespace Server.MirEnvir
 
                         if (!ValidPoint(location)) continue;
 
-                        cell = GetCell(location);
+                        using var cellSnapshot5 = RentObjectsSnapshot(location);
                         bool cast = true;
 
-                        if (cell.Objects != null)
-                            for (int o = 0; o < cell.Objects.Count; o++)
+
+                            for (int o = 0; o < cellSnapshot5.Count; o++)
                             {
-                                MapObject target = cell.Objects[o];
+                                MapObject target = cellSnapshot5[o];
+                                if (!cellSnapshot5.IsCurrent(target)) continue;
                                 if (target.Race != ObjectType.Spell || ((SpellObject)target).Spell != Spell.FireWall) continue;
 
                                 cast = false;
@@ -1197,13 +1185,11 @@ namespace Server.MirEnvir
 
                         if (!ValidPoint(location)) continue;
 
-                        cell = GetCell(location);
-
-                        if (cell.Objects == null) continue;
-
-                        for (int o = 0; o < cell.Objects.Count; o++)
+                        using var cellSnapshot6 = RentObjectsSnapshot(location);
+                        for (int o = 0; o < cellSnapshot6.Count; o++)
                         {
-                            MapObject target = cell.Objects[o];
+                            MapObject target = cellSnapshot6[o];
+                            if (!cellSnapshot6.IsCurrent(target)) continue;
                             if (target.Race != ObjectType.Player && target.Race != ObjectType.Monster) continue;
 
                             if (!target.IsAttackTarget(player)) continue;
@@ -1230,13 +1216,11 @@ namespace Server.MirEnvir
 
                         if (!ValidPoint(location)) continue;
 
-                        cell = GetCell(location);
-
-                        if (cell.Objects == null) continue;
-
-                        for (int o = 0; o < cell.Objects.Count; o++)
+                        using var cellSnapshot7 = RentObjectsSnapshot(location);
+                        for (int o = 0; o < cellSnapshot7.Count; o++)
                         {
-                            MapObject target = cell.Objects[o];
+                            MapObject target = cellSnapshot7[o];
+                            if (!cellSnapshot7.IsCurrent(target)) continue;
                             if (target.Race != ObjectType.Player && target.Race != ObjectType.Monster) continue;
 
                             if (!target.IsAttackTarget(player)) continue;
@@ -1266,13 +1250,14 @@ namespace Server.MirEnvir
                             if (x < 0) continue;
                             if (x >= Width) break;
 
-                            cell = GetCell(x, y);
+                            using var cellSnapshot8 = RentObjectsSnapshot(x, y);
 
-                            if (!cell.Valid || cell.Objects == null) continue;
+                            if (!cellSnapshot8.Valid) continue;
 
-                            for (int i = 0; i < cell.Objects.Count; i++)
+                            for (int i = 0; i < cellSnapshot8.Count; i++)
                             {
-                                MapObject target = cell.Objects[i];
+                                MapObject target = cellSnapshot8[i];
+                                if (!cellSnapshot8.IsCurrent(target)) continue;
                                 switch (target.Race)
                                 {
                                     case ObjectType.Monster:
@@ -1316,13 +1301,14 @@ namespace Server.MirEnvir
                             if (x < 0) continue;
                             if (x >= Width) break;
 
-                            cell = GetCell(x, y);
+                            using var cellSnapshot9 = RentObjectsSnapshot(x, y);
 
-                            if (!cell.Valid || cell.Objects == null) continue;
+                            if (!cellSnapshot9.Valid) continue;
 
-                            for (int i = 0; i < cell.Objects.Count; i++)
+                            for (int i = 0; i < cellSnapshot9.Count; i++)
                             {
-                                MapObject target = cell.Objects[i];
+                                MapObject target = cellSnapshot9[i];
+                                if (!cellSnapshot9.IsCurrent(target)) continue;
                                 switch (target.Race)
                                 {
                                     case ObjectType.Monster:
@@ -1358,13 +1344,14 @@ namespace Server.MirEnvir
                             if (x < 0) continue;
                             if (x >= Width) break;
 
-                            cell = GetCell(x, y);
+                            using var cellSnapshot10 = RentObjectsSnapshot(x, y);
 
-                            if (!cell.Valid || cell.Objects == null) continue;
+                            if (!cellSnapshot10.Valid) continue;
 
-                            for (int i = 0; i < cell.Objects.Count; i++)
+                            for (int i = 0; i < cellSnapshot10.Count; i++)
                             {
-                                MapObject target = cell.Objects[i];
+                                MapObject target = cellSnapshot10[i];
+                                if (!cellSnapshot10.IsCurrent(target)) continue;
                                 switch (target.Race)
                                 {
                                     case ObjectType.Monster:
@@ -1408,13 +1395,14 @@ namespace Server.MirEnvir
                             if (x < 0) continue;
                             if (x >= Width) break;
 
-                            cell = GetCell(x, y);
+                            using var cellSnapshot11 = RentObjectsSnapshot(x, y);
 
-                            if (!cell.Valid || cell.Objects == null) continue;
+                            if (!cellSnapshot11.Valid) continue;
 
-                            for (int i = 0; i < cell.Objects.Count; i++)
+                            for (int i = 0; i < cellSnapshot11.Count; i++)
                             {
-                                MapObject target = cell.Objects[i];
+                                MapObject target = cellSnapshot11[i];
+                                if (!cellSnapshot11.IsCurrent(target)) continue;
                                 if (target.Race != ObjectType.Monster) continue;
                                 //Only targets
                                 if (!target.IsAttackTarget(player) || player.Level + 3 < target.Level) continue;
@@ -1450,15 +1438,16 @@ namespace Server.MirEnvir
                             if (x < 0) continue;
                             if (x >= Width) break;
 
-                            cell = GetCell(x, y);
+                            using var cellSnapshot12 = RentObjectsSnapshot(x, y);
 
-                            if (!cell.Valid) continue;
+                            if (!cellSnapshot12.Valid) continue;
 
                             bool cast = true;
-                            if (cell.Objects != null)
-                                for (int o = 0; o < cell.Objects.Count; o++)
+
+                                for (int o = 0; o < cellSnapshot12.Count; o++)
                                 {
-                                    MapObject target = cell.Objects[o];
+                                    MapObject target = cellSnapshot12[o];
+                                    if (!cellSnapshot12.IsCurrent(target)) continue;
                                     if (target.Race != ObjectType.Spell || ((SpellObject)target).Spell != Spell.PoisonCloud) continue;
 
                                     cast = false;
@@ -1519,13 +1508,11 @@ namespace Server.MirEnvir
 
                                 if (!ValidPoint(hitPoint)) continue;
 
-                                cell = GetCell(hitPoint);
-
-                                if (cell.Objects == null) continue;
-
-                                for (int k = 0; k < cell.Objects.Count; k++)
+                                using var cellSnapshot13 = RentObjectsSnapshot(hitPoint);
+                                for (int k = 0; k < cellSnapshot13.Count; k++)
                                 {
-                                    MapObject target = cell.Objects[k];
+                                    MapObject target = cellSnapshot13[k];
+                                    if (!cellSnapshot13.IsCurrent(target)) continue;
                                     switch (target.Race)
                                     {
                                         case ObjectType.Monster:
@@ -1587,13 +1574,11 @@ namespace Server.MirEnvir
 
                         if (!ValidPoint(location)) continue;
 
-                        cell = GetCell(location);
-
-                        if (cell.Objects == null) continue;
-
-                        for (int o = 0; o < cell.Objects.Count; o++)
+                        using var cellSnapshot14 = RentObjectsSnapshot(location);
+                        for (int o = 0; o < cellSnapshot14.Count; o++)
                         {
-                            MapObject target = cell.Objects[o];
+                            MapObject target = cellSnapshot14[o];
+                            if (!cellSnapshot14.IsCurrent(target)) continue;
                             if (target.Race != ObjectType.Player && target.Race != ObjectType.Monster) continue;
 
                             if (!target.IsAttackTarget(player)) continue;
@@ -1646,15 +1631,16 @@ namespace Server.MirEnvir
                             if (x < 0) continue;
                             if (x >= Width) break;
 
-                            cell = GetCell(x, y);
+                            using var cellSnapshot15 = RentObjectsSnapshot(x, y);
 
-                            if (!cell.Valid) continue;
+                            if (!cellSnapshot15.Valid) continue;
 
                             bool cast = true;
-                            if (cell.Objects != null)
-                                for (int o = 0; o < cell.Objects.Count; o++)
+
+                                for (int o = 0; o < cellSnapshot15.Count; o++)
                                 {
-                                    MapObject target = cell.Objects[o];
+                                    MapObject target = cellSnapshot15[o];
+                                    if (!cellSnapshot15.IsCurrent(target)) continue;
                                     if (target.Race != ObjectType.Spell || ((SpellObject) target).Spell != Spell.Blizzard) continue;
 
                                     cast = false;
@@ -1707,15 +1693,16 @@ namespace Server.MirEnvir
                             if (x < 0) continue;
                             if (x >= Width) break;
 
-                            cell = GetCell(x, y);
+                            using var cellSnapshot16 = RentObjectsSnapshot(x, y);
 
-                            if (!cell.Valid) continue;
+                            if (!cellSnapshot16.Valid) continue;
 
                             bool cast = true;
-                            if (cell.Objects != null)
-                                for (int o = 0; o < cell.Objects.Count; o++)
+
+                                for (int o = 0; o < cellSnapshot16.Count; o++)
                                 {
-                                    MapObject target = cell.Objects[o];
+                                    MapObject target = cellSnapshot16[o];
+                                    if (!cellSnapshot16.IsCurrent(target)) continue;
                                     if (target.Race != ObjectType.Spell || ((SpellObject)target).Spell != Spell.MeteorStrike) continue;
 
                                     cast = false;
@@ -1767,13 +1754,14 @@ namespace Server.MirEnvir
                             if (x < 0) continue;
                             if (x >= Width) break;
 
-                            cell = GetCell(x, y);
+                            using var cellSnapshot17 = RentObjectsSnapshot(x, y);
 
-                            if (!cell.Valid || cell.Objects == null) continue;
+                            if (!cellSnapshot17.Valid) continue;
 
-                            for (int i = 0; i < cell.Objects.Count; i++)
+                            for (int i = 0; i < cellSnapshot17.Count; i++)
                             {
-                                MapObject target = cell.Objects[i];
+                                MapObject target = cellSnapshot17[i];
+                                if (!cellSnapshot17.IsCurrent(target)) continue;
 
                                 if (y == location.Y && x == location.X && target.Race == ObjectType.Monster)
                                 {
@@ -1849,13 +1837,14 @@ namespace Server.MirEnvir
                             if (x < 0) continue;
                             if (x >= Width) break;
 
-                            cell = GetCell(x, y);
+                            using var cellSnapshot18 = RentObjectsSnapshot(x, y);
 
-                            if (!cell.Valid || cell.Objects == null) continue;
+                            if (!cellSnapshot18.Valid) continue;
 
-                            for (int i = 0; i < cell.Objects.Count; i++)
+                            for (int i = 0; i < cellSnapshot18.Count; i++)
                             {
-                                MapObject target = cell.Objects[i];
+                                MapObject target = cellSnapshot18[i];
+                                if (!cellSnapshot18.IsCurrent(target)) continue;
 
                                 if (target.Node == null) continue;
 
@@ -1904,13 +1893,14 @@ namespace Server.MirEnvir
 
                     if (ValidPoint(front))
                     {
-                        cell = GetCell(front);
+                        using var cellSnapshot19 = RentObjectsSnapshot(front);
 
                         bool cast = true;
-                        if (cell.Objects != null)
-                            for (int o = 0; o < cell.Objects.Count; o++)
+
+                            for (int o = 0; o < cellSnapshot19.Count; o++)
                             {
-                                MapObject target = cell.Objects[o];
+                                MapObject target = cellSnapshot19[o];
+                                if (!cellSnapshot19.IsCurrent(target)) continue;
                                 if (target.Race != ObjectType.Spell || (((SpellObject)target).Spell != Spell.FireWall && ((SpellObject)target).Spell != Spell.ExplosiveTrap)) continue;
 
                                 cast = false;
@@ -1932,12 +1922,13 @@ namespace Server.MirEnvir
                                 //for the extra spots make sure to not overlap new traps with old ones since it creates invisible double/tripple /... trap spots
                                 if (i > 0)
                                 {
-                                    cell = GetCell(traps[i]);
+                                    using var cellSnapshot20 = RentObjectsSnapshot(traps[i]);
 
-                                    if (cell.Objects != null)
-                                        for (int o = 0; o < cell.Objects.Count; o++)
+
+                                        for (int o = 0; o < cellSnapshot20.Count; o++)
                                         {
-                                            MapObject target = cell.Objects[o];
+                                            MapObject target = cellSnapshot20[o];
+                                            if (!cellSnapshot20.IsCurrent(target)) continue;
                                             if (target.Race != ObjectType.Spell || (((SpellObject)target).Spell != Spell.FireWall && ((SpellObject)target).Spell != Spell.ExplosiveTrap)) continue;
 
                                             skip = true;
@@ -1981,13 +1972,14 @@ namespace Server.MirEnvir
                     var points= GetPointsInEffectiveSquare(location, Width, Height, 3);
                     foreach (var point in points)
                     {
-                        cell = GetCell(point.X, point.Y);
+                        using var cellSnapshot21 = RentObjectsSnapshot(point.X, point.Y);
 
-                        if (!cell.Valid || cell.Objects == null) continue;
+                        if (!cellSnapshot21.Valid) continue;
 
-                        for (int i = 0; i < cell.Objects.Count; i++)
+                        for (int i = 0; i < cellSnapshot21.Count; i++)
                         {
-                            MapObject target = cell.Objects[i];
+                            MapObject target = cellSnapshot21[i];
+                            if (!cellSnapshot21.IsCurrent(target)) continue;
                             switch (target.Race)
                             {
                                 case ObjectType.Monster:
@@ -2046,6 +2038,7 @@ namespace Server.MirEnvir
                 #region Trap
 
                 case Spell.Trap:
+                {
                     value = (int)data[2];
                     //location = (Point)data[3];
                     MapObject originalTarget = (MapObject)data[3];
@@ -2054,13 +2047,14 @@ namespace Server.MirEnvir
 
                     if (!ValidPoint(location)) break;
 
-                    cell = GetCell(location);
+                    using var cellSnapshot22 = RentObjectsSnapshot(location);
 
-                    if (!cell.Valid || cell.Objects == null) break;
+                    if (!cellSnapshot22.Valid) break;
 
-                    for (int i = 0; i < cell.Objects.Count; i++)
+                    for (int i = 0; i < cellSnapshot22.Count; i++)
                     {
-                        MapObject target = cell.Objects[i];
+                        MapObject target = cellSnapshot22[i];
+                        if (!cellSnapshot22.IsCurrent(target)) continue;
                         if (target.Race == ObjectType.Monster)
                         {
                             selectTarget = (MonsterObject)target;
@@ -2076,7 +2070,7 @@ namespace Server.MirEnvir
 
                     if (location.X <= 0 || location.X > selectTarget.CurrentMap.Width) break;
                     if (location.Y <= 0 || location.Y > selectTarget.CurrentMap.Height) break;
-                    SpellObject spellOb = new SpellObject
+                    spellOb = new SpellObject
                     {
                         Spell = Spell.Trap,
                         ExpireTime = Envir.Time + value,
@@ -2094,6 +2088,7 @@ namespace Server.MirEnvir
                     train = true;
                     break;
 
+                }
                 #endregion
 
                 #region OneWithNature
@@ -2115,13 +2110,14 @@ namespace Server.MirEnvir
                             if (x < 0) continue;
                             if (x >= Width) break;
 
-                            cell = GetCell(x, y);
+                            using var cellSnapshot23 = RentObjectsSnapshot(x, y);
 
-                            if (!cell.Valid || cell.Objects == null) continue;
+                            if (!cellSnapshot23.Valid) continue;
 
-                            for (int i = 0; i < cell.Objects.Count; i++)
+                            for (int i = 0; i < cellSnapshot23.Count; i++)
                             {
-                                MapObject target = cell.Objects[i];
+                                MapObject target = cellSnapshot23[i];
+                                if (!cellSnapshot23.IsCurrent(target)) continue;
                                 switch (target.Race)
                                 {
                                     case ObjectType.Monster:
@@ -2217,13 +2213,14 @@ namespace Server.MirEnvir
                             if (x < 0) continue;
                             if (x >= Width) break;
 
-                            cell = GetCell(x, y);
+                            using var cellSnapshot24 = RentObjectsSnapshot(x, y);
 
-                            if (!cell.Valid || cell.Objects == null) continue;
+                            if (!cellSnapshot24.Valid) continue;
 
-                            for (int i = 0; i < cell.Objects.Count; i++)
+                            for (int i = 0; i < cellSnapshot24.Count; i++)
                             {
-                                MapObject target = cell.Objects[i];
+                                MapObject target = cellSnapshot24[i];
+                                if (!cellSnapshot24.IsCurrent(target)) continue;
                                 switch (target.Race)
                                 {
                                     case ObjectType.Monster:
@@ -2261,11 +2258,12 @@ namespace Server.MirEnvir
                     {
                         for (int x = startX; x <= endX; x++)
                         {
-                            cell = GetCell(x, y);
-                            if (!cell.Valid || cell.Objects == null || cell.Objects.Count == 0) continue;
+                            using var cellSnapshot25 = RentObjectsSnapshot(x, y);
+                            if (!cellSnapshot25.Valid || cellSnapshot25.Count == 0) continue;
 
-                            foreach (var target in cell.Objects)
+                            foreach (var target in cellSnapshot25)
                             {
+                                if (!cellSnapshot25.IsCurrent(target)) continue;
                                 if (target.Race != ObjectType.Monster) continue;
 
                                 int threshold = magic.Level switch
@@ -2311,15 +2309,16 @@ namespace Server.MirEnvir
                             if (x < 0) continue;
                             if (x >= Width) break;
 
-                            cell = GetCell(x, y);
+                            using var cellSnapshot26 = RentObjectsSnapshot(x, y);
 
-                            if (!cell.Valid) continue;
+                            if (!cellSnapshot26.Valid) continue;
 
                             bool cast = true;
-                            if (cell.Objects != null)
-                                for (int o = 0; o < cell.Objects.Count; o++)
+
+                                for (int o = 0; o < cellSnapshot26.Count; o++)
                                 {
-                                    MapObject target = cell.Objects[o];
+                                    MapObject target = cellSnapshot26[o];
+                                    if (!cellSnapshot26.IsCurrent(target)) continue;
                                     if (target.Race != ObjectType.Spell || ((SpellObject)target).Spell != Spell.HealingCircle) continue;
 
                                     cast = false;
@@ -2360,26 +2359,44 @@ namespace Server.MirEnvir
 
         public void AddObject(MapObject ob)
         {
-            if (ob.Race == ObjectType.Player)
+            bool added;
+            bool overflow;
+            var cellIndex = CellIndex(ob.CurrentLocation.X, ob.CurrentLocation.Y);
+            using (LockCell(cellIndex))
             {
-                Players.Add((PlayerObject)ob);
+                added = AddCellCore(cellIndex, ob, out overflow);
+                if (added) lock (mapListSync) AddObjectToMapLists(ob);
             }
-
-            if (ob.Race == ObjectType.Merchant) NPCs.Add((NPCObject)ob);
-            if (ob.Race == ObjectType.Spell) Spells.Add((SpellObject)ob);
-            if (ob.Race == ObjectType.Hero) Heroes.Add((HeroObject)ob);
-
-            GetCell(ob.CurrentLocation).Add(ob);
+            if (!added) ReportCellIssue($"Object {ob?.ObjectID} could not be added to map {Info?.Index}.");
+            else if (overflow) MessageQueue.Enqueue($"Map {Info?.Index}: cell exceeded 16 objects; using unpooled capacity.");
         }
 
         public void RemoveObject(MapObject ob)
+        {
+            bool removed;
+            var cellIndex = CellIndex(ob.CurrentLocation.X, ob.CurrentLocation.Y);
+            using (LockCell(cellIndex))
+            {
+                removed = RemoveCellCore(cellIndex, ob);
+                if (removed) lock (mapListSync) RemoveObjectFromMapLists(ob);
+            }
+            if (!removed) ReportCellIssue($"Object {ob?.ObjectID} could not be removed from map {Info?.Index}.");
+        }
+
+        private void AddObjectToMapLists(MapObject ob)
+        {
+            if (ob.Race == ObjectType.Player) Players.Add((PlayerObject)ob);
+            if (ob.Race == ObjectType.Merchant) NPCs.Add((NPCObject)ob);
+            if (ob.Race == ObjectType.Spell) Spells.Add((SpellObject)ob);
+            if (ob.Race == ObjectType.Hero) Heroes.Add((HeroObject)ob);
+        }
+
+        private void RemoveObjectFromMapLists(MapObject ob)
         {
             if (ob.Race == ObjectType.Player) Players.Remove((PlayerObject)ob);
             if (ob.Race == ObjectType.Merchant) NPCs.Remove((NPCObject)ob);
             if (ob.Race == ObjectType.Spell) Spells.Remove((SpellObject)ob);
             if (ob.Race == ObjectType.Hero) Heroes.Remove((HeroObject)ob);
-
-            GetCell(ob.CurrentLocation).Remove(ob);
         }
 
 
@@ -2470,63 +2487,6 @@ namespace Server.MirEnvir
             {
                 Player.Enqueue(p);
             }    
-        }
-    }
-    public class Cell
-    {
-        public static Cell LowWall { get { return new Cell { Attribute = CellAttribute.LowWall }; } }
-        public static Cell HighWall { get { return new Cell { Attribute = CellAttribute.HighWall }; } }
-
-        public bool Valid
-        {
-            get { return Attribute == CellAttribute.Walk; }
-        }
-
-        public List<MapObject> Objects = new List<MapObject>();
-        public CellAttribute Attribute;
-        public sbyte FishingAttribute = -1;
-
-        public void Add(MapObject mapObject)
-        {
-            if (mapObject == null)
-            {
-                ReportCellIssue("Attempted to add a null MapObject to a Cell.");
-                return;
-            }
-
-            if (Objects.Contains(mapObject))
-            {
-                ReportCellIssue($"Duplicate MapObject add detected for ObjectID {mapObject.ObjectID}.");
-                return;
-            }
-
-            Objects.Add(mapObject);
-        }
-        public void Remove(MapObject mapObject)
-        {
-            if (mapObject == null)
-            {
-                ReportCellIssue("Attempted to remove a null MapObject from a Cell.");
-                return;
-            }
-
-            if (!Objects.Remove(mapObject))
-            {
-                ReportCellIssue($"Failed to remove MapObject {mapObject.ObjectID} from Cell collection.");
-            }
-            // DO NOT set Objects = null; keep the list to avoid re-alloc
-        }
-
-        private static void ReportCellIssue(string message)
-        {
-            try
-            {
-                throw new System.InvalidOperationException(message);
-            }
-            catch (System.Exception ex)
-            {
-                MessageQueue.Instance.Enqueue(ex);
-            }
         }
     }
     public class MapRespawn

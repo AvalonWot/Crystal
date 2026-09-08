@@ -209,9 +209,9 @@ namespace Server.MirObjects.Monsters
 
                     if (x == CurrentLocation.X && y == CurrentLocation.Y) continue;
 
-                    var cell = CurrentMap.GetCell(x, y);
+                    using var cellQuery0 = CurrentMap.RentObjectsSnapshot(x, y);
 
-                    if (!cell.Valid) continue;
+                    if (!cellQuery0.Valid) continue;
 
                     int damage = GetAttackPower(Stats[Stat.MinMC], Stats[Stat.MaxMC]);
 
@@ -257,9 +257,9 @@ namespace Server.MirObjects.Monsters
 
                         if (x == CurrentLocation.X && y == CurrentLocation.Y) continue;
 
-                        var cell = CurrentMap.GetCell(x, y);
+                        using var cellQuery1 = CurrentMap.RentObjectsSnapshot(x, y);
 
-                        if (!cell.Valid) continue;
+                        if (!cellQuery1.Valid) continue;
 
                         int damage = GetAttackPower(Stats[Stat.MinDC], Stats[Stat.MaxDC]);
 

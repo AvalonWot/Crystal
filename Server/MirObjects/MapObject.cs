@@ -330,7 +330,7 @@ namespace Server.MirObjects
 
                 if (location.X < 0 || location.Y < 0 || location.X >= CurrentMap.Width || location.Y >= CurrentMap.Height) return false;
 
-                if (!CurrentMap.GetCell(location).Valid) return false;
+                if (!CurrentMap.GetTerrain(location).Valid) return false;
             }
 
             return true;
@@ -389,12 +389,13 @@ namespace Server.MirObjects
                         if (x < 0) continue;
                         if (x >= CurrentMap.Width) break;
 
-                        Cell cell = CurrentMap.GetCell(x, y);
-                        if (!cell.Valid || cell.Objects == null) continue;
+                        using var cellQuery0 = CurrentMap.RentObjectsSnapshot(x, y);
+                        if (!cellQuery0.Valid) continue;
 
-                        for (int i = 0; i < cell.Objects.Count; i++)
+                        for (int i = 0; i < cellQuery0.Count; i++)
                         {
-                            MapObject ob = cell.Objects[i];
+                            MapObject ob = cellQuery0[i];
+                            if (!cellQuery0.IsCurrent(ob)) continue;
                             if (ob.ObjectID != targetID) continue;
 
                             return ob;
@@ -747,13 +748,14 @@ namespace Server.MirObjects
                     if (x >= CurrentMap.Width) break;
                     if (x < 0 || x >= CurrentMap.Width) continue;
 
-                    Cell cell = CurrentMap.GetCell(x, y);
+                    using var cellQuery1 = CurrentMap.RentObjectsSnapshot(x, y);
 
-                    if (!cell.Valid || cell.Objects == null) continue;
+                    if (!cellQuery1.Valid) continue;
 
-                    for (int i = 0; i < cell.Objects.Count; i++)
+                    for (int i = 0; i < cellQuery1.Count; i++)
                     {
-                        MapObject ob = cell.Objects[i];
+                        MapObject ob = cellQuery1[i];
+                        if (!cellQuery1.IsCurrent(ob)) continue;
                         if (ob.Race != ObjectType.Monster) continue;
 
                         if (ob.Target == this && (!ob.CoolEye || ob.Level < Level)) ob.Target = null;
@@ -764,12 +766,13 @@ namespace Server.MirObjects
 
         public bool CheckStacked()
         {
-            Cell cell = CurrentMap.GetCell(CurrentLocation);
+            using var cellQuery2 = CurrentMap.RentObjectsSnapshot(CurrentLocation);
 
-            if (cell.Objects != null)
-                for (int i = 0; i < cell.Objects.Count; i++)
+
+                for (int i = 0; i < cellQuery2.Count; i++)
                 {
-                    MapObject ob = cell.Objects[i];
+                    MapObject ob = cellQuery2[i];
+                    if (!cellQuery2.IsCurrent(ob)) continue;
                     if (ob == this || !ob.Blocking) continue;
                     return true;
                 }
@@ -781,16 +784,15 @@ namespace Server.MirObjects
         {
             if (temp == null || !temp.ValidPoint(location)) return false;
 
-            CurrentMap.RemoveObject(this);
+            Map sourceMap = CurrentMap;
             if (effects) Broadcast(new S.ObjectTeleportOut {ObjectID = ObjectID, Type = effectnumber});
             Broadcast(new S.ObjectRemove {ObjectID = ObjectID});
-            
-            CurrentMap = temp;
-            CurrentLocation = location;
+
+            sourceMap.MoveObject(this, temp, location);
+            if (CurrentMap != temp || CurrentLocation != location) return false;
 
             InTrapRock = false;
 
-            CurrentMap.AddObject(this);
             BroadcastInfo();
 
             if (effects) Broadcast(new S.ObjectTeleportIn { ObjectID = ObjectID, Type = effectnumber });
@@ -803,7 +805,7 @@ namespace Server.MirObjects
         public virtual bool TeleportRandom(int attempts, int distance, Map map = null)
         {
             if (map == null) map = CurrentMap;
-            if (map.Cells == null) return false;
+            if (!map.HasTerrain) return false;
             if (map.WalkableCells.Count == 0) return false;
 
             int cellIndex = Envir.Random.Next(map.WalkableCells.Count);
@@ -965,12 +967,13 @@ namespace Server.MirObjects
                     if (checklocation.Y < 0) continue;
                     if (checklocation.Y >= CurrentMap.Height) continue;
 
-                    Cell cell = CurrentMap.GetCell(checklocation.X, checklocation.Y);
-                    if (!cell.Valid || cell.Objects == null) continue;
+                    using var cellQuery3 = CurrentMap.RentObjectsSnapshot(checklocation.X, checklocation.Y);
+                    if (!cellQuery3.Valid) continue;
 
-                    for (int j = 0; j < cell.Objects.Count; j++)
+                    for (int j = 0; j < cellQuery3.Count; j++)
                     {
-                        MapObject ob = cell.Objects[j];
+                        MapObject ob = cellQuery3[j];
+                        if (!cellQuery3.IsCurrent(ob)) continue;
                         switch (ob.Race)
                         {
                             case ObjectType.Monster:

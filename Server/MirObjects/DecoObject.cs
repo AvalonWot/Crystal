@@ -38,9 +38,9 @@ namespace Server.MirObjects
 
         public override void Process()
         {           
-            //Cell cell = CurrentMap.GetCell(CurrentLocation);
-            //for (int i = 0; i < cell.Objects.Count; i++)
-            //    ProcessDeco(cell.Objects[i]);
+            //using var cellQuery0 = CurrentMap.RentObjectsSnapshot(CurrentLocation);
+            //for (int i = 0; i < cellQuery0.Count; i++)
+            //    ProcessDeco(cellQuery0[i]);
         }
 
         public override void SetOperateTime()

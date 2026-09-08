@@ -3317,6 +3317,7 @@ namespace Server.MirEnvir
             Players.Clear();
             StartPoints.Clear();
             StartItems.Clear();
+            ClearMapCellStorage();
             MapList.Clear();
             GTMapList.Clear();
             GameshopLog.Clear();
@@ -3445,6 +3446,7 @@ namespace Server.MirEnvir
         {
             SaveGoods(true);
 
+            ClearMapCellStorage();
             MapList.Clear();
             StartPoints.Clear();
             StartItems.Clear();
@@ -3458,6 +3460,12 @@ namespace Server.MirEnvir
             GC.Collect();
 
             MessageQueue.Enqueue(GameLanguage.ServerTextMap.GetLocalization(ServerTextKeys.EnvirStopped));
+        }
+
+        private void ClearMapCellStorage()
+        {
+            for (var i = 0; i < MapList.Count; i++)
+                MapList[i].ClearCellObjects();
         }
         private void StopNetwork()
         {

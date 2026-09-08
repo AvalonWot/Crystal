@@ -98,12 +98,11 @@ namespace Server.MirObjects.Monsters
 
                 if (!CurrentMap.ValidPoint(target)) continue;
 
-                Cell cell = CurrentMap.GetCell(target);
-                if (cell.Objects == null) continue;
-
-                for (int o = 0; o < cell.Objects.Count; o++)
+                using var cellQuery0 = CurrentMap.RentObjectsSnapshot(target);
+                for (int o = 0; o < cellQuery0.Count; o++)
                 {
-                    MapObject ob = cell.Objects[o];
+                    MapObject ob = cellQuery0[o];
+                    if (!cellQuery0.IsCurrent(ob)) continue;
                     if (ob.Race == ObjectType.Monster || ob.Race == ObjectType.Player)
                     {
                         if (!ob.IsAttackTarget(this)) continue;

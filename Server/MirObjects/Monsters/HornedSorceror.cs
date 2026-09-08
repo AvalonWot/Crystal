@@ -167,9 +167,9 @@ namespace Server.MirObjects.Monsters
                     if (x < 0) continue;
                     if (x >= CurrentMap.Width) break;
 
-                    var cell = CurrentMap.GetCell(x, y);
+                    using var cellQuery0 = CurrentMap.RentObjectsSnapshot(x, y);
 
-                    if (!cell.Valid) continue;
+                    if (!cellQuery0.Valid) continue;
 
                     int damage = GetAttackPower(Stats[Stat.MinMC], Stats[Stat.MaxMC]);
 
@@ -213,10 +213,8 @@ namespace Server.MirObjects.Monsters
             {
                 location = Functions.PointMove(CurrentLocation, jumpDir, 1);
 
-                CurrentMap.GetCell(CurrentLocation).Remove(this);
                 RemoveObjects(jumpDir, 1);
-                CurrentLocation = location;
-                CurrentMap.GetCell(CurrentLocation).Add(this);
+                CurrentMap.MoveObject(this, location);
                 AddObjects(jumpDir, 1);
 
                 int damage = Stats[Stat.MaxDC];
@@ -237,13 +235,11 @@ namespace Server.MirObjects.Monsters
             int damage = (int)data[1];
             DefenceType defence = (DefenceType)data[2];
 
-            var cell = CurrentMap.GetCell(location);
-
-            if (cell.Objects == null) return;
-
-            for (int o = 0; o < cell.Objects.Count; o++)
+            using var cellQuery1 = CurrentMap.RentObjectsSnapshot(location);
+            for (int o = 0; o < cellQuery1.Count; o++)
             {
-                MapObject ob = cell.Objects[o];
+                MapObject ob = cellQuery1[o];
+                if (!cellQuery1.IsCurrent(ob)) continue;
                 if (ob.Race != ObjectType.Player && ob.Race != ObjectType.Monster) continue;
                 if (!ob.IsAttackTarget(this)) continue;
 

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Security.Cryptography;
+using Server.MirEnvir;
 using Server.MirDatabase;
 using Server.MirObjects;
 using Shared;
@@ -45,6 +46,7 @@ namespace Server
         public static string GMPassword = "C#Mir 4.0";
         public static bool Multithreaded = true;
         public static int ThreadLimit = 2;
+        public static int CellObjectPoolMaxRetainedCount = 4096;
         public static bool TestServer = false;
         public static bool EnforceDBChecks = true;
 
@@ -388,6 +390,8 @@ namespace Server
             GMPassword = Reader.ReadString("General", "GMPassword", GMPassword);
             Multithreaded = Reader.ReadBoolean("General", "Multithreaded", Multithreaded);
             ThreadLimit = Reader.ReadInt32("General", "ThreadLimit", ThreadLimit);
+            CellObjectPoolMaxRetainedCount = Math.Max(0, Reader.ReadInt32("Performance", "CellObjectPoolMaxRetainedCount", 4096));
+            CellObjectPool.Configure(CellObjectPoolMaxRetainedCount);
             TestServer = Reader.ReadBoolean("General", "TestServer", TestServer);
             EnforceDBChecks = Reader.ReadBoolean("General", "EnforceDBChecks", EnforceDBChecks);
             MonsterProcessWhenAlone = Reader.ReadBoolean("General", "MonsterProcessWhenAlone", MonsterProcessWhenAlone);
@@ -680,6 +684,7 @@ namespace Server
             Reader.Write("General", "RelogDelay", RelogDelay);
             Reader.Write("General", "Multithreaded", Multithreaded);
             Reader.Write("General", "ThreadLimit", ThreadLimit);
+            Reader.Write("Performance", "CellObjectPoolMaxRetainedCount", CellObjectPoolMaxRetainedCount);
             Reader.Write("General", "TestServer", TestServer);
             Reader.Write("General", "EnforceDBChecks", EnforceDBChecks);
             Reader.Write("General", "MonsterProcessWhenAlone", MonsterProcessWhenAlone);

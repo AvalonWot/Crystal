@@ -38,13 +38,11 @@ namespace Server.MirObjects.Monsters
 
                     if (CurrentMap.ValidPoint(location))
                     {
-                        Cell cell = CurrentMap.GetCell(location);
-
-                        if (cell.Objects == null) continue;
-
-                        for (int o = 0; o < cell.Objects.Count; o++)
+                        using var cellQuery0 = CurrentMap.RentObjectsSnapshot(location);
+                        for (int o = 0; o < cellQuery0.Count; o++)
                         {
-                            if (!cell.Objects[o].Blocking) continue;
+                            MapObject cellObject = cellQuery0[o];
+                            if (!cellQuery0.IsCurrent(cellObject) || !cellObject.Blocking) continue;
                             count++;
                             break;
                         }

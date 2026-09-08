@@ -93,13 +93,14 @@ namespace Server.MirObjects.Monsters
                     if (x < 0) continue;
                     if (x >= CurrentMap.Width) break;
 
-                    Cell cell = CurrentMap.GetCell(x, y);
+                    using var cellQuery0 = CurrentMap.RentObjectsSnapshot(x, y);
 
-                    if (!cell.Valid || cell.Objects == null) continue;
+                    if (!cellQuery0.Valid) continue;
 
-                    for (int i = 0; i < cell.Objects.Count; i++)
+                    for (int i = 0; i < cellQuery0.Count; i++)
                     {
-                        MapObject target = cell.Objects[i];
+                        MapObject target = cellQuery0[i];
+                        if (!cellQuery0.IsCurrent(target)) continue;
                         switch (target.Race)
                         {
                             case ObjectType.Monster:
@@ -165,12 +166,11 @@ namespace Server.MirObjects.Monsters
             {
                 if (!CurrentMap.ValidPoint(target)) return;
 
-                Cell cell = CurrentMap.GetCell(target);
-                if (cell.Objects == null) return;
-
-                for (int o = 0; o < cell.Objects.Count; o++)
+                using var cellQuery1 = CurrentMap.RentObjectsSnapshot(target);
+                for (int o = 0; o < cellQuery1.Count; o++)
                 {
-                    MapObject ob = cell.Objects[o];
+                    MapObject ob = cellQuery1[o];
+                    if (!cellQuery1.IsCurrent(ob)) continue;
                     if (ob.Race == ObjectType.Monster || ob.Race == ObjectType.Player)
                     {
                         if (!ob.IsAttackTarget(this)) continue;

@@ -144,13 +144,14 @@ namespace Server.MirObjects.Monsters
             {
                 Point point = Functions.PointMove(CurrentLocation, Direction, 1);
 
-                Cell cell = CurrentMap.GetCell(point);
+                using var cellQuery0 = CurrentMap.RentObjectsSnapshot(point);
 
-                if (cell.Objects != null)
+
                 {
-                    for (int o = 0; o < cell.Objects.Count; o++)
+                    for (int o = 0; o < cellQuery0.Count; o++)
                     {
-                        MapObject t = cell.Objects[o];
+                        MapObject t = cellQuery0[o];
+                        if (!cellQuery0.IsCurrent(t)) continue;
                         if (t == null || t.Race != ObjectType.Player) continue;
 
                         if (t.IsAttackTarget(this))

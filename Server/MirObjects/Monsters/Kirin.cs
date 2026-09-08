@@ -130,7 +130,6 @@ namespace Server.MirObjects.Monsters
         {
             Point location = CurrentLocation;
             MirDirection direction = Direction;
-            Cell cell;
 
             int Damage = GetAttackPower(Stats[Stat.MinMC], Stats[Stat.MaxMC]);
 
@@ -151,13 +150,11 @@ namespace Server.MirObjects.Monsters
 
                     if (!CurrentMap.ValidPoint(hitPoint)) continue;
 
-                    cell = CurrentMap.GetCell(hitPoint);
-
-                    if (cell.Objects == null) continue;
-
-                    for (int k = 0; k < cell.Objects.Count; k++)
+                    using var cellQuery0 = CurrentMap.RentObjectsSnapshot(hitPoint);
+                    for (int k = 0; k < cellQuery0.Count; k++)
                     {
-                        MapObject target = cell.Objects[k];
+                        MapObject target = cellQuery0[k];
+                        if (!cellQuery0.IsCurrent(target)) continue;
                         switch (target.Race)
                         {
                             case ObjectType.Monster:

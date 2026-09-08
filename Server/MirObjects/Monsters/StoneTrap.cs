@@ -43,12 +43,13 @@ namespace Server.MirObjects.Monsters
                         if (x < 0) continue;
                         if (x >= CurrentMap.Width) break;
 
-                        Cell cell = CurrentMap.GetCell(x, y);
-                        if (!cell.Valid || cell.Objects == null) continue;
+                        using var cellQuery0 = CurrentMap.RentObjectsSnapshot(x, y);
+                        if (!cellQuery0.Valid) continue;
 
-                        for (int i = 0; i < cell.Objects.Count; i++)
+                        for (int i = 0; i < cellQuery0.Count; i++)
                         {
-                            MapObject ob = cell.Objects[i];
+                            MapObject ob = cellQuery0[i];
+                            if (!cellQuery0.IsCurrent(ob)) continue;
 
                             if (ob == this)
                             {

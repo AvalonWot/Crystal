@@ -123,12 +123,11 @@ namespace Server.MirObjects.Monsters
                         if (x < 0) continue;
                         if (x >= CurrentMap.Width) break;
                         if (!CurrentMap.ValidPoint(x, y)) continue;
-                        Cell cell = CurrentMap.GetCell(x, y);
-                        if (cell.Objects == null) continue;
-
-                        for (int i = 0; i < cell.Objects.Count; i++)
+                        using var cellQuery0 = CurrentMap.RentObjectsSnapshot(x, y);
+                        for (int i = 0; i < cellQuery0.Count; i++)
                         {
-                            MapObject ob = cell.Objects[i];
+                            MapObject ob = cellQuery0[i];
+                            if (!cellQuery0.IsCurrent(ob)) continue;
                             switch (ob.Race)
                             {
                                 case ObjectType.Monster:

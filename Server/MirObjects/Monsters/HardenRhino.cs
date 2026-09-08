@@ -100,15 +100,14 @@ namespace Server.MirObjects.Monsters
 
                     if (!CurrentMap.ValidPoint(location)) break;
 
-                    CurrentMap.GetCell(CurrentLocation).Remove(this);
                     RemoveObjects(Direction, 1);
 
-                    CurrentLocation = location;
+                    CurrentMap.MoveObject(this, location);
                     travelled++;
 
                     Broadcast(new S.ObjectRun { ObjectID = ObjectID, Direction = Direction, Location = location });
 
-                    CurrentMap.GetCell(CurrentLocation).Add(this);
+
                     AddObjects(Direction, 1);
                 }
             }

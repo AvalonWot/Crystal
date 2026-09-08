@@ -63,10 +63,10 @@ namespace Server.MirObjects
             {
                 Direction = Functions.DirectionFromPoint(CurrentLocation, Target.CurrentLocation);
                 var behindEnemyLocation = Functions.PointMove(Target.CurrentLocation, Direction, 1);
-                var thrustCell = CurrentMap.GetCell(behindEnemyLocation);
+                using var thrustCell = CurrentMap.RentObjectsSnapshot(behindEnemyLocation);
                 bool ThrustObject = false;
 
-                if (thrustCell.Objects != null && thrustCell.Objects.Count != 0) ThrustObject = true;
+                if (thrustCell.Count != 0) ThrustObject = true;
 
                 Spell spell = Spell.None;
 
