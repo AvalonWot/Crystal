@@ -347,12 +347,13 @@ namespace Server.MirObjects
                         if (x < 0) continue;
                         if (x >= CurrentMap.Width) break;
 
-                        Cell cell = CurrentMap.GetCell(x, y);
-                        if (!cell.Valid || cell.Objects == null) continue;
+                        using var cellQuery0 = CurrentMap.RentObjectsSnapshot(x, y);
+                        if (!cellQuery0.Valid) continue;
 
-                        for (int i = 0; i < cell.Objects.Count; i++)
+                        for (int i = 0; i < cellQuery0.Count; i++)
                         {
-                            MapObject ob = cell.Objects[i];
+                            MapObject ob = cellQuery0[i];
+                            if (!cellQuery0.IsCurrent(ob)) continue;
                             if (ob == null) continue;
                             if (ob.Race != ObjectType.Item) continue;
                             if (ob.Owner != null && ob.Owner != this && ob.Owner != Master && !IsMasterGroupMember(ob.Owner)) continue;
@@ -408,12 +409,13 @@ namespace Server.MirObjects
                         if (x < 0) continue;
                         if (x >= CurrentMap.Width) break;
 
-                        Cell cell = CurrentMap.GetCell(x, y);
-                        if (!cell.Valid || cell.Objects == null) continue;
+                        using var cellQuery1 = CurrentMap.RentObjectsSnapshot(x, y);
+                        if (!cellQuery1.Valid) continue;
 
-                        for (int i = 0; i < cell.Objects.Count; i++)
+                        for (int i = 0; i < cellQuery1.Count; i++)
                         {
-                            MapObject ob = cell.Objects[i];
+                            MapObject ob = cellQuery1[i];
+                            if (!cellQuery1.IsCurrent(ob)) continue;
                             if (ob == null) continue;
                             if (ob.Race != ObjectType.Item) continue;
                             if (ob.Owner != null && ob.Owner != this && ob.Owner != Master && !IsMasterGroupMember(ob.Owner)) continue;
@@ -506,11 +508,12 @@ namespace Server.MirObjects
             if (inRange)
             {
                 if (!CurrentMap.ValidPoint(location)) return false;
-                Cell cell = CurrentMap.GetCell(location);
-                if (cell.Objects != null)
-                    for (int i = 0; i < cell.Objects.Count; i++)
+                using var cellQuery2 = CurrentMap.RentObjectsSnapshot(location);
+
+                    for (int i = 0; i < cellQuery2.Count; i++)
                     {
-                        MapObject ob = cell.Objects[i];
+                        MapObject ob = cellQuery2[i];
+                        if (!cellQuery2.IsCurrent(ob)) continue;
                         if (!ob.Blocking) continue;
                         return false;
                     }
@@ -587,11 +590,8 @@ namespace Server.MirObjects
             if (Dead || Master == null) return;
 
             if (!CurrentMap.ValidPoint(location)) return;
-            Cell cell = CurrentMap.GetCell(location);
-            if (cell.Objects == null) return;
-
-
-            int count = cell.Objects.Count;
+            using var cellQuery3 = CurrentMap.RentObjectsSnapshot(location);
+            int count = cellQuery3.Count;
 
             for (int i = 0; i < count; i++)
             {
@@ -604,11 +604,11 @@ namespace Server.MirObjects
             if (Dead || Master == null) return;
 
             if (!CurrentMap.ValidPoint(location)) return;
-            Cell cell = CurrentMap.GetCell(location);
-            if (cell.Objects == null) return;
-            for (int i = 0; i < cell.Objects.Count; i++)
+            using var cellQuery4 = CurrentMap.RentObjectsSnapshot(location);
+            for (int i = 0; i < cellQuery4.Count; i++)
             {
-                MapObject ob = cell.Objects[i];
+                MapObject ob = cellQuery4[i];
+                if (!cellQuery4.IsCurrent(ob)) continue;
                 if (ob == null) continue;
                 if (ob.Race != ObjectType.Item) continue;
                 if (ob.Owner != null && ob.Owner != this && ob.Owner != Master && !IsMasterGroupMember(ob.Owner)) continue;

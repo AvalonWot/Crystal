@@ -37,7 +37,7 @@ namespace Server.MirObjects.Monsters
 
                 currentMoveDistance++;
 
-                if (!CurrentMap.GetCell(location).Valid)
+                if (!CurrentMap.GetTerrain(location).Valid)
                 {
                     dir = Functions.ReverseDirection(dir);
                     continue;

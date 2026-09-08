@@ -111,12 +111,13 @@ namespace Server.MirObjects
             if (Envir.Time < TickTime) return;
             TickTime = Envir.Time + TickSpeed;
 
-            Cell cell = CurrentMap.GetCell(CurrentLocation);
-            for (int i = 0; i < cell.Objects.Count; i++)
-                if (cell != null)
-                {
-                    ProcessSpell(cell.Objects[i]);
-                }
+            using var cellQuery0 = CurrentMap.RentObjectsSnapshot(CurrentLocation);
+            for (int i = 0; i < cellQuery0.Count; i++)
+            {
+                MapObject target = cellQuery0[i];
+                if (!cellQuery0.IsCurrent(target)) continue;
+                ProcessSpell(target);
+            }
 
             if ((Spell == Spell.MapLava) || (Spell == Spell.MapLightning)) Value = 0;
         }

@@ -3027,13 +3027,13 @@ namespace Server.MirObjects
                         map = Envir.GetMapByNameAndInstance(param[0], tempInt);
                         if (map == null) return;
 
-                        foreach (var cell in map.Cells)
+                        foreach (var cellPosition in map.GetOccupiedCellPositions())
                         {
-                            if (cell == null || cell.Objects == null) continue;
-
-                            for (int j = 0; j < cell.Objects.Count(); j++)
+                            using var cellQuery0 = map.RentObjectsSnapshot(cellPosition);
+                            for (int j = 0; j < cellQuery0.Count; j++)
                             {
-                                MapObject ob = cell.Objects[j];
+                                MapObject ob = cellQuery0[j];
+                                if (!cellQuery0.IsCurrent(ob)) continue;
 
                                 if (ob.Race != ObjectType.Monster) continue;
                                 if (ob.Dead) continue;
@@ -3829,13 +3829,13 @@ namespace Server.MirObjects
                             var targetmap = Envir.GetMapByNameAndInstance(param[0], tempInt);
                             if (targetmap == null) return;
 
-                            foreach (var cell in targetmap.Cells)
+                            foreach (var cellPosition in targetmap.GetOccupiedCellPositions())
                             {
-                                if (cell == null || cell.Objects == null) continue;
-
-                                for (int j = 0; j < cell.Objects.Count(); j++)
+                                using var cellQuery1 = targetmap.RentObjectsSnapshot(cellPosition);
+                                for (int j = 0; j < cellQuery1.Count; j++)
                                 {
-                                    MapObject ob = cell.Objects[j];
+                                    MapObject ob = cellQuery1[j];
+                                    if (!cellQuery1.IsCurrent(ob)) continue;
 
                                     if (ob.Race != ObjectType.Monster) continue;
                                     if (ob.Dead) continue;
@@ -4850,13 +4850,13 @@ namespace Server.MirObjects
                             var map = Envir.GetMapByNameAndInstance(param[0], tempInt);
                             if (map == null) return;
 
-                            foreach (var cell in map.Cells)
-                            {
-                                if (cell == null || cell.Objects == null) continue;
-
-                                for (int j = 0; j < cell.Objects.Count(); j++)
+                            foreach (var cellPosition in map.GetOccupiedCellPositions())
+                        {
+                            using var cellQuery2 = map.RentObjectsSnapshot(cellPosition);
+                                for (int j = 0; j < cellQuery2.Count; j++)
                                 {
-                                    MapObject ob = cell.Objects[j];
+                                    MapObject ob = cellQuery2[j];
+                                    if (!cellQuery2.IsCurrent(ob)) continue;
 
                                     if (ob.Race != ObjectType.Monster) continue;
                                     if (ob.Dead) continue;

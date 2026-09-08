@@ -162,14 +162,14 @@ namespace Server.MirObjects.Monsters
                     if (x < 0) continue;
                     if (x >= CurrentMap.Width) break;
 
-                    Cell cell = CurrentMap.GetCell(x, y);
+                    using var cellQuery0 = CurrentMap.RentObjectsSnapshot(x, y);
 
-                    if (!cell.Valid || cell.Objects == null) continue;
+                    if (!cellQuery0.Valid) continue;
 
-                    for (int i = 0; i < cell.Objects.Count; i++)
+                    for (int i = 0; i < cellQuery0.Count; i++)
                     {
-                        GuardianRock target = cell.Objects[i] as GuardianRock;
-                        if (target == null) continue;
+                        GuardianRock target = cellQuery0[i] as GuardianRock;
+                        if (target == null || !cellQuery0.IsCurrent(target)) continue;
                         target.Active = Active;
                     }
                 }

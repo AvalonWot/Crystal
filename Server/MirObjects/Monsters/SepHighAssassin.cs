@@ -1,4 +1,4 @@
-﻿using System.Drawing;
+using System.Drawing;
 using Server.MirDatabase;
 using Server.MirEnvir;
 using S = ServerPackets;
@@ -68,12 +68,13 @@ namespace Server.MirObjects.Monsters
 
             if (!CurrentMap.ValidPoint(temploc)) return false;
 
-            var cell = CurrentMap.GetCell(temploc);
+            using var cellQuery0 = CurrentMap.RentObjectsSnapshot(temploc);
 
-            if (cell.Objects != null)
-                for (int i = 0; i < cell.Objects.Count; i++)
+
+                for (int i = 0; i < cellQuery0.Count; i++)
                 {
-                    MapObject ob = cell.Objects[i];
+                    MapObject ob = cellQuery0[i];
+                    if (!cellQuery0.IsCurrent(ob)) continue;
                     if (!ob.Blocking) continue;
                     return false;
                 }
@@ -84,16 +85,17 @@ namespace Server.MirObjects.Monsters
 
             if (!CurrentMap.ValidPoint(location)) return false;
 
-            cell = CurrentMap.GetCell(location);
+            using var cellQuery1 = CurrentMap.RentObjectsSnapshot(location);
 
             bool isBreak = br;
 
 
 
-            if (cell.Objects != null)
-                for (int i = 0; i < cell.Objects.Count; i++)
+
+                for (int i = 0; i < cellQuery1.Count; i++)
                 {
-                    MapObject ob = cell.Objects[i];
+                    MapObject ob = cellQuery1[i];
+                    if (!cellQuery1.IsCurrent(ob)) continue;
                     if (!ob.Blocking) continue;
                     isBreak = true;
                     break;
@@ -105,23 +107,22 @@ namespace Server.MirObjects.Monsters
 
                 if (!CurrentMap.ValidPoint(location)) return false;
 
-                cell = CurrentMap.GetCell(location);
+                using var cellQuery2 = CurrentMap.RentObjectsSnapshot(location);
 
-                if (cell.Objects != null)
-                    for (int i = 0; i < cell.Objects.Count; i++)
+
+                    for (int i = 0; i < cellQuery2.Count; i++)
                     {
-                        MapObject ob = cell.Objects[i];
+                        MapObject ob = cellQuery2[i];
+                        if (!cellQuery2.IsCurrent(ob)) continue;
                         if (!ob.Blocking) continue;
                         return false;
                     }
             }
 
-            CurrentMap.GetCell(CurrentLocation).Remove(this);
 
             Direction = dir;
             RemoveObjects(dir, 1);
-            CurrentLocation = location;
-            CurrentMap.GetCell(CurrentLocation).Add(this);
+            CurrentMap.MoveObject(this, location);
             AddObjects(dir, 1);
 
             if (Hidden)
@@ -152,12 +153,14 @@ namespace Server.MirObjects.Monsters
                 Broadcast(new S.ObjectRun { ObjectID = ObjectID, Direction = Direction, Location = CurrentLocation });
 
 
-            cell = CurrentMap.GetCell(CurrentLocation);
+            using var cellQuery3 = CurrentMap.RentObjectsSnapshot(CurrentLocation);
 
-            for (int i = 0; i < cell.Objects.Count; i++)
+            for (int i = 0; i < cellQuery3.Count; i++)
             {
-                if (cell.Objects[i].Race != ObjectType.Spell) continue;
-                SpellObject ob = (SpellObject)cell.Objects[i];
+                MapObject currentCellObject = cellQuery3[i];
+                if (!cellQuery3.IsCurrent(currentCellObject)) continue;
+                if (currentCellObject.Race != ObjectType.Spell) continue;
+                SpellObject ob = (SpellObject)currentCellObject;
 
                 ob.ProcessSpell(this);
                 //break;
@@ -205,13 +208,11 @@ namespace Server.MirObjects.Monsters
 
                             if (!CurrentMap.ValidPoint(hitPoint)) continue;
 
-                            Cell cell = CurrentMap.GetCell(hitPoint);
-
-                            if (cell.Objects == null) continue;
-
-                            for (int j = 0; j < cell.Objects.Count; j++)
+                            using var cellQuery4 = CurrentMap.RentObjectsSnapshot(hitPoint);
+                            for (int j = 0; j < cellQuery4.Count; j++)
                             {
-                                MapObject target = cell.Objects[j];
+                                MapObject target = cellQuery4[j];
+                                if (!cellQuery4.IsCurrent(target)) continue;
                                 switch (target.Race)
                                 {
                                     case ObjectType.Monster:

@@ -679,7 +679,7 @@ namespace Server.MirObjects
                     {
                         if (x < 0) continue;
                         if (x >= ConquestMap.Width) break;
-                        if (!ConquestMap.Cells[x, y].Valid) continue;
+                        if (!ConquestMap.GetTerrain(x, y).Valid) continue;
 
                         SpellObject spell = new SpellObject
                         {
@@ -691,7 +691,7 @@ namespace Server.MirObjects
                             Decoration = true
                         };
 
-                        ConquestMap.Cells[x, y].Add(spell);
+                        ConquestMap.AddObjectAt(new Point(x, y), spell);
                         WarEffects.Add(spell);
                         spell.Spawned();
                     }

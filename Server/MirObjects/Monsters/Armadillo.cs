@@ -128,10 +128,8 @@ namespace Server.MirObjects.Monsters
             {
                 location = Functions.PointMove(CurrentLocation, jumpDir, 1);
 
-                CurrentMap.GetCell(CurrentLocation).Remove(this);
                 RemoveObjects(jumpDir, 1);
-                CurrentLocation = location;
-                CurrentMap.GetCell(CurrentLocation).Add(this);
+                CurrentMap.MoveObject(this, location);
                 AddObjects(jumpDir, 1);
             }
 

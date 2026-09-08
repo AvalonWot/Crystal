@@ -70,12 +70,13 @@ namespace Server.MirObjects.Monsters
             //Stacking or Infront of master - Move
             bool stacking = false;
 
-            Cell cell = CurrentMap.GetCell(CurrentLocation);
+            using var cellQuery0 = CurrentMap.RentObjectsSnapshot(CurrentLocation);
 
-            if (cell.Objects != null)
-                for (int i = 0; i < cell.Objects.Count; i++)
+
+                for (int i = 0; i < cellQuery0.Count; i++)
                 {
-                    MapObject ob = cell.Objects[i];
+                    MapObject ob = cellQuery0[i];
+                    if (!cellQuery0.IsCurrent(ob)) continue;
                     if (ob == this || !ob.Blocking) continue;
                     stacking = true;
                     break;
@@ -214,13 +215,14 @@ namespace Server.MirObjects.Monsters
                     if (x < 0) continue;
                     if (x >= CurrentMap.Width) break;
 
-                    Cell cell = CurrentMap.GetCell(x, y);
+                    using var cellQuery1 = CurrentMap.RentObjectsSnapshot(x, y);
 
-                    if (!cell.Valid || cell.Objects == null) continue;
+                    if (!cellQuery1.Valid) continue;
 
-                    for (int i = 0; i < cell.Objects.Count; i++)
+                    for (int i = 0; i < cellQuery1.Count; i++)
                     {
-                        MapObject target = cell.Objects[i];
+                        MapObject target = cellQuery1[i];
+                        if (!cellQuery1.IsCurrent(target)) continue;
                         switch (target.Race)
                         {
                             case ObjectType.Monster:

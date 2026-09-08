@@ -957,12 +957,13 @@ namespace Server.MirObjects
                         if (x < 0) continue;
                         if (x >= CurrentMap.Width) break;
 
-                        Cell cell = CurrentMap.GetCell(x, y);
-                        if (!cell.Valid || cell.Objects == null) continue;
+                        using var cellQuery0 = CurrentMap.RentObjectsSnapshot(x, y);
+                        if (!cellQuery0.Valid) continue;
 
-                        for (int i = 0; i < cell.Objects.Count; i++)
+                        for (int i = 0; i < cellQuery0.Count; i++)
                         {
-                            MapObject ob = cell.Objects[i];
+                            MapObject ob = cellQuery0[i];
+                            if (!cellQuery0.IsCurrent(ob)) continue;
                             switch (ob.Race)
                             {
                                 case ObjectType.Monster:
@@ -997,11 +998,12 @@ namespace Server.MirObjects
             if (inRange)
             {
                 if (!CurrentMap.ValidPoint(location)) return;
-                Cell cell = CurrentMap.GetCell(location);
-                if (cell.Objects != null)
-                    for (int i = 0; i < cell.Objects.Count; i++)
+                using var cellQuery1 = CurrentMap.RentObjectsSnapshot(location);
+
+                    for (int i = 0; i < cellQuery1.Count; i++)
                     {
-                        MapObject ob = cell.Objects[i];
+                        MapObject ob = cellQuery1[i];
+                        if (!cellQuery1.IsCurrent(ob)) continue;
                         if (!ob.Blocking) continue;
                         return;
                     }
@@ -1074,11 +1076,12 @@ namespace Server.MirObjects
                     {
                         if (x < 0) continue;
                         if (x >= Current.Width) break;
-                        Cell cell = Current.Cells[x, y];
-                        if (cell.Objects == null || !cell.Valid) continue;
-                        for (int i = 0; i < cell.Objects.Count; i++)
+                        using var cellQuery2 = Current.RentObjectsSnapshot(x, y);
+                        if (!cellQuery2.Valid) continue;
+                        for (int i = 0; i < cellQuery2.Count; i++)
                         {
-                            MapObject ob = cell.Objects[i];
+                            MapObject ob = cellQuery2[i];
+                            if (!cellQuery2.IsCurrent(ob)) continue;
                             switch (ob.Race)
                             {
                                 case ObjectType.Monster:
