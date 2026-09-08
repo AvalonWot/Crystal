@@ -1431,10 +1431,16 @@ namespace Server.MirObjects
             {
                 HealTime = Envir.Time + HealDelay;
 
-                if (HealAmount > 5)
+                ushort n = this switch
                 {
-                    healthRegen += 5;
-                    HealAmount -= 5;
+                    BoneFamiliar or Shinsu or HolyDeva => Math.Max(PetLevel, (byte)5),
+                    _ => 5,
+                };
+                
+                if (HealAmount > n)
+                {
+                    healthRegen += n;
+                    HealAmount -= n;
                 }
                 else
                 {
