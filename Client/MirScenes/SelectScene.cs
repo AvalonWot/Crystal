@@ -19,6 +19,7 @@ namespace Client.MirScenes
         public MirLabel LastAccessLabel, LastAccessLabelLabel;
         public List<SelectInfo> Characters = new List<SelectInfo>();
         private int _selected;
+        private string _startingCharacterName;
 
         public SelectScene(List<SelectInfo> characters)
         {
@@ -278,6 +279,8 @@ namespace Client.MirScenes
             }
             StartGameButton.Enabled = false;
 
+            _startingCharacterName = Characters[_selected].Name;
+
             Network.Enqueue(new C.StartGame
             {
                 CharacterIndex = Characters[_selected].Index
@@ -466,6 +469,8 @@ namespace Client.MirScenes
                     MirMessageBox.Show(GameLanguage.ClientTextMap.GetLocalization(ClientTextKeys.NoActiveMapOrStartPointFound));
                     break;
                 case 4:
+
+                    CharacterConfig.Load(_startingCharacterName);
 
                     if (p.Resolution < Settings.Resolution || Settings.Resolution == 0) Settings.Resolution = p.Resolution;
 

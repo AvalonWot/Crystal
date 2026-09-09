@@ -9,21 +9,28 @@ namespace Client
 
     internal static class AutoPotionSettings
     {
-        private const string FileName = @".\AutoTool.ini";
+        public static IReadOnlyList<AutoPotionRule> HPRules { get; private set; } = [];
+        public static IReadOnlyList<AutoPotionRule> MPRules { get; private set; } = [];
+        public static bool AutoMagicShield { get; private set; }
 
-        public static IReadOnlyList<AutoPotionRule> HPRules { get; private set; } = Array.Empty<AutoPotionRule>();
-        public static IReadOnlyList<AutoPotionRule> MPRules { get; private set; } = Array.Empty<AutoPotionRule>();
-
-        public static void Load()
+        public static void Load(string filePath)
         {
-            InIReader reader = new InIReader(FileName);
+            InIReader reader = new InIReader(filePath);
             HPRules = ParseRules(reader.ReadString("AutoPotion", "HP", string.Empty, false), "HP");
             MPRules = ParseRules(reader.ReadString("AutoPotion", "MP", string.Empty, false), "MP");
+            AutoMagicShield = reader.ReadBoolean("AutoMagic", "MagicShield", false);
+        }
+
+        public static void Clear()
+        {
+            HPRules = [];
+            MPRules = [];
+            AutoMagicShield = false;
         }
 
         private static IReadOnlyList<AutoPotionRule> ParseRules(string value, string key)
         {
-            if (string.IsNullOrWhiteSpace(value)) return Array.Empty<AutoPotionRule>();
+            if (string.IsNullOrWhiteSpace(value)) return [];
 
             List<AutoPotionRule> rules = new();
             string[] entries = value.Split(';');

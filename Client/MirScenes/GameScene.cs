@@ -278,6 +278,8 @@ namespace Client.MirScenes
 
         private long _nextAutoHPTime;
         private long _nextAutoMPTime;
+        private long _nextAutoMagicShieldTime;
+        private long _nextAutoMagicShieldWarningTime;
         private readonly Dictionary<string, long> _autoPotionWarningTimes = new(StringComparer.OrdinalIgnoreCase);
         private readonly HashSet<ulong> _autoPotionUsesThisProcess = new();
 
@@ -1208,6 +1210,7 @@ namespace Client.MirScenes
                 return;
 
             ProcessAutoPotions();
+            ProcessAutoMagicShield();
 
             if (CMain.Time >= MoveTime)
             {
@@ -1398,6 +1401,41 @@ namespace Client.MirScenes
 
             _autoPotionWarningTimes[itemName] = CMain.Time + 10000;
             OutputMessage(GameLanguage.ClientTextMap.GetLocalization(ClientTextKeys.AutoPotionMissing, itemName));
+        }
+
+        private void ProcessAutoMagicShield()
+        {
+            if (!AutoPotionSettings.AutoMagicShield || User.Class != MirClass.Wizard || User.MagicShield ||
+                CMain.Time < _nextAutoMagicShieldTime || User.Dead || User.RidingMount || User.Fishing || Observing ||
+                User.NextMagic != null || User.QueuedAction != null ||
+                User.Poison.HasFlag(PoisonType.Stun) || User.Poison.HasFlag(PoisonType.Paralysis) ||
+                User.Poison.HasFlag(PoisonType.LRParalysis) || User.Poison.HasFlag(PoisonType.Frozen) ||
+                CMain.Time < User.BlizzardStopTime || CMain.Time < User.ReincarnationStopTime ||
+                CMain.Time < SpellTime || (!User.HasClassWeapon && User.Weapon >= 0))
+                return;
+
+            ClientMagic magic = User.GetMagic(Spell.MagicShield);
+            if (magic == null || CMain.Time <= magic.CastTime + magic.Delay) return;
+
+            int cost = magic.Level * magic.LevelCost + magic.BaseCost;
+            if (User.Stats[Stat.ManaPenaltyPercent] > 0)
+                cost += cost * User.Stats[Stat.ManaPenaltyPercent] / 100;
+
+            if (cost > User.MP)
+            {
+                _nextAutoMagicShieldTime = CMain.Time + 1000;
+                if (CMain.Time < _nextAutoMagicShieldWarningTime) return;
+
+                _nextAutoMagicShieldWarningTime = CMain.Time + 10000;
+                OutputMessage(GameLanguage.ClientTextMap.GetLocalization(ClientTextKeys.LowMana));
+                return;
+            }
+
+            User.NextMagic = magic;
+            User.NextMagicLocation = User.CurrentLocation;
+            User.NextMagicObject = null;
+            User.NextMagicDirection = User.Direction;
+            _nextAutoMagicShieldTime = CMain.Time + 1000;
         }
 
         public void DialogProcess()
@@ -10379,6 +10417,8 @@ namespace Client.MirScenes
                 _autoPotionUsesThisProcess.Clear();
                 _nextAutoHPTime = 0;
                 _nextAutoMPTime = 0;
+                _nextAutoMagicShieldTime = 0;
+                _nextAutoMagicShieldWarningTime = 0;
             }
 
             base.Dispose(disposing);

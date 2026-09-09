@@ -6,20 +6,37 @@ namespace Client;
 
 internal static class GroundItemFilter
 {
-    private static readonly string FilePath = Path.Combine(Application.StartupPath, "GroundItemFilter.txt");
+    private static string _filePath;
     private static HashSet<string> _names = new(StringComparer.OrdinalIgnoreCase);
     private static string _content;
     private static long _nextCheck;
 
-    public static void Load()
+    public static void Load(string filePath)
     {
+        _filePath = filePath;
+        _content = null;
+        Load();
+    }
+
+    public static void Clear()
+    {
+        _filePath = null;
+        _content = null;
+        _nextCheck = long.MaxValue;
+        SetNames(new HashSet<string>(StringComparer.OrdinalIgnoreCase));
+    }
+
+    private static void Load()
+    {
+        if (string.IsNullOrEmpty(_filePath)) return;
+
         _nextCheck = Environment.TickCount64 + 3000;
         try
         {
             string content;
             try
             {
-                content = File.ReadAllText(FilePath, new UTF8Encoding(false, true));
+                content = File.ReadAllText(_filePath, new UTF8Encoding(false, true));
             }
             catch (FileNotFoundException) { content = string.Empty; }
             catch (DirectoryNotFoundException) { content = string.Empty; }
@@ -32,12 +49,8 @@ internal static class GroundItemFilter
                 line = line.Trim();
                 if (line.Length != 0 && !line.StartsWith('#')) names.Add(line);
             }
-            _names = names;
+            SetNames(names);
             _content = content;
-            if (MapObject.MouseObject is ItemObject item && item.IsFiltered)
-                MapObject.MouseObjectID = 0;
-            if (GameScene.Scene?.MapControl != null)
-                GameScene.Scene.MapControl.TextureValid = false;
         }
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or DecoderFallbackException)
         {
@@ -47,7 +60,7 @@ internal static class GroundItemFilter
 
     public static void Process()
     {
-        if (Environment.TickCount64 >= _nextCheck) Load();
+        if (!string.IsNullOrEmpty(_filePath) && Environment.TickCount64 >= _nextCheck) Load();
     }
 
     public static bool Contains(string name) => _names.Contains(WithoutCount(name));
@@ -60,5 +73,14 @@ internal static class GroundItemFilter
             uint.TryParse(name.AsSpan(suffix + 2, name.Length - suffix - 3), out _))
             return name[..suffix];
         return name;
+    }
+
+    private static void SetNames(HashSet<string> names)
+    {
+        _names = names;
+        if (MapObject.MouseObject is ItemObject item && item.IsFiltered)
+            MapObject.MouseObjectID = 0;
+        if (GameScene.Scene?.MapControl != null)
+            GameScene.Scene.MapControl.TextureValid = false;
     }
 }
