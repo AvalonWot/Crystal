@@ -26,6 +26,15 @@ namespace Server.MirObjects.Monsters
                 Stats.Clear();
                 Stats.Add(Master.Stats);
 
+                Stats[Stat.HPRatePercent] = 0;
+                Stats[Stat.MPRatePercent] = 0;
+                Stats[Stat.MaxACRatePercent] = 0;
+                Stats[Stat.MaxMACRatePercent] = 0;
+                Stats[Stat.MaxDCRatePercent] = 0;
+                Stats[Stat.MaxMCRatePercent] = 0;
+                Stats[Stat.MaxSCRatePercent] = 0;
+                Stats[Stat.AttackSpeedRatePercent] = 0;
+
                 Stats[Stat.HP] = 1500;
 
                 MoveSpeed = 100;
@@ -33,7 +42,7 @@ namespace Server.MirObjects.Monsters
             }
         }
 
-        public override void RefreshAll()
+        protected override void RefreshAllCore()
         {
             RefreshBase();
 

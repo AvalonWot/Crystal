@@ -31,9 +31,9 @@ namespace Server.MirObjects.Monsters
                 Quality = (short)(Envir.Random.Next(4) * 1000);
         }
 
-        public override void RefreshAll()
+        protected override void RefreshAllCore()
         {
-            base.RefreshAll();
+            base.RefreshAllCore();
 
             if (_runAway && MoveSpeed >= 600) MoveSpeed -= 300;
         }

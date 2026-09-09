@@ -22,9 +22,9 @@ namespace Server.MirObjects.Monsters
             set { throw new NotSupportedException(); }
         }
 
-        public override void RefreshAll()
+        protected override void RefreshAllCore()
         {
-            base.RefreshAll();
+            base.RefreshAllCore();
             Stats[Stat.MinDC] += 2 * master.Stats[Stat.MinMC];
             Stats[Stat.MaxDC] += 2 * master.Stats[Stat.MaxMC];
             Stats[Stat.MinMC] += master.Stats[Stat.MinMC];

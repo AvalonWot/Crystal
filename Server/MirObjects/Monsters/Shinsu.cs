@@ -23,9 +23,9 @@ namespace Server.MirObjects.Monsters
             ActionTime = Envir.Time + 1000;
         }
 
-        public override void RefreshAll()
+        protected override void RefreshAllCore()
         {
-            base.RefreshAll();
+            base.RefreshAllCore();
             if (master != null)
             {
                 Stats[Stat.MinDC] += (int)Math.Floor(master.Stats[Stat.MinSC] * (PetLevel * PetLevel * 0.005f));

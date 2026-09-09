@@ -47,6 +47,22 @@
             this[pair.Key] += pair.Value;
     }
 
+    public void ApplyBaseStatRatePercentages()
+    {
+        ApplyRatePercentage(Stat.HP, Stat.HPRatePercent);
+        ApplyRatePercentage(Stat.MP, Stat.MPRatePercent);
+        ApplyRatePercentage(Stat.MaxAC, Stat.MaxACRatePercent);
+        ApplyRatePercentage(Stat.MaxMAC, Stat.MaxMACRatePercent);
+        ApplyRatePercentage(Stat.MaxDC, Stat.MaxDCRatePercent);
+        ApplyRatePercentage(Stat.MaxMC, Stat.MaxMCRatePercent);
+        ApplyRatePercentage(Stat.MaxSC, Stat.MaxSCRatePercent);
+    }
+
+    private void ApplyRatePercentage(Stat stat, Stat rateStat)
+    {
+        this[stat] += (this[stat] * this[rateStat]) / 100;
+    }
+
     public void Save(BinaryWriter writer)
     {
         writer.Write(Values.Count);

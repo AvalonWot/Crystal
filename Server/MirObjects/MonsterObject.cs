@@ -808,7 +808,15 @@ namespace Server.MirObjects
             return (uint)Math.Round(scaled);
         }
 
-        public virtual void RefreshAll()
+        public void RefreshAll()
+        {
+            RefreshAllCore();
+            Stats.ApplyBaseStatRatePercentages();
+
+            if (HP > Stats[Stat.HP]) SetHP(Stats[Stat.HP]);
+        }
+
+        protected virtual void RefreshAllCore()
         {
             RefreshBase();
 
