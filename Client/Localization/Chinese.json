@@ -147,6 +147,7 @@
     "WeddingRing": "结婚戒指",
     "DropAmount": "丢弃数量：",
     "LowMana": "魔法值不足，无法施法。",
+    "AutoPotionMissing": "自动喝药：{0}不足。",
     "NoCreatures": "你没有任何宠物。",
     "NoMount": "你没有坐骑。",
     "NoFishingRod": "你没有拿着鱼竿。",

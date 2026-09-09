@@ -369,6 +369,21 @@ namespace Client.MirControls
 
         private bool HeroGridType => GridType == MirGridType.HeroInventory || GridType == MirGridType.HeroEquipment;
 
+        public bool TryAutoUsePotion(bool allowLocked)
+        {
+            if ((Locked && !allowLocked) || GridType != MirGridType.Inventory || Item == null ||
+                Item.Info.Type != ItemType.Potion || Item.Info.Shape < 0 || Item.Info.Shape > 1 ||
+                (Item.Info.Stats[Stat.HP] <= 0 && Item.Info.Stats[Stat.MP] <= 0) ||
+                MapObject.User == null || MapObject.User.Dead || MapObject.User.Fishing ||
+                GameScene.SelectedCell == this || !CanUseItem())
+                return false;
+
+            Network.Enqueue(new C.UseItem { UniqueID = Item.UniqueID, Grid = MirGridType.Inventory });
+            Locked = true;
+            PlayItemSound();
+            return true;
+        }
+
         public void UseItem()
         {
             if (Locked || GridType == MirGridType.Inspect || GridType == MirGridType.TrustMerchant || GridType == MirGridType.GuildStorage || GridType == MirGridType.Craft) return;

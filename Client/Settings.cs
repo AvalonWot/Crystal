@@ -203,6 +203,7 @@ namespace Client
         public static void Load()
         {
             GroundItemFilter.Load();
+            AutoPotionSettings.Load();
 
 
             if (!Directory.Exists(DataPath)) Directory.CreateDirectory(DataPath);

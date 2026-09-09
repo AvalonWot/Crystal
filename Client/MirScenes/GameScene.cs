@@ -276,6 +276,11 @@ namespace Client.MirScenes
 
         public long OutputDelay;
 
+        private long _nextAutoHPTime;
+        private long _nextAutoMPTime;
+        private readonly Dictionary<string, long> _autoPotionWarningTimes = new(StringComparer.OrdinalIgnoreCase);
+        private readonly HashSet<ulong> _autoPotionUsesThisProcess = new();
+
         public GameScene()
         {
             MapControl.AutoRun = false;
@@ -1202,6 +1207,8 @@ namespace Client.MirScenes
             if (MapControl == null || User == null)
                 return;
 
+            ProcessAutoPotions();
+
             if (CMain.Time >= MoveTime)
             {
                 MoveTime = CMain.Time + 100; //Move Speed
@@ -1326,6 +1333,71 @@ namespace Client.MirScenes
             UpdateMouseCursor();
 
             SoundManager.ProcessDelayedSounds();
+        }
+
+        private void ProcessAutoPotions()
+        {
+            if (User.Dead) return;
+
+            _autoPotionUsesThisProcess.Clear();
+
+            if (CMain.Time >= _nextAutoHPTime)
+                TryAutoPotion(AutoPotionSettings.HPRules, User.HP, User.Stats[Stat.HP], Stat.HP, ref _nextAutoHPTime);
+
+            if (CMain.Time >= _nextAutoMPTime)
+                TryAutoPotion(AutoPotionSettings.MPRules, User.MP, User.Stats[Stat.MP], Stat.MP, ref _nextAutoMPTime);
+        }
+
+        private void TryAutoPotion(IReadOnlyList<AutoPotionRule> rules, int current, int maximum, Stat recoveryStat, ref long nextUseTime)
+        {
+            if (rules.Count == 0 || maximum <= 0) return;
+
+            foreach (AutoPotionRule rule in rules)
+            {
+                if ((long)current * 100 > (long)maximum * rule.Percent) continue;
+
+                MirItemCell cell = FindAutoPotionCell(rule.ItemName, recoveryStat);
+                if (cell == null)
+                {
+                    WarnMissingAutoPotion(rule.ItemName);
+                    continue;
+                }
+
+                bool sunPotion = cell.Item.Info.Shape == 1;
+                ulong uniqueID = cell.Item.UniqueID;
+                if (!cell.TryAutoUsePotion(_autoPotionUsesThisProcess.Contains(uniqueID))) continue;
+
+                _autoPotionUsesThisProcess.Add(uniqueID);
+                nextUseTime = CMain.Time + (sunPotion ? 600 : 2000);
+                return;
+            }
+        }
+
+        private MirItemCell FindAutoPotionCell(string itemName, Stat recoveryStat)
+        {
+            for (int index = 0; index < User.Inventory.Length; index++)
+            {
+                UserItem item = User.Inventory[index];
+                if (item?.Info == null || item.Info.Type != ItemType.Potion || item.Info.Shape < 0 || item.Info.Shape > 1 ||
+                    item.Info.Stats[recoveryStat] <= 0 ||
+                    !string.Equals(item.Info.DisplayName, itemName, StringComparison.OrdinalIgnoreCase))
+                    continue;
+
+                return index < User.BeltIdx
+                    ? BeltDialog.GetCell(item.UniqueID)
+                    : InventoryDialog.GetCell(item.UniqueID);
+            }
+
+            return null;
+        }
+
+        private void WarnMissingAutoPotion(string itemName)
+        {
+            if (_autoPotionWarningTimes.TryGetValue(itemName, out long nextWarningTime) && CMain.Time < nextWarningTime)
+                return;
+
+            _autoPotionWarningTimes[itemName] = CMain.Time + 10000;
+            OutputMessage(GameLanguage.ClientTextMap.GetLocalization(ClientTextKeys.AutoPotionMissing, itemName));
         }
 
         public void DialogProcess()
@@ -10303,6 +10375,10 @@ namespace Client.MirScenes
 
                 OutputMessages.Clear();
                 OutputMessages = null;
+                _autoPotionWarningTimes.Clear();
+                _autoPotionUsesThisProcess.Clear();
+                _nextAutoHPTime = 0;
+                _nextAutoMPTime = 0;
             }
 
             base.Dispose(disposing);
