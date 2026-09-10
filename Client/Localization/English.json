@@ -148,6 +148,8 @@
     "DropAmount": "Drop Amount:",
     "LowMana": "Not Enough Mana to cast.",
     "AutoPotionMissing": "Auto potion: Not enough {0}.",
+    "NoAmulet": "No Amulet.",
+    "AutoEquipAmuletFailed": "Failed to equip an amulet automatically.",
     "NoCreatures": "You do not own any creatures.",
     "NoMount": "You do not own a mount.",
     "NoFishingRod": "You are not holding a fishing rod.",

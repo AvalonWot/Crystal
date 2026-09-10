@@ -677,6 +677,7 @@ namespace Client.MirScenes
 
                     case KeybindOptions.Closeall:
                         MapControl.CancelPoisonSwap();
+                        MapControl.CancelAmuletSwap();
                         InventoryDialog.Hide();
                         CharacterDialog.Hide();
                         OptionDialog.Hide();
@@ -972,7 +973,11 @@ namespace Client.MirScenes
 
         public void UseSpell(int key)
         {
-            if (key <= 16) MapControl.CancelPoisonSwap();
+            if (key <= 16)
+            {
+                MapControl.CancelPoisonSwap();
+                MapControl.CancelAmuletSwap();
+            }
             UserObject actor = User;
             if (key > 16)
             {
@@ -2570,6 +2575,7 @@ namespace Client.MirScenes
             if (toCell == null || fromCell == null)
             {
                 MapControl.CompletePoisonSwap(p, false);
+                MapControl.CompleteAmuletSwap(p, false);
                 return;
             }
 
@@ -2579,6 +2585,7 @@ namespace Client.MirScenes
             if (!p.Success)
             {
                 MapControl.CompletePoisonSwap(p, false);
+                MapControl.CompleteAmuletSwap(p, false);
                 return;
             }
 
@@ -2591,6 +2598,7 @@ namespace Client.MirScenes
             else
                 User.RefreshStats();
             MapControl.CompletePoisonSwap(p, true);
+            MapControl.CompleteAmuletSwap(p, true);
         }
         private void EquipSlotItem(S.EquipSlotItem p)
         {
@@ -10430,6 +10438,47 @@ namespace Client.MirScenes
 
     public sealed class MapControl : MirControl
     {
+        private readonly struct AmuletRequirement
+        {
+            public readonly ushort Count;
+            public readonly int Shape;
+
+            public AmuletRequirement(ushort count, int shape = 0)
+            {
+                Count = count;
+                Shape = shape;
+            }
+        }
+
+        private static readonly IReadOnlyDictionary<Spell, AmuletRequirement> AmuletRequirements =
+            new Dictionary<Spell, AmuletRequirement>
+            {
+                [Spell.SoulFireBall] = new(1),
+                [Spell.SummonSkeleton] = new(1),
+                [Spell.Hiding] = new(1),
+                [Spell.MassHiding] = new(1),
+                [Spell.SoulShield] = new(1),
+                [Spell.BlessedArmour] = new(1),
+                [Spell.TrapHexagon] = new(1),
+                [Spell.UltimateEnhancer] = new(1),
+                [Spell.Plague] = new(1),
+                [Spell.Curse] = new(1),
+                [Spell.Hallucination] = new(1),
+                [Spell.SummonHolyDeva] = new(2),
+                [Spell.SummonShinsu] = new(5),
+                [Spell.PoisonCloud] = new(5),
+                [Spell.Reincarnation] = new(1, 3)
+            };
+
+        private sealed class PendingAmuletSwap
+        {
+            public ClientMagic Magic;
+            public Point Origin;
+            public ulong ItemID;
+            public long Expires;
+            public bool Ready;
+        }
+
         private sealed class PendingPoisonSwap
         {
             public ClientMagic Magic;
@@ -10440,7 +10489,124 @@ namespace Client.MirScenes
             public bool Ready;
         }
 
+        private PendingAmuletSwap pendingAmuletSwap;
         private PendingPoisonSwap pendingPoisonSwap;
+
+        public void CancelAmuletSwap()
+        {
+            var pending = pendingAmuletSwap;
+            pendingAmuletSwap = null;
+            if (pending != null && GameScene.Scene != null)
+            {
+                var source = GameScene.Scene.InventoryDialog?.GetCell(pending.ItemID) ??
+                    GameScene.Scene.BeltDialog?.GetCell(pending.ItemID);
+                if (source != null) source.Locked = false;
+
+                var equipment = GameScene.Scene.CharacterDialog?.Grid;
+                if (equipment != null && equipment.Length > (int)EquipmentSlot.Amulet)
+                    equipment[(int)EquipmentSlot.Amulet].Locked = false;
+            }
+            if (pending != null && User?.NextMagic == pending.Magic)
+                User.ClearMagic();
+        }
+
+        private void ProcessAmuletSwap()
+        {
+            var pending = pendingAmuletSwap;
+            if (pending == null) return;
+
+            if (User == null || User.Dead || !Network.Connected || GameScene.Observing ||
+                User.NextMagic != pending.Magic || User.CurrentLocation != pending.Origin)
+            {
+                CancelAmuletSwap();
+                return;
+            }
+
+            if (CMain.Time < pending.Expires) return;
+
+            CancelAmuletSwap();
+            GameScene.Scene.OutputMessage(GameLanguage.ClientTextMap.GetLocalization(ClientTextKeys.AutoEquipAmuletFailed));
+        }
+
+        public void CompleteAmuletSwap(S.EquipItem packet, bool success)
+        {
+            var pending = pendingAmuletSwap;
+            if (pending == null || packet.Grid != MirGridType.Inventory ||
+                packet.To != (int)EquipmentSlot.Amulet || packet.UniqueID != pending.ItemID) return;
+
+            ProcessAmuletSwap();
+            if (pendingAmuletSwap != pending) return;
+            if (!success)
+            {
+                CancelAmuletSwap();
+                GameScene.Scene.OutputMessage(GameLanguage.ClientTextMap.GetLocalization(ClientTextKeys.AutoEquipAmuletFailed));
+                return;
+            }
+
+            pending.Ready = true;
+        }
+
+        private static bool IsRequiredAmulet(UserItem item, AmuletRequirement requirement)
+        {
+            return item != null && item.Info.Type == ItemType.Amulet &&
+                item.Info.Shape == requirement.Shape && item.Count >= requirement.Count;
+        }
+
+        private MirItemCell FindAmulet(AmuletRequirement requirement)
+        {
+            var slot = GameScene.Scene.CharacterDialog.Grid[(int)EquipmentSlot.Amulet];
+            if (slot.Locked) return null;
+
+            foreach (var item in User.Inventory)
+            {
+                if (!IsRequiredAmulet(item, requirement)) continue;
+
+                var cell = GameScene.Scene.InventoryDialog.GetCell(item.UniqueID) ??
+                    GameScene.Scene.BeltDialog.GetCell(item.UniqueID);
+                if (cell != null && !cell.Locked && slot.CanWearItem(User, item))
+                    return cell;
+            }
+
+            return null;
+        }
+
+        private bool PrepareAmulet(ClientMagic magic)
+        {
+            if (User.Class != MirClass.Taoist || !AmuletRequirements.TryGetValue(magic.Spell, out var requirement))
+                return true;
+
+            if (User.Equipment.Any(item => IsRequiredAmulet(item, requirement)))
+            {
+                pendingAmuletSwap = null;
+                return true;
+            }
+
+            var source = FindAmulet(requirement);
+            if (source == null)
+            {
+                CancelAmuletSwap();
+                User.ClearMagic();
+                GameScene.Scene.OutputMessage(GameLanguage.ClientTextMap.GetLocalization(ClientTextKeys.NoAmulet));
+                return false;
+            }
+
+            pendingAmuletSwap = new PendingAmuletSwap
+            {
+                Magic = magic,
+                Origin = User.CurrentLocation,
+                ItemID = source.Item.UniqueID,
+                Expires = pendingAmuletSwap?.Expires ?? CMain.Time + 5000
+            };
+            source.Locked = true;
+            GameScene.Scene.CharacterDialog.Grid[(int)EquipmentSlot.Amulet].Locked = true;
+            Network.Enqueue(new C.EquipItem
+            {
+                Grid = MirGridType.Inventory,
+                UniqueID = source.Item.UniqueID,
+                To = (int)EquipmentSlot.Amulet
+            });
+            return false;
+        }
 
         public void CancelPoisonSwap()
         {
@@ -10720,6 +10886,7 @@ namespace Client.MirScenes
 
         public void ResetMap()
         {
+            CancelAmuletSwap();
             CancelPoisonSwap();
             GameScene.Scene.NPCDialog.Hide();
 
@@ -10781,6 +10948,7 @@ namespace Client.MirScenes
         public void Process()
         {
             Processdoors();
+            ProcessAmuletSwap();
             ProcessPoisonSwap();
             User.Process();
             for (int i = ObjectsList.Count - 1; i >= 0; i--)
@@ -11668,6 +11836,7 @@ namespace Client.MirScenes
 
         private static void OnMouseDown(object sender, MouseEventArgs e)
         {
+            GameScene.Scene.MapControl.CancelAmuletSwap();
             GameScene.Scene.MapControl.CancelPoisonSwap();
             MapButtons |= e.Button;
             if (e.Button != MouseButtons.Right || !Settings.NewMove)
@@ -12085,6 +12254,11 @@ namespace Client.MirScenes
 
         public void UseMagic(ClientMagic magic, UserObject actor)
         {
+            if (actor == User && pendingAmuletSwap != null)
+            {
+                ProcessAmuletSwap();
+                if (pendingAmuletSwap == null || !pendingAmuletSwap.Ready) return;
+            }
             if (actor == User && pendingPoisonSwap != null)
             {
                 ProcessPoisonSwap();
@@ -12316,6 +12490,7 @@ namespace Client.MirScenes
                 return;
             }
 
+            if (actor == User && !PrepareAmulet(magic)) return;
             if (actor == User && magic.Spell == Spell.Poisoning && !PreparePoison(magic, target)) return;
 
             GameScene.LogTime = CMain.Time + Globals.LogDelay;
@@ -12564,6 +12739,8 @@ namespace Client.MirScenes
         {
             if (disposing)
             {
+                CancelAmuletSwap();
+                CancelPoisonSwap();
                 Objects.Clear();
 
                 MapButtons = 0;
